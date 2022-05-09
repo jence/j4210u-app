@@ -1,16 +1,16 @@
 /**
  * MIT LICENSE
  * 
- * Copyright © 2021 Jence, Ejaz Jamil.
+ * Copyright ï¿½ 2021 Jence, Ejaz Jamil.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
- * files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, 
+ * files (the ï¿½Softwareï¿½), to deal in the Software without restriction, including without limitation the rights to use, copy, 
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
  * Software is furnished to do so, subject to the following conditions:
  * 
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * THE SOFTWARE IS PROVIDED ï¿½AS ISï¿½, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
@@ -298,7 +298,7 @@ public class UhfAppComposite extends Composite {
 		composite_1.setLayout(new GridLayout(7, false));
 		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 3, 1);
-		gd_composite_1.heightHint = 63;
+		gd_composite_1.heightHint = 64;
 		composite_1.setLayoutData(gd_composite_1);
 
 		Label lblPort = new Label(composite_1, SWT.NONE);
@@ -312,7 +312,7 @@ public class UhfAppComposite extends Composite {
 		comboPorts_.setLayoutData(gd_comboPorts_);
 
 		btnRefresh_ = new Button(composite_1, SWT.NONE);
-		btnRefresh_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnRefresh_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 		btnRefresh_.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
 				"/jence/icon/usb.png"));
 		btnRefresh_.setToolTipText("Refresh available serial ports.");
@@ -326,6 +326,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnRefresh_.setText("Refresh");
+	
 
 		btnConnect_ = new Button(composite_1, SWT.NONE);
 		btnConnect_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -627,7 +628,7 @@ public class UhfAppComposite extends Composite {
 		btnAuthWrite_.setText("Auth");
 		
 		btnExists = new Button(grpNdef, SWT.NONE);
-		btnExists.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnExists.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 		btnExists.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
