@@ -9,7 +9,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="swt.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt.jar"/>
         </jar>
     </target>
 </project>

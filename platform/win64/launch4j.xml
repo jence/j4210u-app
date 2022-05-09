@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Work\workspace\j4210u-driver\demo\j4210u.jar</jar>
-  <outfile>C:\Work\workspace\j4210u-driver\demo\j4210u.exe</outfile>
+  <jar>C:\Work\workspace\j4210u-app\platform\win64\j4210u.jar</jar>
+  <outfile>C:\Work\workspace\j4210u-app\platform\win64\j4210u.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\Work\workspace\j4210u-driver\UhfApp32.ico</icon>
+  <icon>C:\Work\workspace\j4210u-app\platform\win64\UhfApp32.ico</icon>
   <singleInstance>
     <mutexName>jence</mutexName>
     <windowTitle>Jence Nfc App</windowTitle>
