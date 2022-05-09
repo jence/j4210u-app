@@ -12,7 +12,7 @@
             <fileset dir="bin"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/swt.jar"/>
         </jar>
-    	<copy file="j4210u.jar" todir="UhfApp.app/Contents/java/app/"/>
-    	<copy file="libj4210u.dylib" todir="UhfApp.app/Contents/java/app/"/>
+    	<copy file="j4210u.jar" todir="UhfApp.app/Contents/MacOS/"/>
+    	<copy file="libj4210u.dylib" todir="UhfApp.app/Contents/MacOS/"/>
     </target>
 </project>
