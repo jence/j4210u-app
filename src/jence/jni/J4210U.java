@@ -236,6 +236,9 @@ public class J4210U {
 	public native byte SetGPO(byte gpono);
 	public native void LibVersion(byte[] version);
 	
+	public native byte SetQ(byte q);
+	public native byte SetSession(byte session);
+	
 	private static byte[] LIB_VERSION = {0,0};
 
 	public static byte[] hex2bytes(String hex, int arraySize) {
@@ -504,6 +507,20 @@ public class J4210U {
 		byte[] buffer = new byte[128];
 		LastError(buffer);
 		return getNullTerminatedString(buffer);
+	}
+	
+	public void setQ(int q) throws Exception {
+		int b = SetQ((byte)q);
+		if (b>0) {
+			throw new Exception("Q value must be between 0 to 15.");
+		}
+	}
+
+	public void setSession(int session) throws Exception {
+		int b = SetSession((byte)session);
+		if (b>3) {
+			throw new Exception("Session value must be between 0 to 3.");
+		}
 	}
 
 	/**
