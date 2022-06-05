@@ -38,7 +38,7 @@ public class TagInventoryDemo {
 				COM = COM.trim();
 			}
 			
-			nfc.open(COM);
+			nfc.open(COM, 57600);
 			System.out.println("Connect to the reader: SUCCESS");
 			boolean stop = false;
 			do {
