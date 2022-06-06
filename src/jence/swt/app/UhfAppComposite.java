@@ -937,7 +937,7 @@ public class UhfAppComposite extends Composite {
 
 	private boolean connect() {
 		try {
-			UhfApp.driver_.open(comboPorts_.getText(), 115200);
+			UhfApp.driver_.open(comboPorts_.getText(), 57600);
 			tabFolder.setSelection(0);
 			return true;
 		} catch (Exception e) {
