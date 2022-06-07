@@ -937,7 +937,7 @@ public class UhfAppComposite extends Composite {
 
 	private boolean connect() {
 		try {
-			UhfApp.driver_.open(comboPorts_.getText());
+			UhfApp.driver_.open(comboPorts_.getText(), 57600);
 			tabFolder.setSelection(0);
 			return true;
 		} catch (Exception e) {
@@ -954,12 +954,16 @@ public class UhfAppComposite extends Composite {
 		if (iterations > 1)
 			merge_ = true;
 		try {
+			UhfApp.driver_.setQ(5);
+			UhfApp.driver_.setSession(1);
 			do {
 				boolean ok = scanonce();
 				if (!ok) {
 					return false;
 				}
 			} while(--iterations > 0);
+		} catch(Throwable t) {
+			prompt(t.getLocalizedMessage(), SWT.ICON_WARNING);
 		} finally {
 			merge_ = ismerging;
 		}

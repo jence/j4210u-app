@@ -236,6 +236,9 @@ public class J4210U {
 	public native byte SetGPO(byte gpono);
 	public native void LibVersion(byte[] version);
 	
+	public native byte SetQ(byte q);
+	public native byte SetSession(byte session);
+	
 	private static byte[] LIB_VERSION = {0,0};
 
 	public static byte[] hex2bytes(String hex, int arraySize) {
@@ -413,13 +416,14 @@ public class J4210U {
 	 * in Windows.
 	 * 
 	 * @param comPort com port string, for example "COM31", etc.
+	 * @param baudrate TODO
 	 * @throws Exception a general exception is thrown.
 	 */
-	public void open(String comPort) throws Exception {
+	public void open(String comPort, int baudrate) throws Exception {
 		
 		comPort += "\0";
 		byte[] port = comPort.getBytes("UTF-8");
-		byte ok = OpenComPort(port, 57600);
+		byte ok = OpenComPort(port, baudrate);
 		if (ok == 0) 
 			throw new Exception("Failed to connect to J4210U reader. " + error());
 	}
@@ -505,6 +509,20 @@ public class J4210U {
 		LastError(buffer);
 		return getNullTerminatedString(buffer);
 	}
+	
+	public void setQ(int q) throws Exception {
+		int b = SetQ((byte)q);
+		if (b>0) {
+			throw new Exception("Q value must be between 0 to 15.");
+		}
+	}
+
+	public void setSession(int session) throws Exception {
+		int b = SetSession((byte)session);
+		if (b>3) {
+			throw new Exception("Session value must be between 0 to 3.");
+		}
+	}
 
 	/**
 	 * Gets scan result at index.
@@ -528,7 +546,7 @@ public class J4210U {
 		J4210U uhf = new J4210U();
 		try {
 			String[] ports = uhf.listPorts();
-			uhf.open("com4");
+			uhf.open("com4", 57600);
 			int count = uhf.inventory(false);
 			if (count == 0) {
 				System.out.println("No Tag found.");

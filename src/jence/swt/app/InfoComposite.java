@@ -53,12 +53,12 @@ public class InfoComposite extends Composite {
 	private Text comadr_;
 	private Text readertype_;
 	private Text protocol_;
-	private Text baudrate_;
 	private Spinner power_;
 	private Spinner scantime_;
 	private Combo band_;
 	private Button beepon_;
 	private J4210U.ReaderInfo ri_ = null;
+	private Combo baudrate_;
 
 	public InfoComposite(Composite arg0, int arg1) {
 		super(arg0, arg1);
@@ -136,8 +136,14 @@ public class InfoComposite extends Composite {
 		lblBaudRate.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblBaudRate.setText("Baud Rate");
 		
-		baudrate_ = new Text(this, SWT.BORDER | SWT.READ_ONLY);
+		baudrate_ = new Combo(this, SWT.READ_ONLY);
+		baudrate_.setItems(new String[] {"57600", "115200"});
 		baudrate_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		baudrate_.select(0);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		
 		Label lblPower = new Label(this, SWT.NONE);
 		lblPower.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
