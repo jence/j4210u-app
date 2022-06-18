@@ -8,19 +8,20 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 /**
- * @author soalib
+ * @author Ejaz Jamil
  *
  */
 public class J4210U {
 	public enum TagType {
         UNKNOWN,
-        
-        // ULTRALIGHT FAMILY
+
+        // ALIEN Family
         HIGGS_3,
         HIGGS_4,
         HIGGS_EC,
         HIGGS_9,
 
+        // IMPINJ Family
         MONZA_4QT,
         MONZA_4E,
         MONZA_4D,
@@ -33,6 +34,7 @@ public class J4210U {
         IMPINJ_M730,
         IMPINJ_M750,
 
+        // NXP Family
         UCODE_7,
         UCODE_8,
         UCODE_8M,
@@ -40,6 +42,7 @@ public class J4210U {
         UCODE_DNA_CITY,
         UCODE_DNA_TRACK,
 
+        // EM Family
         EM4423,
 	};
 	

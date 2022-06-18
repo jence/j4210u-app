@@ -305,6 +305,9 @@ public class UhfAppComposite extends Composite {
 		composite_1.setLayoutData(gd_composite_1);
 		
 		composite_7 = new Composite(composite_1, SWT.NONE);
+		GridData gd_composite_7 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_composite_7.widthHint = 155;
+		composite_7.setLayoutData(gd_composite_7);
 		composite_7.setLayout(new GridLayout(2, false));
 		
 				Label lblPort = new Label(composite_7, SWT.NONE);
@@ -313,6 +316,7 @@ public class UhfAppComposite extends Composite {
 				lblPort.setText("Port");
 
 		comboPorts_ = new Combo(composite_7, SWT.READ_ONLY);
+		comboPorts_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		
 		lblBaud = new Label(composite_7, SWT.NONE);
 		lblBaud.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
