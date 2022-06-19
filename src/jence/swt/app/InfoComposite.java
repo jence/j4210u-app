@@ -53,12 +53,17 @@ public class InfoComposite extends Composite {
 	private Text comadr_;
 	private Text readertype_;
 	private Text protocol_;
-	private Text baudrate_;
 	private Spinner power_;
 	private Spinner scantime_;
 	private Combo band_;
 	private Button beepon_;
 	private J4210U.ReaderInfo ri_ = null;
+	private Combo baudrate_;
+	
+	private void status(String text) {
+		UhfAppComposite composite = (UhfAppComposite)(getShell()).getChildren()[0];
+		composite.status(text);
+	}
 
 	public InfoComposite(Composite arg0, int arg1) {
 		super(arg0, arg1);
@@ -136,8 +141,14 @@ public class InfoComposite extends Composite {
 		lblBaudRate.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblBaudRate.setText("Baud Rate");
 		
-		baudrate_ = new Text(this, SWT.BORDER | SWT.READ_ONLY);
+		baudrate_ = new Combo(this, SWT.READ_ONLY);
+		baudrate_.setItems(new String[] {"9600", "19200", "38400", "57600", "115200"});
 		baudrate_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		baudrate_.select(3);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
 		
 		Label lblPower = new Label(this, SWT.NONE);
 		lblPower.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -209,10 +220,19 @@ public class InfoComposite extends Composite {
 		ri_.Band = (byte)band_.getText().charAt(0);
 		ri_.BeepOn = (beepon_.getSelection()) ? (byte)1 : 0;
 		ri_.Power = (byte)(Integer.parseInt(power_.getText()) & 0xFF);
+		// combo box index to internal baudrate mapping
+		int oldBaudrate = ri_.BaudRate;
+		int selectedBaudrate = Integer.parseInt(baudrate_.getText());
+		ri_.BaudRate = selectedBaudrate;;
 
 		try {
+			if (oldBaudrate != selectedBaudrate) {
+				UhfApp.prompt(this.getShell(), "Your old baudrate "+oldBaudrate+" will be immediately changed to new baudrate "+
+						selectedBaudrate+". So, you have to disconnect and then reconnect using the new baudrate.", SWT.ICON_WARNING);
+			}
 			UhfApp.driver_.saveSettings(ri_);
 			refresh();
+			status("Saved Successfully.");
 		} catch (Exception e) {
 			UhfApp.prompt(this.getShell(), e.getLocalizedMessage(), SWT.OK
 					| SWT.ICON_WARNING);
@@ -222,9 +242,8 @@ public class InfoComposite extends Composite {
 	public void refresh() {
 		try {
 			ri_ = UhfApp.driver_.loadSettings();
-			int[] baudrate = {9600, 19200, 38400, 0, 0, 57600, 115200};
 			antenna_.setText(ri_.Antenna + "");
-			baudrate_.setText(baudrate[ri_.BaudRate] + "");
+			baudrate_.setText(ri_.BaudRate + "");
 			comadr_.setText(ri_.ComAdr + "");
 			maxf_.setText(ri_.MaxFreq + "");
 			minf_.setText(ri_.MinFreq + "");

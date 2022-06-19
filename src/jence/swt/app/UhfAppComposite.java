@@ -173,12 +173,15 @@ public class UhfAppComposite extends Composite {
 	private Button btnClear;
 	private Spinner comboIterations_;
 	private Group grpIterationsPerScan;
+	private Composite composite_7;
+	private Combo comboBaudrate_;
+	private Label lblBaud;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
 	}
 
-	private void status(String text) {
+	public void status(String text) {
 		lblStatus_.setText(text);
 	}
 
@@ -295,21 +298,34 @@ public class UhfAppComposite extends Composite {
 		composite.setLayout(new GridLayout(3, false));
 
 		composite_1 = new Composite(this, SWT.NONE);
-		composite_1.setLayout(new GridLayout(7, false));
+		composite_1.setLayout(new GridLayout(6, false));
 		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 3, 1);
-		gd_composite_1.heightHint = 64;
+		gd_composite_1.heightHint = 69;
 		composite_1.setLayoutData(gd_composite_1);
+		
+		composite_7 = new Composite(composite_1, SWT.NONE);
+		GridData gd_composite_7 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_composite_7.widthHint = 155;
+		composite_7.setLayoutData(gd_composite_7);
+		composite_7.setLayout(new GridLayout(2, false));
+		
+				Label lblPort = new Label(composite_7, SWT.NONE);
+				lblPort.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
+						"/jence/icon/usb.png"));
+				lblPort.setText("Port");
 
-		Label lblPort = new Label(composite_1, SWT.NONE);
-		lblPort.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-				"/jence/icon/usb.png"));
-		lblPort.setText("Port");
-
-		comboPorts_ = new Combo(composite_1, SWT.READ_ONLY);
-		GridData gd_comboPorts_ = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_comboPorts_.widthHint = 184;
-		comboPorts_.setLayoutData(gd_comboPorts_);
+		comboPorts_ = new Combo(composite_7, SWT.READ_ONLY);
+		comboPorts_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		
+		lblBaud = new Label(composite_7, SWT.NONE);
+		lblBaud.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblBaud.setText("Baud");
+		
+		comboBaudrate_ = new Combo(composite_7, SWT.READ_ONLY);
+		comboBaudrate_.setItems(new String[] {"9600", "19200", "38400", "57600", "115200"});
+		comboBaudrate_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboBaudrate_.select(3);
 
 		btnRefresh_ = new Button(composite_1, SWT.NONE);
 		btnRefresh_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
@@ -937,7 +953,8 @@ public class UhfAppComposite extends Composite {
 
 	private boolean connect() {
 		try {
-			UhfApp.driver_.open(comboPorts_.getText());
+			int baudrate = Integer.parseInt(comboBaudrate_.getText());
+			UhfApp.driver_.open(comboPorts_.getText(), baudrate);
 			tabFolder.setSelection(0);
 			return true;
 		} catch (Exception e) {
@@ -954,12 +971,16 @@ public class UhfAppComposite extends Composite {
 		if (iterations > 1)
 			merge_ = true;
 		try {
+			UhfApp.driver_.setQ(6);
+			UhfApp.driver_.setSession(0);
 			do {
 				boolean ok = scanonce();
 				if (!ok) {
 					return false;
 				}
 			} while(--iterations > 0);
+		} catch(Throwable t) {
+			prompt(t.getLocalizedMessage(), SWT.ICON_WARNING);
 		} finally {
 			merge_ = ismerging;
 		}
