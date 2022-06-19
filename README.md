@@ -16,5 +16,6 @@ ECLIPSE PROJECT
 To open project, open the project for appropriate platform under the 
 directory /platform. 
 
-Windows 64 -> /platform/win64
-Mac OSX -> /platform/macosx
+Windows 64 -> /platform/win64 <br/>
+Mac OSX -> /platform/macosx <br/>
+Linux 64 -> /platform/linux64 <br/>
