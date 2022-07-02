@@ -8,7 +8,7 @@ follows:
 
 1. Select the platform. Go to each platform and open the project file for that
 platform. 
-2. But when coding in Java, all cost reside in a platform shared /src folder.
+2. But when coding in Java, all code reside in a platform shared /src folder.
 3. The binary class files reside in the platform's /bin folder.
 
 <h2>FRAMEWORK</h2>
