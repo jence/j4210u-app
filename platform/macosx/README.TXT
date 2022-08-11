@@ -17,7 +17,7 @@ Run this Ant script to build j4210u.jar file. This jar file includes include all
 
 libj4210u.dylib
 ===============
-This is the native library, which must be on path when running Java program.
+This is the native library, which must be on path when running Java program. This library is a Universal binary.
 
 NOTE:
 This project uses the shared src/ folder in the parent directory.
