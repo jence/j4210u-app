@@ -208,7 +208,7 @@ public class UhfAppComposite extends Composite {
 		FontData fd = table.getFont().getFontData()[0];
 		fd.setStyle(SWT.BOLD);
 		final Font FONT_BOLD = new Font(Display.getDefault(), fd);
-
+		
 		final TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
@@ -296,6 +296,17 @@ public class UhfAppComposite extends Composite {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 1, 1));
 		composite.setLayout(new GridLayout(3, false));
+		getShell().addListener(SWT.Close, new Listener(){
+			@Override
+			public void handleEvent(Event e) {
+				try {
+					// close the port if the port is open
+					UhfApp.driver_.close();
+				} catch (Exception e1) {
+				}
+				e.doit = true;
+			}});
+
 
 		composite_1 = new Composite(this, SWT.NONE);
 		composite_1.setLayout(new GridLayout(6, false));
