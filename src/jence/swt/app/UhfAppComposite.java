@@ -303,6 +303,7 @@ public class UhfAppComposite extends Composite {
 					// close the port if the port is open
 					UhfApp.driver_.close();
 				} catch (Exception e1) {
+					// do nothing
 				}
 				e.doit = true;
 			}});
