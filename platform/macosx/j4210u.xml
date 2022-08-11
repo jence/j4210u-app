@@ -4,6 +4,7 @@
     <!--ANT 1.7 is required                                        -->
     <!--define folder properties-->
     <target name="create_run_jar">
+    	<delete file="j4210u.jar"/>
         <jar destfile="j4210u.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="jence.swt.app.UhfApp"/>
