@@ -1125,10 +1125,17 @@ public class UhfAppComposite extends Composite {
 		try {
 			String[] ports = UhfApp.driver_.listPorts();
 			comboPorts_.removeAll();
+			int portCount = 0;
 			for (int i = 0; i < ports.length; i++) {
+				String port = ports[i].trim();
+				if (port.length() == 0)
+					continue;
 				comboPorts_.add(ports[i]);
+				portCount++;
 			}
-			if (ports.length > 0) {
+			if (portCount == 0)
+				return false;
+			if (portCount > 0) {
 				comboPorts_.select(0);
 			}
 			return true;
