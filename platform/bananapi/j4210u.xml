@@ -12,7 +12,6 @@
             <fileset dir="./bin"/>
             <zipfileset excludes="META-INF/*.SF" src="./lib/swt.jar"/>
             <fileset dir="./lib"/>
-            <fileset file="./libj4210u.so"/>
         </jar>
     </target>
 </project>
