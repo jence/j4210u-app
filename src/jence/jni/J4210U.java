@@ -522,7 +522,7 @@ public class J4210U {
 
 	public void setSession(int session) throws Exception {
 		int b = SetSession((byte)session);
-		if (b>3) {
+		if (b>0) {
 			throw new Exception("Session value must be between 0 to 3.");
 		}
 	}

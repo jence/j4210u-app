@@ -48,3 +48,7 @@ Thumbs.db
 *.mov
 *.wmv
 
+doc/.~lock.j4210u.docx\#
+platform/win64/j421xtest.py
+platform/win64/j421xlib.py
+platform/win64/j421xgui.py
