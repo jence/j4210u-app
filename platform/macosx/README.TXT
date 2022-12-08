@@ -4,7 +4,7 @@ Open the project associated with this folder into Eclipse or your preferred Java
 
 To run from command line, type:
 
-java -XstartOnFirstThread -jar j4210u.jar
+java -XstartOnFirstThread -Djava.library.path="./" -jar j4210u.jar
 
 or, run the j4210u.sh script.
 
