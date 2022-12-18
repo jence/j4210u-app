@@ -1,1 +1,1 @@
-java -XstartOnFirstThread -jar j4210u.jar
+java -XstartOnFirstThread -Djava.library.path="./" -jar j4210u.jar

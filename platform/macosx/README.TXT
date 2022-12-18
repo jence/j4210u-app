@@ -4,11 +4,11 @@ Open the project associated with this folder into Eclipse or your preferred Java
 
 To run from command line, type:
 
-java -XstartOnFirstThread -jar j4210u.jar
+java -XstartOnFirstThread -Djava.library.path="./" -jar j4210u.jar
 
 or, run the j4210u.sh script.
 
-To build a Mac OSX app, install4j third party application may be used.
+A Mac OS X app name UhfApp may be found in this folder. Move this app to your Applications folder, if you want.
 
 
 jJ4210u.xml
