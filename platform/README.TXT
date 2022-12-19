@@ -1,1 +1,0 @@
-PocketBeagle does not have a Video output. Therefore, you can use the Python library to load this shared object and use it from Python. If you would like to use Java, then use the BeagleBone project file but use this shared object instead.
