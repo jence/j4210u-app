@@ -4,7 +4,8 @@ We used Python 3.7 in our development.
 
 j421xlib.py  : Contains the Python library for calling into the shared library.
 j421xtest.py : Contains the test demo.
-j421xgui.py  : Is incomplete program that will have the GUI tool.
+UhfApp.py    : Is incomplete program that will have the GUI tool.
+icon/        : You need this folder to display the icons used in the UhfApp.
 
 To run the test code:
 
@@ -23,3 +24,14 @@ For all other OS: libj4210u.so
 Alternatively, if any of these shared objects or DLL are in your system path
 or Python path, then there is no need to copy the files into this directory.
 
+Documentation
+=============
+To build documentation, you need to install sphinx then type as follows:
+
+sphinx-apidocs -o docs .
+
+Then go to the docs folder and type:
+
+make.bat html
+
+This will generate html files in _build/html folder.

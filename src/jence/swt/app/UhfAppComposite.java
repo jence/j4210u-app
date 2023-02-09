@@ -18,16 +18,23 @@
  */
 package jence.swt.app;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 import jence.jni.J4210U;
 import jence.jni.J4210U.ScanResult;
@@ -53,18 +60,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.widgets.Spinner;
 
 /**
  * The application front end.
@@ -138,7 +147,7 @@ public class UhfAppComposite extends Composite {
 	private Timer timer_ = null;
 
 	public static final String DOWNLOAD_PAGE = "https://jence.com/web/index.php?route=product/product&path=69_25_225&product_id=792";
-	public static final String LATEST_VERSION_PAGE = "http://jence.com/downloads/version.properties";
+	public static final String LATEST_VERSION_PAGE = "https://jence.com/downloads/version.properties";
 	public static final String[] AUTODETECTED_CHIPS = {
 			TagType.HIGGS_3.toString(), TagType.HIGGS_4.name(),
 			TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(),
@@ -176,6 +185,24 @@ public class UhfAppComposite extends Composite {
 	private Composite composite_7;
 	private Combo comboBaudrate_;
 	private Label lblBaud;
+	private Button btnLog;
+	private TabItem tbtmMessaging;
+	private Composite composite_8;
+	private Label lblThisTabIs;
+	private Group grpTargets;
+	private Text textIP_;
+	private Text textPort_;
+	private Text textHttpUrl_;
+	private Text textDirectory_;
+	private Text textFilename_;
+	private Button btnActivateJsonMessaging_;
+	private Button btnActivateHttpQuery_;
+	private Button btnActivateWriteToFile_;
+	private Button btnScanServer_;
+	private Button btnHelp;
+	private Button btnClearSetting_;
+	
+	private Messenger messenger_ = null;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
@@ -198,6 +225,16 @@ public class UhfAppComposite extends Composite {
 	private void setEnabled(boolean state, Control... w) {
 		for (int i = 0; i < w.length; i++) {
 			w[i].setEnabled(state);
+		}
+	}
+
+	private void setClear(boolean state, Widget... w) {
+		for (int i = 0; i < w.length; i++) {
+			if (w[i] instanceof Button) {
+				((Button)w[i]).setSelection(false);
+			} else if (w[i] instanceof Text) {
+				((Text)w[i]).setText("");
+			}
 		}
 	}
 
@@ -310,11 +347,22 @@ public class UhfAppComposite extends Composite {
 
 
 		composite_1 = new Composite(this, SWT.NONE);
-		composite_1.setLayout(new GridLayout(6, false));
+		composite_1.setLayout(new GridLayout(8, false));
 		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 3, 1);
 		gd_composite_1.heightHint = 69;
 		composite_1.setLayoutData(gd_composite_1);
+		
+		btnHelp = new Button(composite_1, SWT.NONE);
+		btnHelp.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnHelp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				HelpDialog.show(UhfAppComposite.this.getDisplay());
+			}
+		});
+		btnHelp.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/help.png"));
+		btnHelp.setText("Help");
 		
 		composite_7 = new Composite(composite_1, SWT.NONE);
 		GridData gd_composite_7 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -350,6 +398,8 @@ public class UhfAppComposite extends Composite {
 				if (portlist()) {
 					btnConnect_.setEnabled(true);
 					status("Completed listing available ports.");
+				} else {
+					
 				}
 			}
 		});
@@ -366,7 +416,7 @@ public class UhfAppComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if (connect()) {
-					setEnabled(true, btnDisconnect_, btnScan_, btnScanOnTrigger_);
+					setEnabled(true, btnDisconnect_, btnScan_, btnScanServer_, btnScanOnTrigger_, tabFolder);
 					setEnabled(false, btnRefresh_, btnConnect_);
 					status("Connection was successful.");
 				}
@@ -385,7 +435,7 @@ public class UhfAppComposite extends Composite {
 			public void widgetSelected(SelectionEvent arg0) {
 				if (disconnect()) {
 					setEnabled(true, btnRefresh_, btnConnect_);
-					setEnabled(false, btnDisconnect_, btnScan_, btnScanOnTrigger_);
+					setEnabled(false, btnDisconnect_, btnScan_, btnScanServer_, btnScanOnTrigger_, tabFolder);
 					status("Disconnected.");
 				}
 			}
@@ -401,13 +451,29 @@ public class UhfAppComposite extends Composite {
 		btnScan_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				setEnabled(false, btnScanServer_);
 				if (scan()) {
 					// setEnabled(true,);
 					status("Scan completed.");
 				}
+				setEnabled(true, btnScanServer_);
 			}
 		});
 		btnScan_.setText("Scan");
+		
+		btnScanServer_ = new Button(composite_1, SWT.NONE);
+		btnScanServer_.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				setEnabled(false, btnScan_);
+				scans();
+				setEnabled(true, btnScan_);
+			}
+		});
+		btnScanServer_.setEnabled(false);
+		btnScanServer_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/scans.png"));
+		btnScanServer_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnScanServer_.setText("Scan Server");
 
 		btnScanOnTrigger_ = new Button(composite_1, SWT.TOGGLE);
 		btnScanOnTrigger_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -437,6 +503,7 @@ public class UhfAppComposite extends Composite {
 		lblSupportedChips_.setText(sb.toString());
 
 		tabFolder = new TabFolder(this, SWT.NONE);
+		tabFolder.setEnabled(false);
 		tabFolder.setSelection(0);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3,
 				1));
@@ -449,7 +516,7 @@ public class UhfAppComposite extends Composite {
 		composite_3.setLayout(new GridLayout(3, true));
 
 		composite_4 = new Composite(composite_3, SWT.NONE);
-		composite_4.setLayout(new GridLayout(5, false));
+		composite_4.setLayout(new GridLayout(6, false));
 		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
 				3, 1));
 
@@ -495,6 +562,17 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnMerge.setText("Merge");
+		
+		btnLog = new Button(composite_4, SWT.TOGGLE);
+		btnLog.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				UhfApp.driver_.setLog(btnLog.getSelection());
+			}
+		});
+		btnLog.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/log.png"));
+		btnLog.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		btnLog.setText("Log");
 		
 		grpIterationsPerScan = new Group(composite_4, SWT.NONE);
 		grpIterationsPerScan.setText("Iterations per Scan");
@@ -824,7 +902,11 @@ public class UhfAppComposite extends Composite {
 		btnGetGpInput.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				gpi();
+				try {
+					gpi();
+				} catch (Exception e) {
+					UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
+				}
 			}
 		});
 		btnGetGpInput.setText("Get GP Input");
@@ -850,7 +932,11 @@ public class UhfAppComposite extends Composite {
 		btnSetGpOutput.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				gpo();
+				try {
+					gpo();
+				} catch (Exception e) {
+					UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
+				}
 			}
 		});
 		btnSetGpOutput.setText("Set GP Output");
@@ -860,7 +946,7 @@ public class UhfAppComposite extends Composite {
 				1, 1));
 		lblOut.setText("OUT1");
 
-		out1_ = new Text(composite_5, SWT.BORDER | SWT.READ_ONLY);
+		out1_ = new Text(composite_5, SWT.BORDER);
 		out1_.setText("0");
 		out1_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
 				1));
@@ -871,11 +957,126 @@ public class UhfAppComposite extends Composite {
 				false, 1, 1));
 		lblOut_1.setText("OUT2");
 
-		out2_ = new Text(composite_5, SWT.BORDER | SWT.READ_ONLY);
+		out2_ = new Text(composite_5, SWT.BORDER);
 		out2_.setText("0");
 		out2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
 				1));
 		out2_.setTextLimit(1);
+		
+		tbtmMessaging = new TabItem(tabFolder, SWT.NONE);
+		tbtmMessaging.setText("Messaging");
+		
+		composite_8 = new Composite(tabFolder, SWT.NONE);
+		tbtmMessaging.setControl(composite_8);
+		composite_8.setLayout(new GridLayout(1, false));
+		
+		lblThisTabIs = new Label(composite_8, SWT.NONE);
+		lblThisTabIs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		lblThisTabIs.setText("When a tag is detected, its EPC and other relevent information can be sent to one of the following targets:");
+		
+		grpTargets = new Group(composite_8, SWT.NONE);
+		grpTargets.setLayout(new GridLayout(4, false));
+		grpTargets.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpTargets.setText("Send JSON message to a remote socket with port.");
+		
+		btnActivateJsonMessaging_ = new Button(grpTargets, SWT.CHECK);
+		btnActivateJsonMessaging_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		btnActivateJsonMessaging_.setText("Activate This Option");
+		new Label(grpTargets, SWT.NONE);
+		new Label(grpTargets, SWT.NONE);
+		
+		Label lblIpOrDomain = new Label(grpTargets, SWT.NONE);
+		lblIpOrDomain.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblIpOrDomain.setText("IP or Domain");
+		
+		textIP_ = new Text(grpTargets, SWT.BORDER);
+		textIP_.setToolTipText("Provide a server IP that accepts this message.");
+		textIP_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Label lblPort_1 = new Label(grpTargets, SWT.NONE);
+		lblPort_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblPort_1.setText("Port");
+		
+		textPort_ = new Text(grpTargets, SWT.BORDER);
+		textPort_.setToolTipText("Provide the listening port of the server. Port number must be an integer under 65535");
+		textPort_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Group grpSendToHtpp = new Group(composite_8, SWT.NONE);
+		grpSendToHtpp.setLayout(new GridLayout(2, false));
+		grpSendToHtpp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpSendToHtpp.setText("Send to HTPP url as query string");
+		
+		btnActivateHttpQuery_ = new Button(grpSendToHtpp, SWT.CHECK);
+		btnActivateHttpQuery_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		btnActivateHttpQuery_.setText("Activate This Option");
+		
+		Label lblHttpsUrl = new Label(grpSendToHtpp, SWT.NONE);
+		lblHttpsUrl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblHttpsUrl.setText("Http(s) URL:");
+		
+		textHttpUrl_ = new Text(grpSendToHtpp, SWT.BORDER);
+		textHttpUrl_.setToolTipText("Provide a valid http url which accepts this query.");
+		textHttpUrl_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Group grpWriteToDatabase = new Group(composite_8, SWT.NONE);
+		grpWriteToDatabase.setLayout(new GridLayout(4, false));
+		grpWriteToDatabase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpWriteToDatabase.setText("Write to a File:");
+		
+		btnActivateWriteToFile_ = new Button(grpWriteToDatabase, SWT.CHECK);
+		btnActivateWriteToFile_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1));
+		btnActivateWriteToFile_.setText("Activate This Option (file extension will be .json)");
+		
+		Label lblDatabaseHost = new Label(grpWriteToDatabase, SWT.NONE);
+		lblDatabaseHost.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDatabaseHost.setText("Directory");
+		
+		textDirectory_ = new Text(grpWriteToDatabase, SWT.BORDER);
+		textDirectory_.setToolTipText("Leave this blank if you want to save in current directory.");
+		textDirectory_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Label lblDatabasePort = new Label(grpWriteToDatabase, SWT.NONE);
+		lblDatabasePort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblDatabasePort.setText("Filename");
+		
+		textFilename_ = new Text(grpWriteToDatabase, SWT.BORDER);
+		textFilename_.setToolTipText("Leave this field if you like to save in j4210u.json file.");
+		textFilename_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		Group grpSaveYourOptions = new Group(composite_8, SWT.NONE);
+		grpSaveYourOptions.setLayout(new GridLayout(3, false));
+		grpSaveYourOptions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		grpSaveYourOptions.setText("Save or Load your these settings for later");
+		
+		btnClearSetting_ = new Button(grpSaveYourOptions, SWT.NONE);
+		btnClearSetting_.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				clearMessaging();
+			}
+		});
+		btnClearSetting_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
+		btnClearSetting_.setText("Clear");
+		
+		Button btnSave = new Button(grpSaveYourOptions, SWT.NONE);
+		btnSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				saveMessagingSetting();
+			}
+		});
+		btnSave.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/save.png"));
+		btnSave.setText("Save");
+		
+		Button btnLoad = new Button(grpSaveYourOptions, SWT.NONE);
+		btnLoad.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				loadMessagingSetting();
+			}
+		});
+		btnLoad.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/load.png"));
+		btnLoad.setText("Load");
 		tabFolder.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -929,12 +1130,19 @@ public class UhfAppComposite extends Composite {
 	private void checkVersion() {
 		try {
 			URL url = new URL(LATEST_VERSION_PAGE);
-			URLConnection con = url.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+			// avoid the annoying certificate error if it occurs.
+			con.setHostnameVerifier(new HostnameVerifier() {
+				@Override
+				public boolean verify(String arg0, SSLSession arg1) {
+					return true;
+				}
+			  });
 			InputStream stream = con.getInputStream();
 			Properties properties = new Properties();
 			properties.load(stream);
 			String version = properties.getProperty("J4210U");
-			if (version.compareTo(UhfApp.VERSION) > 0) {
+			if (version != null && version.compareTo(UhfApp.VERSION) > 0) {
 				if (UhfApp
 						.prompt(getShell(),
 								"New version "
@@ -955,6 +1163,10 @@ public class UhfAppComposite extends Composite {
 
 	private boolean disconnect() {
 		try {
+			if (messenger_ != null) {
+				messenger_.close();
+				messenger_ = null;
+			}
 			UhfApp.driver_.close();
 			return true;
 		} catch (Exception e) {
@@ -968,6 +1180,7 @@ public class UhfAppComposite extends Composite {
 			int baudrate = Integer.parseInt(comboBaudrate_.getText());
 			UhfApp.driver_.open(comboPorts_.getText(), baudrate);
 			tabFolder.setSelection(0);
+			clearMessaging();
 			return true;
 		} catch (Exception e) {
 			prompt(e.getMessage()
@@ -978,6 +1191,8 @@ public class UhfAppComposite extends Composite {
 	}
 	
 	private boolean scan() {
+		if (!startMessenger())
+			return false;
 		int iterations = Integer.parseInt(comboIterations_.getText());
 		boolean ismerging = merge_;
 		if (iterations > 1)
@@ -1026,13 +1241,13 @@ public class UhfAppComposite extends Composite {
 			if (merge_) {
 				for(int i=0;i<inventory_.getItemCount();i++) {
 					TableItem item = inventory_.getItem(i);
-					J4210U.ScanResult sr = (J4210U.ScanResult)item.getData();
+					final J4210U.ScanResult sr = (J4210U.ScanResult)item.getData();
 					previousContent.put(UhfApp.driver_.toHex(sr.EPC), sr);
 				}
 			}
 			inventory_.removeAll();
 			for (int i = 0; i < n; i++) {
-				J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
+				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
 				if (merge_) {
 					
 					String hex = UhfApp.driver_.toHex(sr.EPC);
@@ -1049,6 +1264,19 @@ public class UhfAppComposite extends Composite {
 						UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
 						sr.Ant + "", sr.Count + "", sr.RSSI + "" });
 				item.setData(sr);
+				// if messaging is enabled, send the message now in a thread.
+				if (messenger_ != null) {
+					new Thread(new Runnable(){
+						final String json = sr.toJson();
+						@Override
+						public void run() {
+							try {
+								messenger_.sendMessage(json);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}}).start();
+				}
 			}
 			if (merge_) {
 				// if the previous content is not empty, the add them too
@@ -1068,11 +1296,32 @@ public class UhfAppComposite extends Composite {
 		}
 		return true;
 	}
+	
+	private void scans() {
+		if (!startMessenger())
+			return;
+		while(btnScanServer_.getSelection()) {
+			scan();
+		}
+	}
+	
+	private boolean startMessenger() {
+		try {
+			messenger_ = new Messenger(getMessagingProperties());
+			return true;
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			UhfApp.prompt(getShell(), "You have incorrect Messenger Settings. "+e1.getLocalizedMessage()+"\n\nScan Aborted.", SWT.ABORT);
+			return false;
+		}
+	}
 
 	/**
 	 * Scan on Trigger.
 	 */
 	private void scant() {
+		if (!startMessenger())
+			return;
 		if (!btnScanOnTrigger_.getSelection()) {
 			scanning_ = false;
 			if (timer_ != null) {
@@ -1392,13 +1641,96 @@ public class UhfAppComposite extends Composite {
 		return sr.EPC;
 	}
 	
-	private void gpi() {
-		in1_.setText(UhfApp.driver_.GetGPI((byte)1) + "");
-		in2_.setText(UhfApp.driver_.GetGPI((byte)2) + "");
+	private void gpi() throws Exception {
+		in1_.setText(UhfApp.driver_.getGPInput(1) + "");
+		in2_.setText(UhfApp.driver_.getGPInput(2) + "");
 	}
 	
-	private void gpo() {
-		UhfApp.driver_.SetGPO((byte)0x01);
-		UhfApp.driver_.SetGPO((byte)0x02);
+	private void gpo() throws Exception {
+		UhfApp.driver_.setGPOutput((byte)0x01);
+		UhfApp.driver_.setGPOutput((byte)0x02);
+	}
+	
+	private Properties getMessagingProperties() {
+        Properties properties = new Properties();
+		
+		properties.setProperty("socket.messaging", btnActivateJsonMessaging_.getSelection() + "");
+		properties.setProperty("socket.ip", textIP_.getText());
+		properties.setProperty("socket.port", textPort_.getText());
+
+		properties.setProperty("http.messaging", btnActivateHttpQuery_.getSelection() + "");
+		properties.setProperty("http.url", textHttpUrl_.getText());
+		
+		properties.setProperty("file.messaging", btnActivateWriteToFile_.getSelection() + "");
+		properties.setProperty("file.dir", textDirectory_.getText());
+		properties.setProperty("file.name", textFilename_.getText());
+		
+		return properties;
+	}
+	
+	private void saveMessagingSetting() {
+		FileDialog fd = new FileDialog(this.getShell(), SWT.SAVE);
+        fd.setText("Save");
+        fd.setFilterPath("./");
+        String[] filterExt = { "*.properties", "*.*" };
+        fd.setFilterExtensions(filterExt);
+        fd.setOverwrite(true);
+        String selected = fd.open();
+        if (selected == null || selected.trim().length() == 0) {
+        	UhfApp.prompt(getShell(), "Settings will not be saved. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
+        	return;
+        }
+        try {
+			Properties properties = getMessagingProperties();
+			properties.store(new FileOutputStream(new File(selected)), "# UhfApp Messaging Setting created on "+new Date());
+        } catch(Exception e) {
+        	e.printStackTrace();
+			UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.APPLICATION_MODAL);
+        }
+	}
+	
+	private void loadMessagingSetting() {
+		FileDialog fd = new FileDialog(this.getShell(), SWT.OPEN);
+        fd.setText("Open");
+        fd.setFilterPath("./");
+        String[] filterExt = { "*.properties", "*.*" };
+        fd.setFilterExtensions(filterExt);
+        String selected = fd.open();
+        if (selected == null) {
+        	UhfApp.prompt(getShell(), "No settings to load. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
+        	return;
+        }
+        try {
+			InputStream is = new FileInputStream(new File(selected));
+	        Properties properties = new Properties();
+			properties.load(is);
+			
+			String value = properties.getProperty("socket.messaging","false");
+			btnActivateJsonMessaging_.setSelection(Boolean.parseBoolean(value));
+			textIP_.setText(properties.getProperty("socket.ip", ""));
+			textPort_.setText(properties.getProperty("socket.port", ""));
+
+			value = properties.getProperty("http.messaging","false");
+			btnActivateHttpQuery_.setSelection(Boolean.parseBoolean(value));
+			textHttpUrl_.setText(properties.getProperty("http.url",""));
+
+			value = properties.getProperty("file.messaging","false");
+			btnActivateWriteToFile_.setSelection(Boolean.parseBoolean(value));
+			textDirectory_.setText(properties.getProperty("file.dir", ""));
+			textFilename_.setText(properties.getProperty("file.name",""));
+
+			if (messenger_ != null) {
+				messenger_.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.APPLICATION_MODAL);
+		}
+    }
+	
+	private void clearMessaging() {
+		setClear(false,btnActivateJsonMessaging_, textIP_, textPort_, 
+				btnActivateHttpQuery_, textHttpUrl_, 
+				btnActivateWriteToFile_, textDirectory_, textFilename_);
 	}
 }

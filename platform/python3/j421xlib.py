@@ -21,6 +21,7 @@
 
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
+# Version: 1.10
 # https://www.soalib.com
 
 # J4210 Class Library for Python version 3.x
@@ -42,39 +43,45 @@ import binascii
 import enum
 
 class TagType(enum.Enum):
-        UNKNOWN = 0
+    """
+      TagType class holds the types of chip the driver can detect automatically.
+    """
+    UNKNOWN = 0
 
-        # ALIEN Family
-        HIGGS_3 =  1
-        HIGGS_4 =  2
-        HIGGS_EC = 3
-        HIGGS_9 =  4
+    # ALIEN Family
+    HIGGS_3 =  1
+    HIGGS_4 =  2
+    HIGGS_EC = 3
+    HIGGS_9 =  4
 
-        # IMPINJ Family
-        MONZA_4QT =   5
-        MONZA_4E =    6
-        MONZA_4D =    7
-        MONZA_4I =    8
-        MONZA_5 =     9
-        MONZA_R6 =    10
-        MONZA_R6P =   11
-        MONZA_X2K =   12
-        MONZA_X8K =   13
-        IMPINJ_M730 = 14
-        IMPINJ_M750 = 15
+    # IMPINJ Family
+    MONZA_4QT =   5
+    MONZA_4E =    6
+    MONZA_4D =    7
+    MONZA_4I =    8
+    MONZA_5 =     9
+    MONZA_R6 =    10
+    MONZA_R6P =   11
+    MONZA_X2K =   12
+    MONZA_X8K =   13
+    IMPINJ_M730 = 14
+    IMPINJ_M750 = 15
 
-        # NXP Family
-        UCODE_7 =         16
-        UCODE_8 =         17
-        UCODE_8M =        18
-        UCODE_DNA =       19
-        UCODE_DNA_CITY =  20
-        UCODE_DNA_TRACK = 21
+    # NXP Family
+    UCODE_7 =         16
+    UCODE_8 =         17
+    UCODE_8M =        18
+    UCODE_DNA =       19
+    UCODE_DNA_CITY =  20
+    UCODE_DNA_TRACK = 21
 
-        # EM Family
-        EM4423 = 22
-		
+    # EM Family
+    EM4423 = 22
+
 class TagInfo():
+    """
+       TagInfo class stores details of the tags memory size information.
+    """		
     # tagtype : 4, tidlen : 4, tid : 64, chip : 16, epclen : 4, userlen : 4, pwdlen : 4
     def __init__(self, bb = None):
         n0 = 0; n1 = 4
@@ -93,7 +100,24 @@ class TagInfo():
         self.pwdlen = int.from_bytes(bb[n0:n1],"little")
         return
 
+    def getChipName(self):
+        """
+        Returns chip name as string
+
+        :param None
+
+        :return: chip name as string
+        """
+        return self.chip.decode("utf-8")
+
     def echo(self):
+        """
+        Echos the tag type on the console.
+
+        :param None
+
+        :return: None
+        """
         print("TagInfo{")
         print("\tTagType =          ", self.TagType)
         print("\tTID Length =       ", self.tidlen)
@@ -106,7 +130,9 @@ class TagInfo():
         print("}")
 
 class ScanResult():
-
+    """
+       Stores scanned result.
+    """
     def __init__(self, bb = None):
         if (bb == None):
             self.Ant = 0
@@ -116,33 +142,57 @@ class ScanResult():
             self.EPC = bytes(12)
             return
 
-        self.Ant = bb[0]
-        self.RSSI = bb[1]
-        self.Count = bb[2]
-        self.EpcLength = bb[3]
+        self.Ant = int.from_bytes(bb[0:1],"little") #bb[0]
+        self.RSSI = int.from_bytes(bb[1:2],"little", signed="True") #bb[1]
+        self.Count = int.from_bytes(bb[2:3],"little") #bb[2]
+        self.EpcLength = int.from_bytes(bb[3:4],"little") #bb[3]
         self.EPC = bb[4:16]
         return
 
     def echo(self):
+        """
+           Echos a printout of the Scan Result to the console.
+
+           :param None
+           :result: None
+        """
         print("ScanResult{")
-        print("\tAnt: ", bytes(self.Ant)[0])
-        print("\tRSSI: ", bytes(self.RSSI)[0])
-        print("\tCount: ", bytes(self.Count)[0])
-        print("\tEpcLength: ", bytes(self.EpcLength)[0])
-        h = binascii.hexlify(self.EPC).decode('utf-8')
+        print("\tAnt: ", self.Ant)
+        print("\tRSSI: ", self.RSSI)
+        print("\tCount: ", self.Count)
+        print("\tEpcLength: ", self.EpcLength)
+        h = binascii.hexlify(self.EPC).decode('utf-8').upper()
         print("\tEPC: ", h)
         print("}")
         return
+    
+    def hexEPC(self):
+        """
+           Converts EPC to hex value (upper case).
+
+           :param None
+           :return: EPC in hex (capital)
+        """
+        return binascii.hexlify(self.EPC).decode('utf-8').upper()
 
     def line(self):
-        h = binascii.hexlify(self.EPC).decode('utf-8')
-        print("Ant: ", bytes(self.Ant)[0],\
-        " | RSSI: %02d" % (bytes(self.RSSI)[0]),\
-        " | EpcLength: %02d" % bytes(self.EpcLength)[0],\
-        " | Count: % 3d" % (bytes(self.Count)[0]),\
-        " | EPC: ", h)
+        """
+           Oututs the Scan Result in a single line with all column aligned.
 
+           :param None
+           :return: None
+        """
+        h = binascii.hexlify(self.EPC).decode('utf-8').upper()
+        print("Ant: ", self.Ant,\
+        " | RSSI: %02d" % self.RSSI,\
+        " | EpcLength: %02d" % self.EpcLength,\
+        " | Count: % 3d" % self.Count,\
+        " | EPC: ", h)
+    
 class ReaderInfo():
+    """
+       Stores the Reader Info.
+    """
 
     def __init__(self, bb = None):
         if (bb == None):
@@ -187,6 +237,12 @@ class ReaderInfo():
         self.BaudRate = int.from_bytes(bb[24:27],"little")
 
     def echo(self):
+        """
+           Echos the content of Reader Info to the console.
+
+           :param None
+           :return: None
+        """
         print("ReaderInfo{")
         print('\tSerial:     ', self.Serial)
         print('\tVersion:    ', self.Version)
@@ -194,7 +250,7 @@ class ReaderInfo():
         print('\tComAdr:     ', self.ComAdr)
         print('\tReaderType: ', self.ReaderType)
         print('\tProtocol:   ', self.Protocol)
-        print('\tBand:       ', self.Band)
+        print('\tBand:       ', chr(self.Band))
         print('\tPower:      ', self.Power)
         print('\tScanTime:   ', self.ScanTime)
         print('\tBeepOn:     ', bool(self.BeepOn))
@@ -204,6 +260,13 @@ class ReaderInfo():
         print("}")
     
     def tobytes(self):
+        """
+           Converts the content to Reader Info int byte array
+           for writing to the device.
+
+           :param None
+           :return: array of bytes
+        """
         buf = []
         buf += self.Serial.to_bytes(4, 'little')
         buf += self.major
@@ -229,9 +292,17 @@ class ReaderInfo():
 
 # create a Geek class
 class J4210():
+    """
+       This the main class which calls the native functions.
+    """
     
     # constructor
     def __init__(self):
+        """
+           The native libraries must be on path. For Windows, its all the dependent dll
+           including the main driver j4210u.dll. For Mac OS X, its libj4210u.dylib. For
+           all other OSes, its libj4210u.so.
+        """
         # load the library
         # os.chdir('D:\Work\workspace\j4210u-app\platform\win64')
         # REM: All the drivers should be in path or in currect dir
@@ -244,9 +315,29 @@ class J4210():
             self.lib = cdll.LoadLibrary('libj4210u.dylib')
         lib = self.lib
         return
-    
+
+    def getSupportedChips(self):
+        """
+           Returns a comma separated string of supported chip types.
+        """
+        x = ""
+        for a in (TagType):
+            if (a.value == 0):
+                continue
+            #print(a.name)
+            if (len(x) > 0):
+                x += ","
+            x += a.name
+        #print(x)
+        return x
+
     # short AvailablePorts(byte[] ports);
     def AvailablePorts(self):
+        """
+           Gets a list of available USB serial ports for the computer.
+
+           :return: An array of string with USB serial device names.
+        """
         self.lib.AvailablePorts.argtypes = [c_char_p]
         self.lib.AvailablePorts.retypes = [c_uint]
         arg = create_string_buffer(2048)
@@ -254,6 +345,7 @@ class J4210():
         str = arg.value
         str = str.decode("utf-8")
         ret = str.split('\n',n)
+        ret.remove("")
 
         #print(ret)
         #print(n)
@@ -262,21 +354,38 @@ class J4210():
     
     # byte OpenComPort(byte[] port, int baud);
     def OpenPort(self, port, baud):
+        """
+           Opens the given port at the stated baud rate.
+
+           :param port (string): Name of the port returned by the function
+           AvailablePorts.
+           :param baud (int): A valid baud rate. Must be one of 9600, 19200,
+           38400, 57600 and 115200.
+           :return: True, if connected. Otherwise False.
+        """
         self.lib.AvailablePorts.argtypes = [c_char_p, c_uint]
         self.lib.AvailablePorts.retypes = [c_char]
         arg = bytes(port,"ascii")
-        print('arg=', arg)
-        ret = self.lib.OpenComPort(arg, baud)
+        print('arg=', arg, ', baud=', baud)
+        ret = self.lib.OpenComPort(arg, int(baud))
         del arg
         return bool(ret)
 
     # void CloseComPort();
     def ClosePort(self):
+        """
+           Closes the last open port.
+        """
         self.lib.CloseComPort()
         return
 
     # byte LoadSettings(byte[] buff);
     def LoadSettings(self):
+        """
+           Loads current setting from the device hardware
+
+           :return (ReaderInfo): Returns the ReaderInfo object with current settings.
+        """
         self.lib.LoadSettings.argtypes = [c_char_p]
         self.lib.LoadSettings.retypes = [c_char]
         arg = create_string_buffer(32)
@@ -292,6 +401,12 @@ class J4210():
 
     # byte SaveSettings(byte[] buff);
     def SaveSettings(self, ri):
+        """
+           Saves the supplied setting.
+
+           :param ri (ReaderInfo): Setting to replace the currnent settings.
+           :param (True): if successful, otherwise False
+        """
         self.lib.SaveSettings.argtypes = [c_char_p]
         self.lib.SaveSettings.retypes = [c_char]
         buf = ri.tobytes()
@@ -300,6 +415,12 @@ class J4210():
 
     # int  Inventory(byte filter);	
     def Inventory(self, filter):
+        """
+           Performs Inventory scan with or without Filtering.
+
+           :param filter(boolean): If True, applies the filter settings.
+           :return (int): Number of tags detected or 0 if none.
+        """
         self.lib.Inventory.argtypes = [c_char]
         self.lib.Inventory.retypes = [c_uint]
         ff = 0
@@ -310,6 +431,13 @@ class J4210():
 
     # byte GetResult(byte[] scanresult, int index);
     def GetResult(self, index = 0):
+        """
+           Gets the result at the given index. Index must be less than the number
+           of tags detected in previous inventory scan.
+
+           :param index (int): zero based index, zero being the first tag.
+           :return (ScanResult): Returned object contains all the scanned result data.
+        """
         self.lib.GetResult.argtypes = [c_char_p, c_int]
         self.lib.GetResult.retypes = [c_char]
         buf = create_string_buffer(64)
@@ -321,11 +449,23 @@ class J4210():
         return result
 
     def Bytes2Hex(self, bb):
-        h = binascii.hexlify(bb).decode('utf-8')
+        """
+           Converts the given byte array into HEX (capital)
+
+           :param bb (byte[]): byte array to convert.
+           :return (string): HEX value of the array of bytes.
+        """
+        h = binascii.hexlify(bb).decode('utf-8').upper()
         return h
 
     # byte GetTID(byte[] epc, byte epclen, byte[] tid, byte[] tidlen);
     def GetTID(self, epc):
+        """
+           Gets the TID value for the provided EPC in bytes.
+
+           :param epc(byte[]): EPC bytes (must exist).
+           :return (byte[]): The TID bytes for the tag.
+        """
         self.lib.GetTID.argtypes = [c_char_p, c_char, c_char_p, c_char_p]
         self.lib.GetTID.retypes = [c_char]
         buf = create_string_buffer(64)
@@ -344,6 +484,14 @@ class J4210():
 	
     # byte SetPassword(byte[] epc, byte epcLen, byte[] pass, byte size);
     def SetPassword(self, epc, password):
+        """
+           Sets password of the tag with the EPC to the given password.
+           The Old password should be provided by Auth method first.
+
+           :param epc (byte[]): EPC of the tag to change the password.
+           :param password (byte[]): a 4 byte password.
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.SetPassword.argtypes = [c_char_p, c_char, c_char_p, c_char]
         self.lib.SetPassword.retypes = [c_char]
         ret = self.lib.SetPassword(epc,len(epc),password,len(password))
@@ -351,6 +499,14 @@ class J4210():
 
     # byte SetKillPassword(byte[] epc, byte epcLen, byte[] pass, byte size);
     def SetKillPassword(self, epc, password):
+        """
+           Sets kill password of the tag with the EPC to the given password.
+           The Old password should be provided by Auth method first.
+
+           :param epc (byte[]): EPC of the tag to change the password.
+           :param password (byte[]): a 4 byte kill password.
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.SetKillPassword.argtypes = [c_char_p, c_char, c_char_p, c_char]
         self.lib.SetKillPassword.retypes = [c_char]
         ret = self.lib.SetKillPassword(epc,len(epc),password,len(password))
@@ -358,6 +514,11 @@ class J4210():
 
     # void LastError(byte[] buffer);
     def LastError(self):
+        """
+           Returns the last error message.
+
+           :return (str): Last error message.
+        """
         self.lib.LastError.argtypes = [c_char_p]
         buf = create_string_buffer(128)
         self.lib.LastError(buf);
@@ -366,6 +527,12 @@ class J4210():
 	
     # byte Auth(byte[] password, byte size);
     def Auth(self, password):
+        """
+           Sets the current password. This password is required to read memory content.
+
+           :param (byte[]): 4 byte default password.
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.Auth.argtypes = [c_char_p]
         self.lib.Auth.retypes = [c_char]
         ret = self.lib.Auth(password, len(password))
@@ -373,6 +540,15 @@ class J4210():
 
     # byte WriteMemWord(byte[] epc, byte epclen, byte[] data, byte windex);
     def WriteMemWord(self, epc, data, windex):
+        """
+           Writes 16 bit (2 byte) data simultaneously to a word address.
+
+           :param epc (byte[]): A valid EPC of the tag.
+           :param data (byte[]): 16 bit (2 byte) data word.
+           :param windex (int): word memory index (zero based).
+
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.WriteMemWord.argtypes = [c_char_p, c_char, c_char_p, c_char]
         self.lib.WriteMemWord.retypes = [c_char]
         ret = self.lib.WriteMemWord(epc, len(epc), data, windex)
@@ -380,6 +556,14 @@ class J4210():
 
     # byte ReadMemWord(byte[] epc, byte epclen, byte[] data, byte windex);
     def ReadMemWord(self, epc, windex):
+        """
+           Reads 16 bit (2 byte) data simultaneously from a word address.
+
+           :param epc (byte[]): A valid EPC of the tag.
+           :param windex (int): valid word memory index (zero based).
+
+           :return (byte[]): 2 byte of memory data.
+        """
         self.lib.ReadMemWord.argtypes = [c_char_p, c_char, c_char_p, c_char]
         self.lib.ReadMemWord.retypes = [c_char]
         data = create_string_buffer(2)
@@ -390,6 +574,15 @@ class J4210():
 
     # byte SetFilter(int maskAdrInByte, int maskLenInByte, byte[] maskDataByte);
     def SetFilter(self, adr, len, mask):
+        """
+           Creates a filter which can be used during inventory, if desired.
+
+           :param adr (int): 16 bit (2 byte) word address.
+           :param len (int): length of the mask (must be even), i.e., 2 bytes at a time.
+           :param mask (byte[]): actual bytes used as mask.
+
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.SetFilter.argtypes = [c_int, c_int, c_char_p]
         self.lib.SetFilter.retypes = [c_char]
         ret = self.lib.SetFilter(adr, len, mask)
@@ -397,6 +590,12 @@ class J4210():
 	
     # byte TagExists(byte[] epc, byte epclen);
     def TagExists(self, epc):
+        """
+           Checks if a tag with the given EPC exist.
+
+           :param epc (bytep[]): full EPC value.
+           :return (boolean): True, if found, otherwise False.
+        """
         self.lib.TagExists.argtypes = [c_char_p]
         self.lib.TagExists.retypes = [c_char]
         ret = self.lib.TagExists(epc, len(epc))
@@ -404,6 +603,15 @@ class J4210():
 
     # byte WriteEpcWord(byte[] epc, byte epclen, byte[] data, byte windex);
     def WriteEpcWord(self, epc, data, windex):
+        """
+           Writes EPC Word at specified word index in a 16-bit memory.
+
+           :param epc (bytep[]): full EPC value.
+           :param data (byte[]): New EPC word (2 byte).
+           :param windoex (int): Word memory index, must be even.
+
+           :return (boolean): True, if successful, otherwise False.
+        """
         self.lib.WriteEpcWord.argtypes = [c_char_p, c_char, c_char_p, c_char]
         self.lib.WriteEpcWord.retypes = [c_char]
         ret = self.lib.WriteEpcWord(epc, len(epc), data, windex)
@@ -411,6 +619,13 @@ class J4210():
 	
     # byte GetTagInfo(byte[] tid, byte[] info);
     def GetTagInfo(self, tid):
+        """
+           Gets the detail information about the tag and returns the TagInfo
+           object.
+
+           :param tid (byte[]): The full TID of the tag.
+           :return (TagInfo): The TagInfo object.
+        """
         self.lib.GetTagInfo.argtypes = [c_char_p, c_char_p]
         self.lib.GetTagInfo.retypes = [c_char]
         buf = create_string_buffer(128)
@@ -427,6 +642,13 @@ class J4210():
     # GetGPI(2), gets input from GPI-1
     # All other values are invalid.
     def GetGPI(self, gpino):
+        """
+           Gets the GPIO Input from GPI0 or GPI1 port. The argument should be either,
+           1, to read GPI0 or 2 to read GPI1 or 3 to read both GPI0 and GPI1.
+
+           :param gpino(int): 1 -> GPI0, 2 -> GPI1, 3 -> GPI0 & GPI1
+           :return (int): The state of the GPI inputs relative to the bit position.
+        """
         self.lib.GetGPI.argtypes = [c_char]
         self.lib.GetGPI.retypes = [c_char]
         ret = self.lib.GetGPI(gpino)
@@ -441,6 +663,13 @@ class J4210():
     # SetGPO(0x02) sets GPO-0 to 0 and GPO-1 to 1
     # SetGPO(0x03) sets both GPO-0 and GPO-1 to 1
     def SetGPO(self, gpono):
+        """
+           Sets the GPIO Output of GPO0 or GPO1 port. Bit 0 is GPO0, bit 1 is GPO1.
+
+           :param gpono(int): The state of bit 0 will be written to GPO0 and state of
+           bit 1 will be written to GPO1.
+           :return (int): The state of the GPO outputs after writing relative to bit position.
+        """
         self.lib.SetGPO.argtypes = [c_char]
         self.lib.SetGPO.retypes = [c_char]
         ret = self.lib.SetGPO(gpono)
@@ -448,6 +677,11 @@ class J4210():
 
     # void LibVersion(byte[] version);
     def LibVersion(self):
+        """
+           Gets the library version as string.
+
+           :return (string): Library Version as string in major.minor format.
+        """
         self.lib.LibVersion.argtypes = [c_char_p]
         self.lib.LibVersion.retypes = [c_char]
         arg = create_string_buffer(2)
@@ -462,12 +696,24 @@ class J4210():
 	
     # byte SetQ(byte q);
     def SetQ1(self, q):
+        """
+           Obsolete
+        """
         self.lib.SetQ.argtypes = [c_char]
         self.lib.SetQ.retypes = [c_char]
         ret = self.lib.SetQ(q)
         return bool(ret)
 
     def SetQ(self, q):
+        """
+           Sets the Q value of the reader. 
+
+           :param q (int): A value 0 - 15 as Q value. If there is only 1 tag, use Q = 1.
+           If there are a large number of tags, use Q = 15. Usually Q should be in the range
+           of 4 - 5 for optimal reading when the number of tags is less than 16.
+
+           :return (boolean): True, if successful, False otherwise.
+        """
         self.lib.SetQ.argtypes = [c_char]
         self.lib.SetQ.retypes = [c_char]
         ret = self.lib.SetQ(q)
@@ -475,6 +721,16 @@ class J4210():
 
     # byte SetSession(byte session);
     def SetSession(self, session):
+        """
+           Sets reader session. In a multi-reader environment, set this value such that each
+           reader has different session. This will prevent interference of other readers when 
+           reading the same tag. Sessions values are from 0 to 3. So, there should be at most 
+           4 readers that can read the same tag simultaneously. 
+
+           :param session (int): Session value 0 to 3.
+
+           :return (boolean): True, if successful, False otherwise.
+        """
         self.lib.SetSession.argtypes = [c_char]
         self.lib.SetSession.retypes = [c_char]
         ret = self.lib.SetSession(session)
