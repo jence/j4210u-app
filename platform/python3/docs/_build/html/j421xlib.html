@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>j421xlib module &#8212; J421x 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-j421xlib">
+<span id="j421xlib-module"></span><h1>j421xlib module<a class="headerlink" href="#module-j421xlib" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="j421xlib.J4210">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j421xlib.</span></span><span class="sig-name descname"><span class="pre">J4210</span></span><a class="reference internal" href="_modules/j421xlib.html#J4210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This the main class which calls the native functions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.Auth">
+<span class="sig-name descname"><span class="pre">Auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.Auth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.Auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current password. This password is required to read memory content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> – 4 byte default password.</p>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.AvailablePorts">
+<span class="sig-name descname"><span class="pre">AvailablePorts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.AvailablePorts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.AvailablePorts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of available USB serial ports for the computer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An array of string with USB serial device names.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.Bytes2Hex">
+<span class="sig-name descname"><span class="pre">Bytes2Hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.Bytes2Hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.Bytes2Hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the given byte array into HEX (capital)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>bb</em>) – byte array to convert.</p>
+</dd>
+<dt class="field-even">Return (string)</dt>
+<dd class="field-even"><p>HEX value of the array of bytes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.ClosePort">
+<span class="sig-name descname"><span class="pre">ClosePort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.ClosePort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.ClosePort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the last open port.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.GetGPI">
+<span class="sig-name descname"><span class="pre">GetGPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpino</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.GetGPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.GetGPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the GPIO Input from GPI0 or GPI1 port. The argument should be either,
+1, to read GPI0 or 2 to read GPI1 or 3 to read both GPI0 and GPI1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gpino</strong><strong>(</strong><strong>int</strong><strong>)</strong> – 1 -&gt; GPI0, 2 -&gt; GPI1, 3 -&gt; GPI0 &amp; GPI1</p>
+</dd>
+<dt class="field-even">Return (int)</dt>
+<dd class="field-even"><p>The state of the GPI inputs relative to the bit position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.GetResult">
+<span class="sig-name descname"><span class="pre">GetResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.GetResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.GetResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the result at the given index. Index must be less than the number
+of tags detected in previous inventory scan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>index</em>) – zero based index, zero being the first tag.</p>
+</dd>
+<dt class="field-even">Return (ScanResult)</dt>
+<dd class="field-even"><p>Returned object contains all the scanned result data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.GetTID">
+<span class="sig-name descname"><span class="pre">GetTID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.GetTID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.GetTID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the TID value for the provided EPC in bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>epc</strong><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> – EPC bytes (must exist).</p>
+</dd>
+<dt class="field-even">Return (byte[])</dt>
+<dd class="field-even"><p>The TID bytes for the tag.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.GetTagInfo">
+<span class="sig-name descname"><span class="pre">GetTagInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.GetTagInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.GetTagInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the detail information about the tag and returns the TagInfo
+object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>tid</em>) – The full TID of the tag.</p>
+</dd>
+<dt class="field-even">Return (TagInfo)</dt>
+<dd class="field-even"><p>The TagInfo object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.Inventory">
+<span class="sig-name descname"><span class="pre">Inventory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.Inventory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.Inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs Inventory scan with or without Filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filter</strong><strong>(</strong><strong>boolean</strong><strong>)</strong> – If True, applies the filter settings.</p>
+</dd>
+<dt class="field-even">Return (int)</dt>
+<dd class="field-even"><p>Number of tags detected or 0 if none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.LastError">
+<span class="sig-name descname"><span class="pre">LastError</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.LastError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.LastError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the last error message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return (str)</dt>
+<dd class="field-odd"><p>Last error message.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.LibVersion">
+<span class="sig-name descname"><span class="pre">LibVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.LibVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.LibVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the library version as string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return (string)</dt>
+<dd class="field-odd"><p>Library Version as string in major.minor format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.LoadSettings">
+<span class="sig-name descname"><span class="pre">LoadSettings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.LoadSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.LoadSettings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads current setting from the device hardware</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return (ReaderInfo)</dt>
+<dd class="field-odd"><p>Returns the ReaderInfo object with current settings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.OpenPort">
+<span class="sig-name descname"><span class="pre">OpenPort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baud</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.OpenPort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.OpenPort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens the given port at the stated baud rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>string</strong><strong>)</strong> (<em>port</em>) – Name of the port returned by the function</p>
+</dd>
+</dl>
+<p>AvailablePorts.
+:param baud (int): A valid baud rate. Must be one of 9600, 19200,
+38400, 57600 and 115200.
+:return: True, if connected. Otherwise False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.ReadMemWord">
+<span class="sig-name descname"><span class="pre">ReadMemWord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.ReadMemWord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.ReadMemWord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads 16 bit (2 byte) data simultaneously from a word address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>epc</em>) – A valid EPC of the tag.</p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>windex</em>) – valid word memory index (zero based).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (byte[])</dt>
+<dd class="field-even"><p>2 byte of memory data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SaveSettings">
+<span class="sig-name descname"><span class="pre">SaveSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SaveSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SaveSettings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the supplied setting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>ReaderInfo</strong><strong>)</strong> (<em>ri</em>) – Setting to replace the currnent settings.</p></li>
+<li><p><strong>(</strong><strong>True</strong><strong>)</strong> – if successful, otherwise False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetFilter">
+<span class="sig-name descname"><span class="pre">SetFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a filter which can be used during inventory, if desired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>len</em>) – 16 bit (2 byte) word address.</p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> – length of the mask (must be even), i.e., 2 bytes at a time.</p></li>
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>mask</em>) – actual bytes used as mask.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetGPO">
+<span class="sig-name descname"><span class="pre">SetGPO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpono</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetGPO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetGPO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the GPIO Output of GPO0 or GPO1 port. Bit 0 is GPO0, bit 1 is GPO1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gpono</strong><strong>(</strong><strong>int</strong><strong>)</strong> – The state of bit 0 will be written to GPO0 and state of</p>
+</dd>
+</dl>
+<p>bit 1 will be written to GPO1.
+:return (int): The state of the GPO outputs after writing relative to bit position.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetKillPassword">
+<span class="sig-name descname"><span class="pre">SetKillPassword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetKillPassword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetKillPassword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets kill password of the tag with the EPC to the given password.
+The Old password should be provided by Auth method first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>password</em>) – EPC of the tag to change the password.</p></li>
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> – a 4 byte kill password.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetPassword">
+<span class="sig-name descname"><span class="pre">SetPassword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetPassword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetPassword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets password of the tag with the EPC to the given password.
+The Old password should be provided by Auth method first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>password</em>) – EPC of the tag to change the password.</p></li>
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> – a 4 byte password.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetQ">
+<span class="sig-name descname"><span class="pre">SetQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the Q value of the reader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>q</em>) – A value 0 - 15 as Q value. If there is only 1 tag, use Q = 1.</p>
+</dd>
+</dl>
+<p>If there are a large number of tags, use Q = 15. Usually Q should be in the range
+of 4 - 5 for optimal reading when the number of tags is less than 16.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return (boolean)</dt>
+<dd class="field-odd"><p>True, if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetQ1">
+<span class="sig-name descname"><span class="pre">SetQ1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetQ1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetQ1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obsolete</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.SetSession">
+<span class="sig-name descname"><span class="pre">SetSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.SetSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.SetSession" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets reader session. In a multi-reader environment, set this value such that each
+reader has different session. This will prevent interference of other readers when 
+reading the same tag. Sessions values are from 0 to 3. So, there should be at most 
+4 readers that can read the same tag simultaneously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>session</em>) – Session value 0 to 3.</p>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.TagExists">
+<span class="sig-name descname"><span class="pre">TagExists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.TagExists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.TagExists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a tag with the given EPC exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>bytep</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>epc</em>) – full EPC value.</p>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if found, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.WriteEpcWord">
+<span class="sig-name descname"><span class="pre">WriteEpcWord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.WriteEpcWord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.WriteEpcWord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes EPC Word at specified word index in a 16-bit memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>bytep</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>epc</em>) – full EPC value.</p></li>
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>data</em>) – New EPC word (2 byte).</p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>windoex</em>) – Word memory index, must be even.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.WriteMemWord">
+<span class="sig-name descname"><span class="pre">WriteMemWord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.WriteMemWord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.WriteMemWord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes 16 bit (2 byte) data simultaneously to a word address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> (<em>data</em>) – A valid EPC of the tag.</p></li>
+<li><p><strong>(</strong><strong>byte</strong><strong>[</strong><strong>]</strong><strong>)</strong> – 16 bit (2 byte) data word.</p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>windex</em>) – word memory index (zero based).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return (boolean)</dt>
+<dd class="field-even"><p>True, if successful, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.J4210.getSupportedChips">
+<span class="sig-name descname"><span class="pre">getSupportedChips</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#J4210.getSupportedChips"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.J4210.getSupportedChips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a comma separated string of supported chip types.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j421xlib.ReaderInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j421xlib.</span></span><span class="sig-name descname"><span class="pre">ReaderInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ReaderInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ReaderInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stores the Reader Info.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.ReaderInfo.echo">
+<span class="sig-name descname"><span class="pre">echo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ReaderInfo.echo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ReaderInfo.echo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Echos the content of Reader Info to the console.</p>
+<p>:param None
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.ReaderInfo.tobytes">
+<span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ReaderInfo.tobytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ReaderInfo.tobytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the content to Reader Info int byte array
+for writing to the device.</p>
+<p>:param None
+:return: array of bytes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j421xlib.ScanResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j421xlib.</span></span><span class="sig-name descname"><span class="pre">ScanResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ScanResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ScanResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stores scanned result.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.ScanResult.echo">
+<span class="sig-name descname"><span class="pre">echo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ScanResult.echo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ScanResult.echo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Echos a printout of the Scan Result to the console.</p>
+<p>:param None
+:result: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.ScanResult.hexEPC">
+<span class="sig-name descname"><span class="pre">hexEPC</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ScanResult.hexEPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ScanResult.hexEPC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts EPC to hex value (upper case).</p>
+<p>:param None
+:return: EPC in hex (capital)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.ScanResult.line">
+<span class="sig-name descname"><span class="pre">line</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#ScanResult.line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.ScanResult.line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Oututs the Scan Result in a single line with all column aligned.</p>
+<p>:param None
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j421xlib.TagInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j421xlib.</span></span><span class="sig-name descname"><span class="pre">TagInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#TagInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.TagInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TagInfo class stores details of the tags memory size information.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.TagInfo.echo">
+<span class="sig-name descname"><span class="pre">echo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#TagInfo.echo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.TagInfo.echo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Echos the tag type on the console.</p>
+<p>:param None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="j421xlib.TagInfo.getChipName">
+<span class="sig-name descname"><span class="pre">getChipName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#TagInfo.getChipName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.TagInfo.getChipName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns chip name as string</p>
+<p>:param None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>chip name as string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="j421xlib.TagType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">j421xlib.</span></span><span class="sig-name descname"><span class="pre">TagType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/j421xlib.html#TagType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#j421xlib.TagType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>TagType class holds the types of chip the driver can detect automatically.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.EM4423">
+<span class="sig-name descname"><span class="pre">EM4423</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">22</span></em><a class="headerlink" href="#j421xlib.TagType.EM4423" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.HIGGS_3">
+<span class="sig-name descname"><span class="pre">HIGGS_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#j421xlib.TagType.HIGGS_3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.HIGGS_4">
+<span class="sig-name descname"><span class="pre">HIGGS_4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#j421xlib.TagType.HIGGS_4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.HIGGS_9">
+<span class="sig-name descname"><span class="pre">HIGGS_9</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#j421xlib.TagType.HIGGS_9" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.HIGGS_EC">
+<span class="sig-name descname"><span class="pre">HIGGS_EC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#j421xlib.TagType.HIGGS_EC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.IMPINJ_M730">
+<span class="sig-name descname"><span class="pre">IMPINJ_M730</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#j421xlib.TagType.IMPINJ_M730" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.IMPINJ_M750">
+<span class="sig-name descname"><span class="pre">IMPINJ_M750</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#j421xlib.TagType.IMPINJ_M750" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_4D">
+<span class="sig-name descname"><span class="pre">MONZA_4D</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_4D" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_4E">
+<span class="sig-name descname"><span class="pre">MONZA_4E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_4E" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_4I">
+<span class="sig-name descname"><span class="pre">MONZA_4I</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_4I" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_4QT">
+<span class="sig-name descname"><span class="pre">MONZA_4QT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_4QT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_5">
+<span class="sig-name descname"><span class="pre">MONZA_5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_R6">
+<span class="sig-name descname"><span class="pre">MONZA_R6</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_R6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_R6P">
+<span class="sig-name descname"><span class="pre">MONZA_R6P</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_R6P" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_X2K">
+<span class="sig-name descname"><span class="pre">MONZA_X2K</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_X2K" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.MONZA_X8K">
+<span class="sig-name descname"><span class="pre">MONZA_X8K</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#j421xlib.TagType.MONZA_X8K" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_7">
+<span class="sig-name descname"><span class="pre">UCODE_7</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_8">
+<span class="sig-name descname"><span class="pre">UCODE_8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">17</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_8M">
+<span class="sig-name descname"><span class="pre">UCODE_8M</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">18</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_8M" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_DNA">
+<span class="sig-name descname"><span class="pre">UCODE_DNA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">19</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_DNA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_DNA_CITY">
+<span class="sig-name descname"><span class="pre">UCODE_DNA_CITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_DNA_CITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UCODE_DNA_TRACK">
+<span class="sig-name descname"><span class="pre">UCODE_DNA_TRACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">21</span></em><a class="headerlink" href="#j421xlib.TagType.UCODE_DNA_TRACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="j421xlib.TagType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#j421xlib.TagType.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">J421x</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Ejaz Jamil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/j421xlib.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

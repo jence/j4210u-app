@@ -1,0 +1,837 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>j421xlib &#8212; J421x 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for j421xlib</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright, Jence (c) 2022, All Rights Reserved</span>
+<span class="c1">#</span>
+<span class="c1"># MIT LICENSE</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining </span>
+<span class="c1"># a copy of this software and associated documentation files (the &quot;Software&quot;), </span>
+<span class="c1"># to deal in the Software without restriction, including without limitation </span>
+<span class="c1"># the rights to use, copy, modify, merge, publish, distribute, sublicense, </span>
+<span class="c1"># and/or sell copies of the Software, and to permit persons to whom the </span>
+<span class="c1"># Software is furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included </span>
+<span class="c1"># in all copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS </span>
+<span class="c1"># OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, </span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE </span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER </span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, </span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN </span>
+<span class="c1"># THE SOFTWARE.</span>
+
+<span class="c1"># Author: Ejaz Jamil</span>
+<span class="c1"># Soalib Incorporated, Massachusetts, USA</span>
+<span class="c1"># https://www.soalib.com</span>
+
+<span class="c1"># J4210 Class Library for Python version 3.x</span>
+<span class="c1"># This is a Python class for use with J4210 series of readers.</span>
+<span class="c1"># This is a class library only. This class should be called</span>
+<span class="c1"># from your program.</span>
+<span class="c1"># To use this library, all the driver libraries should be</span>
+<span class="c1"># on Python path or on the same directory of this class file.</span>
+<span class="c1"># If the hardware libraries are not in path, then move the</span>
+<span class="c1"># libraries to the directory where this library is. All the </span>
+<span class="c1"># dependent libraries must also be on path on in the same</span>
+<span class="c1"># directory.</span>
+
+<span class="c1"># import the module</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+
+<div class="viewcode-block" id="TagType"><a class="viewcode-back" href="../j421xlib.html#j421xlib.TagType">[docs]</a><span class="k">class</span> <span class="nc">TagType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      TagType class holds the types of chip the driver can detect automatically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># ALIEN Family</span>
+    <span class="n">HIGGS_3</span> <span class="o">=</span>  <span class="mi">1</span>
+    <span class="n">HIGGS_4</span> <span class="o">=</span>  <span class="mi">2</span>
+    <span class="n">HIGGS_EC</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">HIGGS_9</span> <span class="o">=</span>  <span class="mi">4</span>
+
+    <span class="c1"># IMPINJ Family</span>
+    <span class="n">MONZA_4QT</span> <span class="o">=</span>   <span class="mi">5</span>
+    <span class="n">MONZA_4E</span> <span class="o">=</span>    <span class="mi">6</span>
+    <span class="n">MONZA_4D</span> <span class="o">=</span>    <span class="mi">7</span>
+    <span class="n">MONZA_4I</span> <span class="o">=</span>    <span class="mi">8</span>
+    <span class="n">MONZA_5</span> <span class="o">=</span>     <span class="mi">9</span>
+    <span class="n">MONZA_R6</span> <span class="o">=</span>    <span class="mi">10</span>
+    <span class="n">MONZA_R6P</span> <span class="o">=</span>   <span class="mi">11</span>
+    <span class="n">MONZA_X2K</span> <span class="o">=</span>   <span class="mi">12</span>
+    <span class="n">MONZA_X8K</span> <span class="o">=</span>   <span class="mi">13</span>
+    <span class="n">IMPINJ_M730</span> <span class="o">=</span> <span class="mi">14</span>
+    <span class="n">IMPINJ_M750</span> <span class="o">=</span> <span class="mi">15</span>
+
+    <span class="c1"># NXP Family</span>
+    <span class="n">UCODE_7</span> <span class="o">=</span>         <span class="mi">16</span>
+    <span class="n">UCODE_8</span> <span class="o">=</span>         <span class="mi">17</span>
+    <span class="n">UCODE_8M</span> <span class="o">=</span>        <span class="mi">18</span>
+    <span class="n">UCODE_DNA</span> <span class="o">=</span>       <span class="mi">19</span>
+    <span class="n">UCODE_DNA_CITY</span> <span class="o">=</span>  <span class="mi">20</span>
+    <span class="n">UCODE_DNA_TRACK</span> <span class="o">=</span> <span class="mi">21</span>
+
+    <span class="c1"># EM Family</span>
+    <span class="n">EM4423</span> <span class="o">=</span> <span class="mi">22</span></div>
+
+<div class="viewcode-block" id="TagInfo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.TagInfo">[docs]</a><span class="k">class</span> <span class="nc">TagInfo</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       TagInfo class stores details of the tags memory size information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>		
+    <span class="c1"># tagtype : 4, tidlen : 4, tid : 64, chip : 16, epclen : 4, userlen : 4, pwdlen : 4</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">n1</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TagType</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tidlen</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">64</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tid</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n0</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">tidlen</span><span class="p">]</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">16</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chip</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">]</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epclen</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">userlen</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">n1</span><span class="p">;</span> <span class="n">n1</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pwdlen</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">n0</span><span class="p">:</span><span class="n">n1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="TagInfo.getChipName"><a class="viewcode-back" href="../j421xlib.html#j421xlib.TagInfo.getChipName">[docs]</a>    <span class="k">def</span> <span class="nf">getChipName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns chip name as string</span>
+
+<span class="sd">        :param None</span>
+
+<span class="sd">        :return: chip name as string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chip</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TagInfo.echo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.TagInfo.echo">[docs]</a>    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Echos the tag type on the console.</span>
+
+<span class="sd">        :param None</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TagInfo{&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">TagType =          &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">TagType</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">TID Length =       &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tidlen</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tid</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">TID =              &quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Chip Used =        &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chip</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EPC Length =       &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epclen</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">User Memory Size = &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">userlen</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Password Size =    &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pwdlen</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="ScanResult"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ScanResult">[docs]</a><span class="k">class</span> <span class="nc">ScanResult</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Stores scanned result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bb</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ant</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">RSSI</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">EpcLength</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">EPC</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ant</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span> <span class="c1">#bb[0]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RSSI</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">)</span> <span class="c1">#bb[1]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Count</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span> <span class="c1">#bb[2]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EpcLength</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span> <span class="c1">#bb[3]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EPC</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="ScanResult.echo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ScanResult.echo">[docs]</a>    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Echos a printout of the Scan Result to the console.</span>
+
+<span class="sd">           :param None</span>
+<span class="sd">           :result: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ScanResult{&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Ant: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ant</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">RSSI: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">RSSI</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Count: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Count</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EpcLength: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">EpcLength</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EPC</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">EPC: &quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+    
+<div class="viewcode-block" id="ScanResult.hexEPC"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ScanResult.hexEPC">[docs]</a>    <span class="k">def</span> <span class="nf">hexEPC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Converts EPC to hex value (upper case).</span>
+
+<span class="sd">           :param None</span>
+<span class="sd">           :return: EPC in hex (capital)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EPC</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ScanResult.line"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ScanResult.line">[docs]</a>    <span class="k">def</span> <span class="nf">line</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Oututs the Scan Result in a single line with all column aligned.</span>
+
+<span class="sd">           :param None</span>
+<span class="sd">           :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EPC</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ant: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ant</span><span class="p">,</span>\
+        <span class="s2">&quot; | RSSI: </span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">RSSI</span><span class="p">,</span>\
+        <span class="s2">&quot; | EpcLength: </span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">EpcLength</span><span class="p">,</span>\
+        <span class="s2">&quot; | Count: </span><span class="si">% 3d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">Count</span><span class="p">,</span>\
+        <span class="s2">&quot; | EPC: &quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span></div></div>
+    
+<div class="viewcode-block" id="ReaderInfo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ReaderInfo">[docs]</a><span class="k">class</span> <span class="nc">ReaderInfo</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       Stores the Reader Info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bb</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Serial</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">major</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">minor</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Version</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Antenna</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ComAdr</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ReaderType</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Band</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Power</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ScanTime</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">BeepOn</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">MaxFreq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">MinFreq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">BaudRate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="c1">#_fields_ = [(&#39;Serial&#39;, c_int), (&#39;VersionMajor&#39;, c_char),(&#39;VersionMinor&#39;, c_char)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Serial</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">major</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minor</span> <span class="o">=</span> <span class="n">bb</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">major</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">minor</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">5</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">major</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">minor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Antenna</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">6</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ComAdr</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">7</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ReaderType</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">8</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Protocol</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">9</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Band</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">10</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Power</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">11</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ScanTime</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">12</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BeepOn</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">13</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">reserved1</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">14</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">reserved2</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">15</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">MaxFreq</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">19</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinFreq</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">23</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BaudRate</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="mi">24</span><span class="p">:</span><span class="mi">27</span><span class="p">],</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReaderInfo.echo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ReaderInfo.echo">[docs]</a>    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Echos the content of Reader Info to the console.</span>
+
+<span class="sd">           :param None</span>
+<span class="sd">           :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ReaderInfo{&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Serial:     &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Serial</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Version:    &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Version</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Antenna:    &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Antenna</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">ComAdr:     &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ComAdr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">ReaderType: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ReaderType</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Protocol:   &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Protocol</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Band:       &#39;</span><span class="p">,</span> <span class="nb">chr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Band</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Power:      &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Power</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">ScanTime:   &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ScanTime</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">BeepOn:     &#39;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BeepOn</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">MaxFreq:    &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MaxFreq</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">MinFreq:    &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinFreq</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">BaudRate:   &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BaudRate</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="ReaderInfo.tobytes"><a class="viewcode-back" href="../j421xlib.html#j421xlib.ReaderInfo.tobytes">[docs]</a>    <span class="k">def</span> <span class="nf">tobytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Converts the content to Reader Info int byte array</span>
+<span class="sd">           for writing to the device.</span>
+
+<span class="sd">           :param None</span>
+<span class="sd">           :return: array of bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Serial</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">major</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minor</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Antenna</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ComAdr</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ReaderType</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Protocol</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Band</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Power</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ScanTime</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BeepOn</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+
+        <span class="n">buf</span> <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span>
+
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MaxFreq</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinFreq</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+        <span class="n">buf</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BaudRate</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+
+        <span class="c1"># print(bytes(buf))</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span></div></div>
+
+<span class="c1"># create a Geek class</span>
+<div class="viewcode-block" id="J4210"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210">[docs]</a><span class="k">class</span> <span class="nc">J4210</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       This the main class which calls the native functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># constructor</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           The native libraries must be on path. For Windows, its all the dependent dll</span>
+<span class="sd">           including the main driver j4210u.dll. For Mac OS X, its libj4210u.dylib. For</span>
+<span class="sd">           all other OSes, its libj4210u.so.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># load the library</span>
+        <span class="c1"># os.chdir(&#39;D:\Work\workspace\j4210u-app\platform\win64&#39;)</span>
+        <span class="c1"># REM: All the drivers should be in path or in currect dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lib</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;j4210u.dll&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lib</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;libj4210u.so&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Mac OS X&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lib</span> <span class="o">=</span> <span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;libj4210u.dylib&#39;</span><span class="p">)</span>
+        <span class="n">lib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="J4210.getSupportedChips"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.getSupportedChips">[docs]</a>    <span class="k">def</span> <span class="nf">getSupportedChips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Returns a comma separated string of supported chip types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TagType</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c1">#print(a.name)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">+=</span> <span class="s2">&quot;,&quot;</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1">#print(x)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+    <span class="c1"># short AvailablePorts(byte[] ports);</span>
+<div class="viewcode-block" id="J4210.AvailablePorts"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.AvailablePorts">[docs]</a>    <span class="k">def</span> <span class="nf">AvailablePorts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets a list of available USB serial ports for the computer.</span>
+
+<span class="sd">           :return: An array of string with USB serial device names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">AvailablePorts</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">AvailablePorts</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_uint</span><span class="p">]</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">AvailablePorts</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="nb">str</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">value</span>
+        <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1">#print(ret)</span>
+        <span class="c1">#print(n)</span>
+        <span class="k">del</span> <span class="n">arg</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+    
+    <span class="c1"># byte OpenComPort(byte[] port, int baud);</span>
+<div class="viewcode-block" id="J4210.OpenPort"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.OpenPort">[docs]</a>    <span class="k">def</span> <span class="nf">OpenPort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">baud</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Opens the given port at the stated baud rate.</span>
+
+<span class="sd">           :param port (string): Name of the port returned by the function</span>
+<span class="sd">           AvailablePorts.</span>
+<span class="sd">           :param baud (int): A valid baud rate. Must be one of 9600, 19200,</span>
+<span class="sd">           38400, 57600 and 115200.</span>
+<span class="sd">           :return: True, if connected. Otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">AvailablePorts</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_uint</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">AvailablePorts</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">port</span><span class="p">,</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;arg=&#39;</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="s1">&#39;, baud=&#39;</span><span class="p">,</span> <span class="n">baud</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">OpenComPort</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">baud</span><span class="p">))</span>
+        <span class="k">del</span> <span class="n">arg</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># void CloseComPort();</span>
+<div class="viewcode-block" id="J4210.ClosePort"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.ClosePort">[docs]</a>    <span class="k">def</span> <span class="nf">ClosePort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Closes the last open port.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">CloseComPort</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+    <span class="c1"># byte LoadSettings(byte[] buff);</span>
+<div class="viewcode-block" id="J4210.LoadSettings"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.LoadSettings">[docs]</a>    <span class="k">def</span> <span class="nf">LoadSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Loads current setting from the device hardware</span>
+
+<span class="sd">           :return (ReaderInfo): Returns the ReaderInfo object with current settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LoadSettings</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LoadSettings</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LoadSettings</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">ReaderInfo</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="c1">#print(ret, bytes(arg))</span>
+        <span class="k">del</span> <span class="n">arg</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1">#info.echo()</span>
+        <span class="c1">#info.tobytes()</span>
+        <span class="k">return</span> <span class="n">info</span></div>
+
+    <span class="c1"># byte SaveSettings(byte[] buff);</span>
+<div class="viewcode-block" id="J4210.SaveSettings"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SaveSettings">[docs]</a>    <span class="k">def</span> <span class="nf">SaveSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Saves the supplied setting.</span>
+
+<span class="sd">           :param ri (ReaderInfo): Setting to replace the currnent settings.</span>
+<span class="sd">           :param (True): if successful, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SaveSettings</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SaveSettings</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">ri</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SaveSettings</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># int  Inventory(byte filter);	</span>
+<div class="viewcode-block" id="J4210.Inventory"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.Inventory">[docs]</a>    <span class="k">def</span> <span class="nf">Inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Performs Inventory scan with or without Filtering.</span>
+
+<span class="sd">           :param filter(boolean): If True, applies the filter settings.</span>
+<span class="sd">           :return (int): Number of tags detected or 0 if none.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Inventory</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Inventory</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_uint</span><span class="p">]</span>
+        <span class="n">ff</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">filter</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="n">ff</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Inventory</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="c1"># byte GetResult(byte[] scanresult, int index);</span>
+<div class="viewcode-block" id="J4210.GetResult"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.GetResult">[docs]</a>    <span class="k">def</span> <span class="nf">GetResult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets the result at the given index. Index must be less than the number</span>
+<span class="sd">           of tags detected in previous inventory scan.</span>
+
+<span class="sd">           :param index (int): zero based index, zero being the first tag.</span>
+<span class="sd">           :return (ScanResult): Returned object contains all the scanned result data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetResult</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetResult</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetResult</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ScanResult</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="c1">#result.echo()</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="J4210.Bytes2Hex"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.Bytes2Hex">[docs]</a>    <span class="k">def</span> <span class="nf">Bytes2Hex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bb</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Converts the given byte array into HEX (capital)</span>
+
+<span class="sd">           :param bb (byte[]): byte array to convert.</span>
+<span class="sd">           :return (string): HEX value of the array of bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">bb</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">h</span></div>
+
+    <span class="c1"># byte GetTID(byte[] epc, byte epclen, byte[] tid, byte[] tidlen);</span>
+<div class="viewcode-block" id="J4210.GetTID"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.GetTID">[docs]</a>    <span class="k">def</span> <span class="nf">GetTID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets the TID value for the provided EPC in bytes.</span>
+
+<span class="sd">           :param epc(byte[]): EPC bytes (must exist).</span>
+<span class="sd">           :return (byte[]): The TID bytes for the tag.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTID</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTID</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+        <span class="n">tidsize</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1">#print(&#39;EPC:&#39;, self.Bytes2Hex(epc))</span>
+        <span class="c1">#print(&#39;EPC Len: &#39;, len(epc))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTID</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span> <span class="n">buf</span><span class="p">,</span> <span class="n">tidsize</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">tidlen</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">tidsize</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#print(&quot;TID Len: &quot;, tidlen)</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[:</span><span class="n">tidlen</span><span class="p">]</span>
+        <span class="c1">#print(self.Bytes2Hex(buf))</span>
+        <span class="k">return</span> <span class="n">buf</span></div>
+	
+    <span class="c1"># byte SetPassword(byte[] epc, byte epcLen, byte[] pass, byte size);</span>
+<div class="viewcode-block" id="J4210.SetPassword"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetPassword">[docs]</a>    <span class="k">def</span> <span class="nf">SetPassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets password of the tag with the EPC to the given password.</span>
+<span class="sd">           The Old password should be provided by Auth method first.</span>
+
+<span class="sd">           :param epc (byte[]): EPC of the tag to change the password.</span>
+<span class="sd">           :param password (byte[]): a 4 byte password.</span>
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetPassword</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetPassword</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetPassword</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span><span class="n">password</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># byte SetKillPassword(byte[] epc, byte epcLen, byte[] pass, byte size);</span>
+<div class="viewcode-block" id="J4210.SetKillPassword"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetKillPassword">[docs]</a>    <span class="k">def</span> <span class="nf">SetKillPassword</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets kill password of the tag with the EPC to the given password.</span>
+<span class="sd">           The Old password should be provided by Auth method first.</span>
+
+<span class="sd">           :param epc (byte[]): EPC of the tag to change the password.</span>
+<span class="sd">           :param password (byte[]): a 4 byte kill password.</span>
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetKillPassword</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetKillPassword</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetKillPassword</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span><span class="n">password</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># void LastError(byte[] buffer);</span>
+<div class="viewcode-block" id="J4210.LastError"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.LastError">[docs]</a>    <span class="k">def</span> <span class="nf">LastError</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Returns the last error message.</span>
+
+<span class="sd">           :return (str): Last error message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LastError</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LastError</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+        <span class="nb">str</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span></div>
+	
+    <span class="c1"># byte Auth(byte[] password, byte size);</span>
+<div class="viewcode-block" id="J4210.Auth"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.Auth">[docs]</a>    <span class="k">def</span> <span class="nf">Auth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets the current password. This password is required to read memory content.</span>
+
+<span class="sd">           :param (byte[]): 4 byte default password.</span>
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Auth</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Auth</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">Auth</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># byte WriteMemWord(byte[] epc, byte epclen, byte[] data, byte windex);</span>
+<div class="viewcode-block" id="J4210.WriteMemWord"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.WriteMemWord">[docs]</a>    <span class="k">def</span> <span class="nf">WriteMemWord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">windex</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Writes 16 bit (2 byte) data simultaneously to a word address.</span>
+
+<span class="sd">           :param epc (byte[]): A valid EPC of the tag.</span>
+<span class="sd">           :param data (byte[]): 16 bit (2 byte) data word.</span>
+<span class="sd">           :param windex (int): word memory index (zero based).</span>
+
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteMemWord</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteMemWord</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteMemWord</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">windex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># byte ReadMemWord(byte[] epc, byte epclen, byte[] data, byte windex);</span>
+<div class="viewcode-block" id="J4210.ReadMemWord"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.ReadMemWord">[docs]</a>    <span class="k">def</span> <span class="nf">ReadMemWord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">,</span> <span class="n">windex</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Reads 16 bit (2 byte) data simultaneously from a word address.</span>
+
+<span class="sd">           :param epc (byte[]): A valid EPC of the tag.</span>
+<span class="sd">           :param windex (int): valid word memory index (zero based).</span>
+
+<span class="sd">           :return (byte[]): 2 byte of memory data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">ReadMemWord</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">ReadMemWord</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">ReadMemWord</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">windex</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span></div>
+
+    <span class="c1"># byte SetFilter(int maskAdrInByte, int maskLenInByte, byte[] maskDataByte);</span>
+<div class="viewcode-block" id="J4210.SetFilter"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetFilter">[docs]</a>    <span class="k">def</span> <span class="nf">SetFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adr</span><span class="p">,</span> <span class="nb">len</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Creates a filter which can be used during inventory, if desired.</span>
+
+<span class="sd">           :param adr (int): 16 bit (2 byte) word address.</span>
+<span class="sd">           :param len (int): length of the mask (must be even), i.e., 2 bytes at a time.</span>
+<span class="sd">           :param mask (byte[]): actual bytes used as mask.</span>
+
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetFilter</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetFilter</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetFilter</span><span class="p">(</span><span class="n">adr</span><span class="p">,</span> <span class="nb">len</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+	
+    <span class="c1"># byte TagExists(byte[] epc, byte epclen);</span>
+<div class="viewcode-block" id="J4210.TagExists"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.TagExists">[docs]</a>    <span class="k">def</span> <span class="nf">TagExists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Checks if a tag with the given EPC exist.</span>
+
+<span class="sd">           :param epc (bytep[]): full EPC value.</span>
+<span class="sd">           :return (boolean): True, if found, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">TagExists</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">TagExists</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">TagExists</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># byte WriteEpcWord(byte[] epc, byte epclen, byte[] data, byte windex);</span>
+<div class="viewcode-block" id="J4210.WriteEpcWord"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.WriteEpcWord">[docs]</a>    <span class="k">def</span> <span class="nf">WriteEpcWord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epc</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">windex</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Writes EPC Word at specified word index in a 16-bit memory.</span>
+
+<span class="sd">           :param epc (bytep[]): full EPC value.</span>
+<span class="sd">           :param data (byte[]): New EPC word (2 byte).</span>
+<span class="sd">           :param windoex (int): Word memory index, must be even.</span>
+
+<span class="sd">           :return (boolean): True, if successful, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteEpcWord</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteEpcWord</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">WriteEpcWord</span><span class="p">(</span><span class="n">epc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">epc</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">windex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+	
+    <span class="c1"># byte GetTagInfo(byte[] tid, byte[] info);</span>
+<div class="viewcode-block" id="J4210.GetTagInfo"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.GetTagInfo">[docs]</a>    <span class="k">def</span> <span class="nf">GetTagInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets the detail information about the tag and returns the TagInfo</span>
+<span class="sd">           object.</span>
+
+<span class="sd">           :param tid (byte[]): The full TID of the tag.</span>
+<span class="sd">           :return (TagInfo): The TagInfo object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTagInfo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTagInfo</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetTagInfo</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+        <span class="c1"># print(buf)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">taginfo</span> <span class="o">=</span> <span class="n">TagInfo</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">taginfo</span></div>
+	
+    <span class="c1"># byte GetGPI(byte gpino);</span>
+    <span class="c1"># For GPI-0 use bit-0, for GPI-1 use bit-1</span>
+    <span class="c1"># Example: GetGPI(1), gets input from GPI-0</span>
+    <span class="c1"># GetGPI(2), gets input from GPI-1</span>
+    <span class="c1"># All other values are invalid.</span>
+<div class="viewcode-block" id="J4210.GetGPI"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.GetGPI">[docs]</a>    <span class="k">def</span> <span class="nf">GetGPI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpino</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets the GPIO Input from GPI0 or GPI1 port. The argument should be either,</span>
+<span class="sd">           1, to read GPI0 or 2 to read GPI1 or 3 to read both GPI0 and GPI1.</span>
+
+<span class="sd">           :param gpino(int): 1 -&gt; GPI0, 2 -&gt; GPI1, 3 -&gt; GPI0 &amp; GPI1</span>
+<span class="sd">           :return (int): The state of the GPI inputs relative to the bit position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetGPI</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetGPI</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">GetGPI</span><span class="p">(</span><span class="n">gpino</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="c1"># byte SetGPO(byte gpono);</span>
+    <span class="c1"># For GPO-0 use bit-0, for GPO-1 use bit-1</span>
+    <span class="c1"># therefore, this function affects both the </span>
+    <span class="c1"># the output ports.</span>
+    <span class="c1"># Example: SetGPO(0) sets both GPO-0 and GPO-1 to 0</span>
+    <span class="c1"># SetGPO(0x01) sets GPO-0 to 1 and GPO-1 to 0</span>
+    <span class="c1"># SetGPO(0x02) sets GPO-0 to 0 and GPO-1 to 1</span>
+    <span class="c1"># SetGPO(0x03) sets both GPO-0 and GPO-1 to 1</span>
+<div class="viewcode-block" id="J4210.SetGPO"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetGPO">[docs]</a>    <span class="k">def</span> <span class="nf">SetGPO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpono</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets the GPIO Output of GPO0 or GPO1 port. Bit 0 is GPO0, bit 1 is GPO1.</span>
+
+<span class="sd">           :param gpono(int): The state of bit 0 will be written to GPO0 and state of</span>
+<span class="sd">           bit 1 will be written to GPO1.</span>
+<span class="sd">           :return (int): The state of the GPO outputs after writing relative to bit position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetGPO</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetGPO</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetGPO</span><span class="p">(</span><span class="n">gpono</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="c1"># void LibVersion(byte[] version);</span>
+<div class="viewcode-block" id="J4210.LibVersion"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.LibVersion">[docs]</a>    <span class="k">def</span> <span class="nf">LibVersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Gets the library version as string.</span>
+
+<span class="sd">           :return (string): Library Version as string in major.minor format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LibVersion</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LibVersion</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">LibVersion</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">major</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">minor</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ver</span> <span class="o">=</span> <span class="n">major</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">minor</span>
+        <span class="c1">#print(ver)</span>
+        <span class="k">return</span> <span class="n">ver</span></div>
+	
+    <span class="c1"># byte SetQ(byte q);</span>
+<div class="viewcode-block" id="J4210.SetQ1"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetQ1">[docs]</a>    <span class="k">def</span> <span class="nf">SetQ1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Obsolete</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="J4210.SetQ"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetQ">[docs]</a>    <span class="k">def</span> <span class="nf">SetQ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets the Q value of the reader. </span>
+
+<span class="sd">           :param q (int): A value 0 - 15 as Q value. If there is only 1 tag, use Q = 1.</span>
+<span class="sd">           If there are a large number of tags, use Q = 15. Usually Q should be in the range</span>
+<span class="sd">           of 4 - 5 for optimal reading when the number of tags is less than 16.</span>
+
+<span class="sd">           :return (boolean): True, if successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetQ</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
+
+    <span class="c1"># byte SetSession(byte session);</span>
+<div class="viewcode-block" id="J4210.SetSession"><a class="viewcode-back" href="../j421xlib.html#j421xlib.J4210.SetSession">[docs]</a>    <span class="k">def</span> <span class="nf">SetSession</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">           Sets reader session. In a multi-reader environment, set this value such that each</span>
+<span class="sd">           reader has different session. This will prevent interference of other readers when </span>
+<span class="sd">           reading the same tag. Sessions values are from 0 to 3. So, there should be at most </span>
+<span class="sd">           4 readers that can read the same tag simultaneously. </span>
+
+<span class="sd">           :param session (int): Session value 0 to 3.</span>
+
+<span class="sd">           :return (boolean): True, if successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetSession</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetSession</span><span class="o">.</span><span class="n">retypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">SetSession</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">J421x</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Ejaz Jamil.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

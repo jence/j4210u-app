@@ -27,7 +27,7 @@
 import j421xlib
 
 def Test():
-    # create a Geek class object
+    # load the library
     f = j421xlib.J4210()
 
     # object method calling
@@ -82,6 +82,7 @@ def Test():
     print("Session = ", sess) # session is 0 to 3
     n = f.Inventory(False) # inventory witout filtering
     print("Tags found: ", n)
+    assert n>0, "No Tags found nearby. Aborting TEST!"
 
     # list inventory
     print("Tag List:")
@@ -173,6 +174,7 @@ def Test():
         assert ret == True
         # now perform inventory using the filter
         n = f.Inventory(True) # passing True tells to use the filter
+        assert n > 0, "Inventory count returned ZERO!"
         # list inventory
         print("Tag List:")
         for i in range(n):
