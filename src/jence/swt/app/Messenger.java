@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
@@ -77,10 +79,16 @@ public class Messenger implements Runnable {
 			socket_.getOutputStream().flush();
 		}
 		if (httpMode) {
+			httpUrl_ = "http://localhost/soalib.com/main/messenger.php?json=";
+			httpUrl_ += URLEncoder.encode(json, "UTF-8");
 			URL url = new URL(httpUrl_);
-			HttpURLConnection httpscon = (HttpsURLConnection)url.openConnection();
+			HttpURLConnection httpscon = null;
+			if (httpUrl_.toLowerCase().startsWith("https"))
+				httpscon = (HttpsURLConnection)url.openConnection();
+			else
+				httpscon = (HttpURLConnection)url.openConnection();
 			// avoid the annoying certificate error if it occurs.
-			if (httpscon instanceof HttpURLConnection) {
+			if (httpscon instanceof HttpsURLConnection) {
 				((HttpsURLConnection)httpscon).setHostnameVerifier(new HostnameVerifier() {
 					@Override
 					public boolean verify(String arg0, SSLSession arg1) {
@@ -88,15 +96,9 @@ public class Messenger implements Runnable {
 					}
 				  });
 			}
-			httpscon.setRequestMethod("GET");
-			httpscon.setRequestProperty("User-Agent", USER_AGENT);
+			System.out.println("URL : " + httpUrl_);
 			int responseCode = httpscon.getResponseCode();
 			System.out.println("GET Response Code :: " + responseCode);
-			httpscon.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(httpscon.getOutputStream());
-			wr.writeBytes("json="+json);
-			wr.flush();
-			wr.close();
 		}
 		if (fileMode && fos_ != null) {
 			fos_.write(json.getBytes("utf-8"));
