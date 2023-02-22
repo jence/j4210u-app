@@ -48,7 +48,7 @@ public class UhfApp {
 	
 	public static J4210U driver_ = new J4210U();
 	private static Shell app_;
-	private static Display display_;
+	public static Display display_;
 	
 	public static int prompt(Shell shell, String text, int style) {
 		MessageBox messageBox = new MessageBox(shell, style);	

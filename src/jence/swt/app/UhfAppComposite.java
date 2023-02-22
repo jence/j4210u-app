@@ -461,7 +461,7 @@ public class UhfAppComposite extends Composite {
 		});
 		btnScan_.setText("Scan");
 		
-		btnScanServer_ = new Button(composite_1, SWT.NONE);
+		btnScanServer_ = new Button(composite_1, SWT.TOGGLE);
 		btnScanServer_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -1290,6 +1290,10 @@ public class UhfAppComposite extends Composite {
 							sr.Ant + "", sr.Count + "", sr.RSSI + "" });
 					item.setData(sr);
 				}
+			} else {
+				if (messenger_ != null) {
+					messenger_.close();
+				}
 			}
 		} catch (Exception e) {
 			prompt(e.getMessage(), SWT.ICON_WARNING | SWT.OK);
@@ -1302,6 +1306,7 @@ public class UhfAppComposite extends Composite {
 			return;
 		while(btnScanServer_.getSelection()) {
 			scan();
+			while(UhfApp.display_.readAndDispatch());
 		}
 	}
 	
