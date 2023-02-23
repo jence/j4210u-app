@@ -1210,6 +1210,9 @@ public class UhfAppComposite extends Composite {
 			prompt(t.getLocalizedMessage(), SWT.ICON_WARNING);
 		} finally {
 			merge_ = ismerging;
+			if (messenger_ != null) {
+				messenger_.close();
+			}
 		}
 		return true;
 	}
@@ -1266,16 +1269,12 @@ public class UhfAppComposite extends Composite {
 				item.setData(sr);
 				// if messaging is enabled, send the message now in a thread.
 				if (messenger_ != null) {
-					new Thread(new Runnable(){
+					try {
 						final String json = sr.toJson();
-						@Override
-						public void run() {
-							try {
-								messenger_.sendMessage(json);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}}).start();
+						messenger_.sendMessage(json);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			if (merge_) {
@@ -1289,10 +1288,6 @@ public class UhfAppComposite extends Composite {
 							UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
 							sr.Ant + "", sr.Count + "", sr.RSSI + "" });
 					item.setData(sr);
-				}
-			} else {
-				if (messenger_ != null) {
-					messenger_.close();
 				}
 			}
 		} catch (Exception e) {
