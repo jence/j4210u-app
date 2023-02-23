@@ -38,6 +38,6 @@ sphinx-apidocs -o docs .
 
 Then go to the docs folder and type:
 
-make.bat html
+mkdoc.bat html
 
 This will generate html files in _build/html folder.
