@@ -35,5 +35,9 @@ Linux 64 -> /platform/linux64 <br/>
 
 NOTE: You may get error after loading the product because the /src folder will not in the same directory where we developed. Simply point to the correct directory in your development environment.
 
+<h4>Videos</h4>
+Short Youtube videos are prepared to learn how to operate this device.
+https://www.youtube.com/watch?v=5fi8C1mVFXk&t=22s
+
 <h4>NOTE</h4>
 <p>The hardware driver for j4210u is compiled to run only in 64 bit platform. </p>
