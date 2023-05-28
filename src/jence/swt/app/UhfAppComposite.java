@@ -377,6 +377,10 @@ public class UhfAppComposite extends Composite {
 
 		comboPorts_ = new Combo(composite_7, SWT.READ_ONLY);
 		comboPorts_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		if (UhfApp.LAST_USE_SERIAL_PORT.length() != 0) {
+			comboPorts_.add(UhfApp.LAST_USE_SERIAL_PORT);
+			comboPorts_.setText(UhfApp.LAST_USE_SERIAL_PORT);
+		}
 		
 		lblBaud = new Label(composite_7, SWT.NONE);
 		lblBaud.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -419,6 +423,7 @@ public class UhfAppComposite extends Composite {
 					setEnabled(true, btnDisconnect_, btnScan_, btnScanServer_, btnScanOnTrigger_, tabFolder);
 					setEnabled(false, btnRefresh_, btnConnect_);
 					status("Connection was successful.");
+					UhfApp.LAST_USE_SERIAL_PORT = comboPorts_.getText();
 				}
 			}
 		});
@@ -1125,7 +1130,16 @@ public class UhfAppComposite extends Composite {
 
 		// this.pack();
 		checkVersion();
-	}
+		this.getShell().addListener(SWT.Close, new Listener() {
+		      public void handleEvent(Event event) {
+		        event.doit = true;
+		        try {
+					UhfApp.driver_.close();
+				} catch (Exception e) {
+				}
+		      }
+		    });
+		}
 
 	private void checkVersion() {
 		try {
@@ -1733,4 +1747,5 @@ public class UhfAppComposite extends Composite {
 				btnActivateHttpQuery_, textHttpUrl_, 
 				btnActivateWriteToFile_, textDirectory_, textFilename_);
 	}
+
 }

@@ -308,7 +308,10 @@ class J4210():
         # REM: All the drivers should be in path or in currect dir
         self.lib = None
         if (platform.system() == 'Windows'):
-            self.lib = cdll.LoadLibrary('j4210u.dll')
+            dllpath = os.path.dirname(os.path.realpath(__file__))
+            dllpath = dllpath + '\\' + 'j4210u.dll'
+            print(dllpath)
+            self.lib = cdll.LoadLibrary(dllpath)
         elif (platform.system() == 'Linux'):
             self.lib = cdll.LoadLibrary('libj4210u.so')
         elif (platform.system() == 'Mac OS X'):
