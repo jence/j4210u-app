@@ -5,14 +5,18 @@ package jence.demo;
 
 import java.util.Scanner;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.TableItem;
+
 import jence.jni.J4210U;
+import jence.swt.app.UhfApp;
 
 /**
  * @author soalib
  *
  */
 public class TagInventoryDemo {
-	private static J4210U nfc = new J4210U();
+	private static J4210U uhf = new J4210U();
 
 	/**
 	 * 
@@ -38,24 +42,34 @@ public class TagInventoryDemo {
 				COM = COM.trim();
 			}
 			
-			nfc.open(COM, 57600);
+			uhf.open(COM, 57600);
 			System.out.println("Connect to the reader: SUCCESS");
-			boolean stop = false;
-			do {
-				System.out.println("Place a card on the device and press ENTER. (Press x+ENTER to stop)");
-				String line = scanner.nextLine();
-				if (line.indexOf('x') >= 0)
-					break;
-				
-				int block = 0;
-				byte[] data = null;
-			} while(true);
-			nfc.close();
+			
+			// get reader info.
+			J4210U.ReaderInfo ri = uhf.loadSettings();
+			System.out.println(ri);
+			
+			uhf.setQ(6);
+			uhf.setSession(0);
+			uhf.auth(new byte[]{0,0,0,0});
+			ri.ScanTime = 200;
+			//uhf.saveSettings(ri);
+			
+			// scan without filtering
+			int n = uhf.inventory(false);
+			for (int i = 0; i < n; i++) {
+				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
+				// System.out.println(sr);
+				System.out.println("EPC=" + uhf.toHex(sr.EPC) + " + EPC Len=" + sr.EpcLength + " + Ant=" +
+						sr.Ant + "+ Count="+ sr.Count + ", RSSI="+ sr.RSSI + "" );
+			}
+			
+			uhf.close();
 		} catch (Exception e) {
 			System.err.println(e.getLocalizedMessage());
 			//e.printStackTrace();
 		}
-		System.out.println("Program EXITED.");
+		System.out.println("Program FINISHED.");
 	}
 }
 
