@@ -151,10 +151,12 @@ public class UhfAppComposite extends Composite {
 	public static final String[] AUTODETECTED_CHIPS = {
 			TagType.HIGGS_3.toString(), TagType.HIGGS_4.name(),
 			TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(),
-			TagType.IMPINJ_M750.name(), TagType.MONZA_4D.name(),
+			TagType.IMPINJ_M750.name(), TagType.IMPINJ_M770.name(), 
+			TagType.IMPINJ_M775.name(), TagType.MONZA_4D.name(),
 			TagType.MONZA_4E.name(), TagType.MONZA_4I.name(),
 			TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(),
-			TagType.MONZA_R6P.name(), TagType.UCODE_8.name() };
+			TagType.MONZA_R6P.name(), TagType.UCODE_8.name(), 
+			TagType.KILOWAY_2005BL.name() };
 	private Text epclen2_;
 	private Text pwdlen2_;
 	private Text usrlen2_;

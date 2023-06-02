@@ -48,6 +48,8 @@ public class J4210U {
         MONZA_X8K,
         IMPINJ_M730,
         IMPINJ_M750,
+        IMPINJ_M770,
+        IMPINJ_M775,
 
         // NXP Family
         UCODE_7,
@@ -59,6 +61,11 @@ public class J4210U {
 
         // EM Family
         EM4423,
+        
+        // Kiloway family
+        KILOWAY_2005BR,
+        KILOWAY_2005BL,
+        KILOWAY_2005BT,
 	};
 
 	/**
