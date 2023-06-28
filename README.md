@@ -33,7 +33,7 @@ Choose the product. Open the project for appropriate platform under the
 directory /platform. 
 
 Windows 64 -> /platform/win64 <br/>
-Mac OSX (Apple Silicon, M1 or higher) -> /platform/macosx (<i>Do not use in Intel based Mac/i>)<br/>
+Mac OSX (Apple Silicon, M1 or higher) -> /platform/macosx (<i>Do not use in Intel based Mac</i>)<br/>
 Mac OSX (Intel Processor) -> /platform/macosx[intel] (<i>Do not use in Apple Silicon</i>)<br/>
 Linux 64 -> /platform/linux64 <br/>
 Python 3 -> /platform/python3 <br/>
