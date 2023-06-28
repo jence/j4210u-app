@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>UhfApp</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.5</string>
+	<key>CFBundleGetInfoString</key>
+	<string>1.0.5</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>false</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleIconFile</key>
+	<string>app.icns</string>
+	<key>Java</key>
+	<dict>
+		<key>MainClass</key>
+		<string>jence.swt.app.UhfApp</string>
+		<key>JVMVersion</key>
+		<string>1.7+</string>
+		<key>ClassPath</key>
+		<array>
+			<string>$APP_PACKAGE/Contents/MacOS/j4210u.jar</string>
+		</array>
+		<key>WorkingDirectory</key>
+		<string>$APP_PACKAGE/Contents/MacOS</string>
+		<key>StartOnMainThread</key>
+		<true/>
+	</dict>
+</dict>
+</plist>
