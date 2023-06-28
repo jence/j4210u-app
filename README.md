@@ -24,14 +24,20 @@ You can modify this application and create your own application. Your applicatio
   <code>chmod 755 j4210u.sh</code><br/>
 Make sure libj4210u.so is in the same directory as the jar file.</p>
 
+<h3>Python</h3>
+<p>The python3 code is compiled with version 3.7. Most likely, it will also work with other version 3. See the README.TXT file in the python3 directory for specific instructions.</p>
+
 ECLIPSE PROJECT
 ===============
 Choose the product. Open the project for appropriate platform under the 
 directory /platform. 
 
 Windows 64 -> /platform/win64 <br/>
-Mac OSX -> /platform/macosx <br/>
+Mac OSX (Apple Silicon, M1 or higher) -> /platform/macosx (<i>Do not use in Intel based Mac/i>)<br/>
+Mac OSX (Intel Processor) -> /platform/macosx[intel] (<i>Do not use in Apple Silicon</i>)<br/>
 Linux 64 -> /platform/linux64 <br/>
+Python 3 -> /platform/python3 <br/>
+Other Platforms -> /platform/<platform_name>, where <platform_name> is one of the following: bananapi, beaglebone, beaglebone-ai64, orangepi, pocketbeagle, raspberrypi64.
 
 NOTE: You may get error after loading the product because the /src folder will not in the same directory where we developed. Simply point to the correct directory in your development environment.
 
