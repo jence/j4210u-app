@@ -19,6 +19,7 @@ You can modify this application and create your own application. Your applicatio
 <p>Install Launch4j, a free Java executable from jar to create your Windows executable. Make sure that the following files are in the same directory as the executable: j4210u.dll, libgcc_s_seh-1.dll, libstdc++-6.dll, libwinpthread-1.dll and any other files that you load in the application.</p>
 <h3>MAC OS X</h3>
 <p>There is a Mac OS X application named UhfApp.app. You can directly run this application. To create your own application, make sure that simply run the Ant script j4210u.xml, the script will modify an application name UhfApp.app. You can change the name and the application icon by editing Info.plist inside UhfApp.app directory.</p>
+<p>There are two Mac OS X distributions: The Intel Mac where an Intel base processor is used and the M1 Mac where Apple's M1 chip is used. Choose the appropriate distribution to run. One distribution will not run on the other Mac hardware. The are totally different hardware.</p>
 <h3>Linux 64 bit</h3>
 <p>In Linux, you simply run j4210u.sh script. To make this file executable, run the command:<br/>
   <code>chmod 755 j4210u.sh</code><br/>
