@@ -1,9 +1,9 @@
 # j4210u-app
 J4210U Hardware Demo Application
 <h2>Supported Hardware</h2>
-1. J4210U UHF RFID Desktop Short Range Reader.<br/>
-2. J4211UH Plain & Simple UHF RFID Desktop Handheld Reader.<br/>
-3. J4420U UHF RFID Long Range Reader with I/O.<br/>
+1. J4210U UHF RFID Desktop Short Range Reader. [https://www.amazon.com/dp/B09LD5L45F]<br/>
+2. J4211UH Plain & Simple UHF RFID Desktop Handheld Reader. [https://www.amazon.com/dp/B0C7M5T21F]<br/>
+3. J4420U UHF RFID Long Range Reader with I/O. [Not Yet Released]<br/>
 
 <h2>BUILD</h2>
 The demo application is built using Eclipse with SWT toolkit. To successfully 
