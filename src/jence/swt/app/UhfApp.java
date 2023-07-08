@@ -22,7 +22,7 @@ package jence.swt.app;
  * The application entry point.
  * 
  * @author Ejaz Jamil
- * @version 1.0
+ * @version 1.1
  *
  */
 import jence.jni.J4210U;

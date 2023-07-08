@@ -80,7 +80,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
  * 
  * 
  * @author Ejaz Jamil
- * @version 1.0
+ * @version 1.1
  * 
  */
 public class UhfAppComposite extends Composite {
