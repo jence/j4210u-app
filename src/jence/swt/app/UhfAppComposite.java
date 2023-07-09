@@ -492,8 +492,6 @@ public class UhfAppComposite extends Composite {
 				scant();
 			}
 		});
-		btnScanOnTrigger_.setForeground(SWTResourceManager
-				.getColor(SWT.COLOR_WHITE));
 		btnScanOnTrigger_.setImage(SWTResourceManager.getImage(
 				UhfAppComposite.class, "/jence/icon/scant.png"));
 		btnScanOnTrigger_.setText("Scan On Trigger");
@@ -1353,7 +1351,7 @@ public class UhfAppComposite extends Composite {
 			if (timer_ == null)
 				timer_ = new Timer();
 			btnScan_.setEnabled(false);
-			btnScanOnTrigger_.setEnabled(false);
+			//btnScanOnTrigger_.setEnabled(false);
 			timer_.schedule(new TimerTask() {
 	
 				@Override
@@ -1365,28 +1363,35 @@ public class UhfAppComposite extends Composite {
 						Thread.sleep(20);
 						trigger = trigger && UhfApp.driver_.getGPInput(1);
 						if (trigger) {
-							System.out.println("Trigger Pressed.");
+							scanning_ = true;
+							/// System.out.println("Trigger Pressed.");
 							UhfAppComposite.this.getDisplay().syncExec(
 									new Runnable() {
 										@Override
 										public void run() {
-											if (!btnScanOnTrigger_.getSelection()) {
-												return;
-											}
-
-											scanning_ = true;
+											UhfAppComposite.this.status("Trigger Pressed.");
 											scan();
-											scanning_ = false;
+										}
+									});
+						} else {
+							syncExec(new Runnable() {
+										@Override
+										public void run() {
+											UhfAppComposite.this.status("Trigger Released.");
 										}
 									});
 						}
+						scanning_ = false;
 					} catch (Exception e) {
 						//e.printStackTrace();
-						System.out.println("Could not detect press.");
 					}
 				}
-			}, 0, 500);
+			}, 0, 100);
 		}
+	}
+	
+	private void syncExec(final Runnable runnable) {
+		UhfAppComposite.this.getDisplay().syncExec(runnable);
 	}
 
 	private boolean portlist() {
