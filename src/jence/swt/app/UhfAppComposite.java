@@ -1141,6 +1141,7 @@ public class UhfAppComposite extends Composite {
 				}
 		      }
 		    });
+		this.getShell().pack();
 		}
 
 	private void checkVersion() {
