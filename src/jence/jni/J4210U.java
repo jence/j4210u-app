@@ -36,6 +36,7 @@ public class J4210U {
         HIGGS_4,
         HIGGS_EC,
         HIGGS_9,
+        HIGGS_10,
 
         // IMPINJ Family
         MONZA_4QT,

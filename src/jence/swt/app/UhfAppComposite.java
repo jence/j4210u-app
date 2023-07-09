@@ -1361,6 +1361,8 @@ public class UhfAppComposite extends Composite {
 						if (scanning_)
 							return;
 						boolean trigger = UhfApp.driver_.getGPInput(1);
+						Thread.sleep(20);
+						trigger = trigger && UhfApp.driver_.getGPInput(1);
 						if (trigger) {
 							System.out.println("Trigger Pressed.");
 							UhfAppComposite.this.getDisplay().syncExec(
