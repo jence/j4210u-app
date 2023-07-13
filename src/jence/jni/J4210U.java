@@ -149,7 +149,7 @@ public class J4210U {
 		public byte[] EPC = new byte[12];
 		
 		public byte[] toByteArray() {
-			ByteBuffer bb = ByteBuffer.allocate(128);
+			ByteBuffer bb = ByteBuffer.allocate(size());
 			bb.order(ByteOrder.LITTLE_ENDIAN);
 			
 			bb.put(Ant);

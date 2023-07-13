@@ -502,7 +502,7 @@ public class UhfAppComposite extends Composite {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < AUTODETECTED_CHIPS.length; i++) {
 			if (i > 0)
-				sb.append(",");
+				sb.append(", ");
 			sb.append(AUTODETECTED_CHIPS[i]);
 		}
 		lblSupportedChips_.setText(sb.toString());
@@ -1299,6 +1299,7 @@ public class UhfAppComposite extends Composite {
 					J4210U.ScanResult sr = previousContent.get(keys.nextElement());
 					TableItem item = new TableItem(inventory_, SWT.None
 							| SWT.FULL_SELECTION);
+					
 					item.setText(new String[] { (i + 1) + "",
 							UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
 							sr.Ant + "", sr.Count + "", sr.RSSI + "" });
