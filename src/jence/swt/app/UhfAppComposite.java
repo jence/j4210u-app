@@ -42,8 +42,13 @@ import jence.jni.J4210U.TagType;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -163,15 +168,7 @@ public class UhfAppComposite extends Composite {
 	private TabItem tbtmGpio;
 	private Composite composite_5;
 	private Button btnGetGpInput;
-	private Text in1_;
-	private Text in2_;
 	private Button btnSetGpOutput;
-	private Label lblOut;
-	private Text out1_;
-	private Label lblOut_1;
-	private Text out2_;
-	private Label lblIn;
-	private Label lblNewLabel_3;
 	private Button btnScanOnTrigger_;
 	private Label lblSupportedChips_;
 	private Text tidlen2_;
@@ -205,6 +202,14 @@ public class UhfAppComposite extends Composite {
 	private Button btnClearSetting_;
 	
 	private Messenger messenger_ = null;
+	private Button btnGpo1;
+	private Button btnGpo2;
+	private Button btnGpi1;
+	private Button btnGpi2;
+	private Button btnMonitor_;
+	private Group grpGpOutput;
+	private Group grpGpInput;
+	private Timer gpioTimer_ = null;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
@@ -222,6 +227,42 @@ public class UhfAppComposite extends Composite {
 				status(text);
 			}
 		});
+	}
+	
+	private void monitorStop() {
+		if (gpioTimer_ != null) {
+			monitor();
+		}
+	}
+	
+	private void monitor() {
+		if (gpioTimer_ != null) {
+			btnMonitor_.setText("Monitor Input");
+			gpioTimer_.cancel();
+			gpioTimer_ = null;
+		} else {
+			gpioTimer_ = new Timer();
+			btnMonitor_.setText("Monitor {STOP]");
+			gpioTimer_.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					try {
+						final boolean gpi1 = UhfApp.driver_.getGPInput(1);
+						final boolean gpi2 = UhfApp.driver_.getGPInput(2);
+						
+						syncExec(new Runnable(){
+
+							@Override
+							public void run() {
+								btnGpi1.setSelection(gpi1);
+								btnGpi2.setSelection(gpi2);
+							}});
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}}, 0, 500);
+		}
 	}
 
 	private void setEnabled(boolean state, Control... w) {
@@ -440,6 +481,7 @@ public class UhfAppComposite extends Composite {
 		btnDisconnect_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				monitorStop();
 				if (disconnect()) {
 					setEnabled(true, btnRefresh_, btnConnect_);
 					setEnabled(false, btnDisconnect_, btnScan_, btnScanServer_, btnScanOnTrigger_, tabFolder);
@@ -458,6 +500,8 @@ public class UhfAppComposite extends Composite {
 		btnScan_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				monitorStop();
+				
 				setEnabled(false, btnScanServer_);
 				if (scan()) {
 					// setEnabled(true,);
@@ -472,6 +516,8 @@ public class UhfAppComposite extends Composite {
 		btnScanServer_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				monitorStop();
+
 				setEnabled(false, btnScan_);
 				scans();
 				setEnabled(true, btnScan_);
@@ -489,6 +535,7 @@ public class UhfAppComposite extends Composite {
 		btnScanOnTrigger_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				monitorStop();
 				scant();
 			}
 		});
@@ -502,7 +549,7 @@ public class UhfAppComposite extends Composite {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < AUTODETECTED_CHIPS.length; i++) {
 			if (i > 0)
-				sb.append(", ");
+				sb.append(",");
 			sb.append(AUTODETECTED_CHIPS[i]);
 		}
 		lblSupportedChips_.setText(sb.toString());
@@ -512,6 +559,23 @@ public class UhfAppComposite extends Composite {
 		tabFolder.setSelection(0);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3,
 				1));
+
+		tabFolder.addFocusListener(new FocusListener(){
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				if (gpioTimer_ != null) {
+					monitor();
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if (gpioTimer_ != null) {
+					monitor();
+				}
+				
+			}});
 
 		tbtmRaw = new TabItem(tabFolder, SWT.NONE);
 		tbtmRaw.setText("INVENTORY");
@@ -897,43 +961,17 @@ public class UhfAppComposite extends Composite {
 
 		tbtmGpio = new TabItem(tabFolder, SWT.NONE);
 		tbtmGpio.setText("GPIO");
-
 		composite_5 = new Composite(tabFolder, SWT.NONE);
 		tbtmGpio.setControl(composite_5);
-		composite_5.setLayout(new GridLayout(5, false));
-
-		btnGetGpInput = new Button(composite_5, SWT.NONE);
-		btnGetGpInput.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-		btnGetGpInput.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				try {
-					gpi();
-				} catch (Exception e) {
-					UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
-				}
-			}
-		});
-		btnGetGpInput.setText("Get GP Input");
-
-		lblIn = new Label(composite_5, SWT.NONE);
-		lblIn.setText("IN1");
-
-		in1_ = new Text(composite_5, SWT.BORDER | SWT.READ_ONLY);
-		in1_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		in1_.setTextLimit(1);
-
-		lblNewLabel_3 = new Label(composite_5, SWT.NONE);
-		lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblNewLabel_3.setText("IN2");
-
-		in2_ = new Text(composite_5, SWT.BORDER | SWT.READ_ONLY);
-		in2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		in2_.setTextLimit(1);
-
-		btnSetGpOutput = new Button(composite_5, SWT.NONE);
-		btnSetGpOutput.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+		composite_5.setLayout(new GridLayout(3, false));
+		new Label(composite_5, SWT.NONE);
+		
+		grpGpOutput = new Group(composite_5, SWT.NONE);
+		grpGpOutput.setText("GP Output");
+		grpGpOutput.setLayout(new GridLayout(2, false));
+		
+		btnSetGpOutput = new Button(grpGpOutput, SWT.NONE);
+		btnSetGpOutput.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnSetGpOutput.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -945,28 +983,45 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnSetGpOutput.setText("Set GP Output");
-
-		lblOut = new Label(composite_5, SWT.NONE);
-		lblOut.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
-		lblOut.setText("OUT1");
-
-		out1_ = new Text(composite_5, SWT.BORDER);
-		out1_.setText("0");
-		out1_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-		out1_.setTextLimit(1);
-
-		lblOut_1 = new Label(composite_5, SWT.NONE);
-		lblOut_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lblOut_1.setText("OUT2");
-
-		out2_ = new Text(composite_5, SWT.BORDER);
-		out2_.setText("0");
-		out2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
-		out2_.setTextLimit(1);
+		
+		btnGpo2 = new Button(grpGpOutput, SWT.CHECK);
+		btnGpo2.setText("GPO2");
+		
+		btnGpo1 = new Button(grpGpOutput, SWT.CHECK);
+		btnGpo1.setText("GPO1");
+		
+		grpGpInput = new Group(composite_5, SWT.NONE);
+		grpGpInput.setText("GP Input");
+		grpGpInput.setLayout(new GridLayout(2, false));
+				
+						btnGetGpInput = new Button(grpGpInput, SWT.NONE);
+						btnGetGpInput.addSelectionListener(new SelectionAdapter() {
+							@Override
+							public void widgetSelected(SelectionEvent arg0) {
+								try {
+									gpi();
+								} catch (Exception e) {
+									UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
+								}
+							}
+						});
+						btnGetGpInput.setText("Get GP Input");
+						
+						btnMonitor_ = new Button(grpGpInput, SWT.NONE);
+						btnMonitor_.addSelectionListener(new SelectionAdapter() {
+							@Override
+							public void widgetSelected(SelectionEvent arg0) {
+								monitor();
+							}
+						});
+						btnMonitor_.setToolTipText("Monitor the input and display status at real time.");
+						btnMonitor_.setText("Monitor Input");
+						
+						btnGpi2 = new Button(grpGpInput, SWT.CHECK);
+						btnGpi2.setText("GPI2");
+						
+						btnGpi1 = new Button(grpGpInput, SWT.CHECK);
+						btnGpi1.setText("GPI1");
 		
 		tbtmMessaging = new TabItem(tabFolder, SWT.NONE);
 		tbtmMessaging.setText("Messaging");
@@ -1299,7 +1354,6 @@ public class UhfAppComposite extends Composite {
 					J4210U.ScanResult sr = previousContent.get(keys.nextElement());
 					TableItem item = new TableItem(inventory_, SWT.None
 							| SWT.FULL_SELECTION);
-					
 					item.setText(new String[] { (i + 1) + "",
 							UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
 							sr.Ant + "", sr.Count + "", sr.RSSI + "" });
@@ -1667,13 +1721,26 @@ public class UhfAppComposite extends Composite {
 	}
 	
 	private void gpi() throws Exception {
-		in1_.setText(UhfApp.driver_.getGPInput(1) + "");
-		in2_.setText(UhfApp.driver_.getGPInput(2) + "");
+		boolean gpi1 = UhfApp.driver_.getGPInput(1);
+		Thread.sleep(20);
+		gpi1 = gpi1 && UhfApp.driver_.getGPInput(1);
+		boolean gpi2 = UhfApp.driver_.getGPInput(2);
+		Thread.sleep(20);
+		gpi2 = gpi2 && UhfApp.driver_.getGPInput(2);
+
+		btnGpi1.setSelection(gpi1);
+		btnGpi2.setSelection(gpi2);
 	}
 	
 	private void gpo() throws Exception {
-		UhfApp.driver_.setGPOutput((byte)0x01);
-		UhfApp.driver_.setGPOutput((byte)0x02);
+//		UhfApp.driver_.setGPOutput((byte)0x01);
+//		UhfApp.driver_.setGPOutput((byte)0x02);
+		
+		boolean gpo1 = btnGpo1.getSelection();
+		boolean gpo2 = btnGpo2.getSelection();
+		byte gpoVal = (gpo1) ? (byte)0x01 : (byte)0x00;
+		gpoVal |= (gpo2) ? (byte)0x02 : (byte)0x00;
+		UhfApp.driver_.setGPOutput(gpoVal);
 	}
 	
 	private Properties getMessagingProperties() {

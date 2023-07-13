@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class UhfApp {
 	
-	public static final String VERSION = "1.9.0";
+	public static final String VERSION = "2.0.0";
 	
 	public static J4210U driver_ = new J4210U();
 	private static Shell app_;
