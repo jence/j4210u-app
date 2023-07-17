@@ -170,7 +170,7 @@ public class UhfAppComposite extends Composite {
 	private Button btnGetGpInput;
 	private Button btnSetGpOutput;
 	private Button btnScanOnTrigger_;
-	private Label lblSupportedChips_;
+	private Text txtSupportedChips_;
 	private Text tidlen2_;
 	private Text total2_;
 	private Label lblLibraryVersion;
@@ -215,7 +215,7 @@ public class UhfAppComposite extends Composite {
 		return UhfApp.prompt(this.getShell(), text, style);
 	}
 
-	public void status(String text) {
+	public void status(final String text) {
 		syncExec(new Runnable() {
 
 			@Override
@@ -548,16 +548,16 @@ public class UhfAppComposite extends Composite {
 				UhfAppComposite.class, "/jence/icon/scant.png"));
 		btnScanOnTrigger_.setText("Scan On Trigger");
 
-		lblSupportedChips_ = new Label(this, SWT.WRAP);
-		lblSupportedChips_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
+		txtSupportedChips_ = new Text(this, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
+		txtSupportedChips_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
 				false, false, 3, 1));
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < AUTODETECTED_CHIPS.length; i++) {
 			if (i > 0)
-				sb.append(",");
+				sb.append(", ");
 			sb.append(AUTODETECTED_CHIPS[i]);
 		}
-		lblSupportedChips_.setText(sb.toString());
+		txtSupportedChips_.setText(sb.toString());
 
 		tabFolder = new TabFolder(this, SWT.NONE);
 		tabFolder.setEnabled(false);
