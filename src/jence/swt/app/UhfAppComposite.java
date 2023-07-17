@@ -216,7 +216,12 @@ public class UhfAppComposite extends Composite {
 	}
 
 	public void status(String text) {
-		lblStatus_.setText(text);
+		syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				lblStatus_.setText(text);
+			}});
 	}
 
 	private void syncstatus(final String text) {
