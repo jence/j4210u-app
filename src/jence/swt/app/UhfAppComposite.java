@@ -85,7 +85,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
  * 
  * 
  * @author Ejaz Jamil
- * @version 1.2
+ * @version 1.3
  * 
  */
 public class UhfAppComposite extends Composite {
