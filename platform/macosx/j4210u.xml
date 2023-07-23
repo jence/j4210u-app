@@ -15,5 +15,7 @@
         </jar>
     	<copy file="j4210u.jar" todir="UhfApp.app/Contents/MacOS/"/>
     	<copy file="libj4210u.dylib" todir="UhfApp.app/Contents/MacOS/"/>
+    	<copy file="j4210u.jar" todir="../macosx[intel]/UhfApp.app/Contents/MacOS/"/>
+    	<copy file="j4210u.jar" todir="../macosx[intel]/"/>
     </target>
 </project>
