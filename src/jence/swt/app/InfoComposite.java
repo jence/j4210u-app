@@ -142,7 +142,7 @@ public class InfoComposite extends Composite {
 		lblBaudRate.setText("Baud Rate");
 		
 		baudrate_ = new Combo(this, SWT.READ_ONLY);
-		baudrate_.setItems(new String[] {"9600", "19200", "38400", "57600", "115200"});
+		baudrate_.setItems(new String[] {"57600", "115200"});
 		baudrate_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		baudrate_.select(3);
 		new Label(this, SWT.NONE);
@@ -223,7 +223,7 @@ public class InfoComposite extends Composite {
 		// combo box index to internal baudrate mapping
 		int oldBaudrate = ri_.BaudRate;
 		int selectedBaudrate = Integer.parseInt(baudrate_.getText());
-		ri_.BaudRate = selectedBaudrate;;
+		ri_.BaudRate = selectedBaudrate;
 
 		try {
 			if (oldBaudrate != selectedBaudrate) {

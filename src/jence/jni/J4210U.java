@@ -424,6 +424,7 @@ public class J4210U {
 	
 	private native byte SetQ(byte q);
 	private native byte SetSession(byte session);
+	private native byte Debug(boolean debug);
 	//^^^^^^^^^^^^^^^^^^^^^^^^^^[JNI FUNCTIONS]^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	
 	private static byte[] LIB_VERSION = {0,0};
@@ -566,6 +567,10 @@ public class J4210U {
 		if (success == 0) {
 			throw new Exception(error());
 		}
+	}
+	
+	public void SetDebug(boolean debug) throws Exception {
+		Debug(debug);
 	}
 
 	/**

@@ -210,6 +210,7 @@ public class UhfAppComposite extends Composite {
 	private Group grpGpOutput;
 	private Group grpGpInput;
 	private Timer gpioTimer_ = null;
+	private Button btnDebug;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
@@ -1167,12 +1168,26 @@ public class UhfAppComposite extends Composite {
 		composite_6 = new Composite(this, SWT.NONE);
 		composite_6.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
 				false, 3, 1));
-		composite_6.setLayout(new GridLayout(5, false));
+		composite_6.setLayout(new GridLayout(6, false));
 
 		lblStatus_ = new Label(composite_6, SWT.NONE);
 		lblStatus_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 2, 1));
 		lblStatus_.setSize(0, 15);
+		
+		btnDebug = new Button(composite_6, SWT.CHECK);
+		btnDebug.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				try {
+					UhfApp.driver_.SetDebug(btnDebug.getSelection());
+				} catch (Exception e) {
+					//e.printStackTrace();
+					UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.ERROR);
+				}
+			}
+		});
+		btnDebug.setText("Debug");
 		
 		lblLibraryVersion = new Label(composite_6, SWT.NONE);
 		lblLibraryVersion.setText("Library Version");
