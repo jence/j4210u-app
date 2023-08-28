@@ -1290,6 +1290,7 @@ public class UhfAppComposite extends Composite {
 		try {
 			UhfApp.driver_.setQ(6);
 			UhfApp.driver_.setSession(0);
+			inventory_.removeAll();
 			do {
 				boolean ok = scanonce();
 				if (!ok) {
@@ -1338,7 +1339,6 @@ public class UhfAppComposite extends Composite {
 					previousContent.put(UhfApp.driver_.toHex(sr.EPC), sr);
 				}
 			}
-			inventory_.removeAll();
 			for (int i = 0; i < n; i++) {
 				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
 				if (merge_) {
