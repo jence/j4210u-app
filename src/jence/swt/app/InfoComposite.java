@@ -74,7 +74,7 @@ public class InfoComposite extends Composite {
 		
 		Label lblSerialNo = new Label(this, SWT.NONE);
 		lblSerialNo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblSerialNo.setText("Serial No");
+		lblSerialNo.setText("Device ID");
 		
 		serialno_ = new Text(this, SWT.BORDER | SWT.READ_ONLY);
 		serialno_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));

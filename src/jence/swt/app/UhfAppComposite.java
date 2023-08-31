@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Timer;
@@ -511,7 +512,6 @@ public class UhfAppComposite extends Composite {
 				setEnabled(false, btnScanServer_);
 				if (scan()) {
 					// setEnabled(true,);
-					status("Scan completed.");
 				}
 				setEnabled(true, btnScanServer_);
 			}
@@ -1331,6 +1331,7 @@ public class UhfAppComposite extends Composite {
 				status("No tags found.");
 				return false;
 			}
+			status(n+" Tags detected. Fetching tag details...");
 			Hashtable<String, J4210U.ScanResult> previousContent = new Hashtable<String, J4210U.ScanResult>();
 			if (merge_) {
 				for(int i=0;i<inventory_.getItemCount();i++) {
@@ -1339,18 +1340,32 @@ public class UhfAppComposite extends Composite {
 					previousContent.put(UhfApp.driver_.toHex(sr.EPC), sr);
 				}
 			}
+			HashSet unique = new HashSet();
+			int count = 0;
+			int nonunique = 0;
 			for (int i = 0; i < n; i++) {
 				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
+				String hex = UhfApp.driver_.toHex(sr.EPC);
 				if (merge_) {
 					
-					String hex = UhfApp.driver_.toHex(sr.EPC);
+//					String hex = UhfApp.driver_.toHex(sr.EPC);
 					J4210U.ScanResult srold = previousContent.get(hex);
 					if (srold != null) {
 						sr.Count += srold.Count;
 						previousContent.remove(hex);
 					}
 				}
+				
+				if (!unique.contains(hex))
+					unique.add(hex); // Keep only the unique EPC
+				else {
+					nonunique++;
+					// If only unique tags are needed, uncomment this line
+//					continue;
+				}
+				
 				// System.out.println(sr);
+				count++;
 				TableItem item = new TableItem(inventory_, SWT.None
 						| SWT.FULL_SELECTION);
 				item.setText(new String[] { (i + 1) + "",
@@ -1366,6 +1381,8 @@ public class UhfAppComposite extends Composite {
 						e.printStackTrace();
 					}
 				}
+				status("Fetched Tag Info: "+count+" of "+n+"...");
+				updateGuiTasks();
 			}
 			if (merge_) {
 				// if the previous content is not empty, the add them too
@@ -1380,10 +1397,15 @@ public class UhfAppComposite extends Composite {
 					item.setData(sr);
 				}
 			}
+			status("Scan Completed. Tags Found: "+n+". Non-Unique: "+nonunique);
 		} catch (Exception e) {
 			prompt(e.getMessage(), SWT.ICON_WARNING | SWT.OK);
 		}
 		return true;
+	}
+	
+	private void updateGuiTasks() {
+		while(UhfApp.display_.readAndDispatch());
 	}
 	
 	private void scans() {
@@ -1391,7 +1413,7 @@ public class UhfAppComposite extends Composite {
 			return;
 		while(btnScanServer_.getSelection()) {
 			scan();
-			while(UhfApp.display_.readAndDispatch());
+			updateGuiTasks();
 		}
 	}
 	
