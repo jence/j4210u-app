@@ -1,9 +1,10 @@
 # j4210u-app
 J4210U Hardware Demo Application
 <h2>Supported Hardware</h2>
-1. J4210U UHF RFID Desktop Short Range Reader. [https://www.amazon.com/dp/B09LD5L45F]<br/>
-2. J4211UH Plain & Simple UHF RFID Desktop Handheld Reader. [https://www.amazon.com/dp/B0C7M5T21F]<br/>
-3. J4420U UHF RFID Long Range Reader with I/O. [Not Yet Released]<br/>
+1. J4210U USB UHF RFID Desktop Short Range Reader. [https://www.amazon.com/dp/B09LD5L45F]<br/>
+2. J4211UH USB Plain & Simple UHF RFID Desktop Handheld Reader. [https://www.amazon.com/dp/B0C7M5T21F]<br/>
+3. J4420UX USB UHF RFID Long Range Reader with I/O. [https://www.amazon.com/dp/B0CGZJSXS6]<br/>
+4. J4212U Short Range UHF RFID Desktop Reader with USB, GPIO and UART. [https://www.amazon.com/dp/B0CGYXD76V]
 
 <h2>BUILD</h2>
 The demo application is built using Eclipse with SWT toolkit. To successfully 
@@ -53,6 +54,13 @@ Short Youtube videos are prepared to learn how to operate this device.<br>
 2. J4210U With RaspberryPi- https://youtu.be/B4wUL2kJwo0 <br>
 3. J4210U With Python- https://youtu.be/jBNB8a8g6Hk <br>
 4. J4210U App New Features- https://youtu.be/jBNB8a8g6Hk <br>
+5. J4210U Messaging Feature - https://youtu.be/UJeyh9SEx2o?si=OaB1BONRjRyPppfk <br>
 
 <h4>NOTE</h4>
 <p>The hardware driver for j4210u is compiled to run only in 64 bit platform. </p>
+
+# Arduino and Energia Support
+The following models are compatible with Arduino and Energia:
+1. J4212U
+2. J4220UX
+These devices have GPIO and UART output in addition to USB allowing them to be operated by UART connection. The device is powered through the external ports and it is not necessary to connect with USB.
