@@ -64,3 +64,7 @@ The following models are compatible with Arduino and Energia:
 1. J4212U
 2. J4220UX
 These devices have GPIO and UART output in addition to USB allowing them to be operated by UART connection. The device is powered through the external ports and it is not necessary to connect with USB.
+
+# Drivers
+Windows already come with a default USB Serial driver. Connect the device and check if there is any new COM port attached to the device. If not, then install the 64-bit driver from the driver directory.
+For Linux and Mac OSX, the driver attachement is automatic. However, in some Linux cdc_acm have to be executed if a driver is not attached.
