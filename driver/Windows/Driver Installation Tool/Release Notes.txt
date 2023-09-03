@@ -1,0 +1,73 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+           README File for MCP2200 Driver Installation Tool 
+--------------------------------------------------------------------------------------------------------------------------------------
+
+                Microchip Technology, Inc.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+System Requirements
+--------------------------------------------------------------------------------------------------------------------------------------
+Operating System:   Windows XP SP3, Vista, 7, 8 - (ADMIN PRIVILEGES ARE REQUIRED) 
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+Important Information   
+--------------------------------------------------------------------------------------------------------------------------------------
+**** The instructions below does not apply to Windows 10(MCP2221 drivers are automatically installed in this case) ****
+**** Certain portions of the MCP2200 Driver Installation Tool are copyright Microsoft, Inc., and used under license ****
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+How to Use   
+--------------------------------------------------------------------------------------------------------------------------------------
+---- DRIVER INSTALLATION ----	
+Basic Usage: 
+	Start the driver installation (Normal install wizard window):
+		1. Double-click the executable file within the appropriate folder for your system (x86 for 32-bit OS and x64 for 64-bit OS). 
+
+
+Advanced Usage: 
+	Run the driver installation in transparent/hidden mode:
+		1. Use the following command line options when running dpinst.exe: /sw
+
+	How to check for success/failure when running this tool during another software installation:
+		1. Tool runs and attempts to install the driver.
+		2. Installation result is given in wizard window (in normal mode)
+		3. If the transparent/hidden mode is used, check the application return code or the dpinst log file created in the system 
+		   directory.  More on this at: 
+			http://msdn.microsoft.com/en-us/library/windows/hardware/ff544790%28v=VS.85%29.aspx and
+			http://msdn.microsoft.com/en-us/library/windows/hardware/ff548674%28v=VS.85%29.aspx
+		4. If installation was successful, an entry is made under "Programs/Features" ("Add/Remove Programs" in Windows XP) for the 
+		   driver. This can be avoided by using the following command line switch: /sa    
+		
+
+
+---- DRIVER UNINSTALL ----		
+To uninstall this driver, simply double-click the entry in "Programs and Features" (Windows 7) or "Add/Remove Programs" (Windows XP) 
+found in the Control Panel.
+
+  
+--------------------------------------------------------------------------------------------------------------------------------------
+Versioning History
+--------------------------------------------------------------------------------------------------------------------------------------
+Version 1.3 (Released 10/09/2014):
+ - Updated tool to include the new MCP2200/MCP2221 driver version (v1.4).
+
+Version 1.2 (Released 02/20/2013):
+ - Updated tool to include the new MCP2200 driver version (v1.3).
+
+Version 1.1 (Released 08/29/2012):
+ - Updated tool to include the new MCP2200 driver version (v1.2).
+
+Version 1.00 (Released 08/15/2012):
+ - Initial Release
+   
+
+--------------------------------------------------------------------------------------------------------------------------------------
+Contact Information
+--------------------------------------------------------------------------------------------------------------------------------------
+Main Website: 		http://www.microchip.com
+Technical Support: 	http://support.microchip.com
