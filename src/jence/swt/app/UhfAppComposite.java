@@ -994,6 +994,11 @@ public class UhfAppComposite extends Composite {
 		btnGpo2.setText("GPO2");
 		
 		btnGpo1 = new Button(grpGpOutput, SWT.CHECK);
+		btnGpo1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+			}
+		});
 		btnGpo1.setText("GPO1");
 		
 		grpGpInput = new Group(composite_5, SWT.NONE);
@@ -1290,7 +1295,8 @@ public class UhfAppComposite extends Composite {
 		try {
 			UhfApp.driver_.setQ(6);
 			UhfApp.driver_.setSession(0);
-			inventory_.removeAll();
+			if (!merge_)
+				inventory_.removeAll();
 			do {
 				boolean ok = scanonce();
 				if (!ok) {
@@ -1334,6 +1340,7 @@ public class UhfAppComposite extends Composite {
 			status(n+" Tags detected. Fetching tag details...");
 			Hashtable<String, J4210U.ScanResult> previousContent = new Hashtable<String, J4210U.ScanResult>();
 			if (merge_) {
+				// Get previous content
 				for(int i=0;i<inventory_.getItemCount();i++) {
 					TableItem item = inventory_.getItem(i);
 					final J4210U.ScanResult sr = (J4210U.ScanResult)item.getData();
@@ -1346,8 +1353,7 @@ public class UhfAppComposite extends Composite {
 			for (int i = 0; i < n; i++) {
 				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
 				String hex = UhfApp.driver_.toHex(sr.EPC);
-				if (merge_) {
-					
+				if (merge_) {					
 //					String hex = UhfApp.driver_.toHex(sr.EPC);
 					J4210U.ScanResult srold = previousContent.get(hex);
 					if (srold != null) {

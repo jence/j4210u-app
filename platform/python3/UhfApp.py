@@ -27,6 +27,9 @@
 import j421xlib
 import tkinter as tk
 import webbrowser
+import threading
+import time
+
 from tkinter import *
 from tkinter import ttk 
 from tkinter import messagebox
@@ -60,6 +63,7 @@ class UhfApp():
         self.btnConnect["state"] = "disabled"
         self.btnDisconnect["state"] = "normal"
         self.btnScan["state"] = "normal"
+        self.btnScans["state"] = "normal"
         self.loadSettings()
         self.printStatus("Connected to Device")
         self.lblVer['text'] = "Lib Version: " + self.lib.LibVersion() + " | App Version: " + UhfApp.VERSION + " "
@@ -106,6 +110,7 @@ class UhfApp():
         self.btnConnect["state"] = "normal"
         self.btnDisconnect["state"] = "disabled"
         self.btnScan["state"] = "disabled"
+        self.btnScans["state"] = "disabled"
         return
 
     def scan(self):
@@ -113,24 +118,59 @@ class UhfApp():
         print("Tags found: ", n)
 
         # list inventory
+        if not self.Merge:
+            self.ResultBuffer = {}
         self.tblInventory.delete(*self.tblInventory.get_children())
-        self.scanResult = []
 
         color = 'even'
         if (n>0):
-            self.tabFolder.select(self.tabInventory)
-            print("Tag List:")
+            # enter all tag info into merge buffer
+            # enter into dictionary to merge
             for i in range(n):
                 sr = self.lib.GetResult(i)
+                if not sr.EPC in self.ResultBuffer.keys():
+                    hexEPC = self.lib.Bytes2Hex(sr.EPC).upper()
+                    self.ResultBuffer[hexEPC] = sr
+
+            self.tabFolder.select(self.tabInventory)
+            print("Tag List:")
+            i = 0
+            for epc in self.ResultBuffer:
+                sr = self.ResultBuffer[epc]
                 #sr.echo()
                 if (i % 2 == 0):
                     color = 'even'
                 else:
                     color = 'odd'
                 self.tblInventory.insert(parent='',tags=(color,),index='end',iid=i,text=str(i),values=(sr.hexEPC(),sr.EpcLength,sr.Ant,sr.Count,sr.RSSI))
-                self.scanResult.append(sr)
                 sr.line()
+                i += 1
         return
+    
+    def scans_thread(self,event):
+        self.Count = 0;
+        while not event.is_set():
+            #scan(self)
+            self.Count += 1
+            print("Calling Scan as Thread..." + str(self.Count))
+            #time.sleep(1)
+            self.scan()
+        print("Stopped Server Mode.")
+
+    
+    def scans(self):
+        if (self.btnScans['relief'] == 'raised'):
+            self.btnScans['relief'] = 'sunken'
+            self.stop_event = threading.Event()
+            self.ServerThread = threading.Thread(target=self.scans_thread, args=(self.stop_event,), daemon=True)
+            self.ServerThread.start()
+        else:
+            self.btnScans['relief'] = 'raised'
+            self.stop_event.set()
+        return
+
+    def clean(self):
+        self.tblInventory.delete(*self.tblInventory.get_children())
 
     def refresh(self):
         print("Refresh")
@@ -142,6 +182,14 @@ class UhfApp():
             self.cmbPorts.set(ports[0])
         return
 
+    def merge(self):
+        if (self.btnMerge['relief'] == 'raised'):
+            self.Merge = True
+            self.btnMerge['relief'] = 'sunken'
+        else:
+            self.Merge = True
+            self.btnMerge['relief'] = 'raised'
+
     def readMemory(self, event):
         column = self.tblInventory.identify_column(event.x)
         rowidx = self.tblInventory.identify_row(event.y)
@@ -149,10 +197,11 @@ class UhfApp():
         iid = self.tblInventory.focus()
         colidx = int(column[1:]) - 1
         values = self.tblInventory.item(iid)
-        epc = values.get("values")[1]
+        epc = values.get("values")[0]
         print("EPC : "+str(epc))
         # insert epc row
-        sr = self.scanResult[int(rowidx)]
+        #print(self.ResultBuffer.keys())
+        sr = self.ResultBuffer[epc]
         sr.line()
 
         self.tabFolder.select(self.tabMemory)
@@ -299,6 +348,11 @@ class UhfApp():
         self.btnScan = tk.Button(frmToolbar, text="Scan", image=imgScan, compound=LEFT, command=lambda: UhfApp.scan(self), state="disabled")
         self.btnScan.pack(side = LEFT, padx=5)
 
+        # Scan Server button
+        imgScans = PhotoImage(file="icon/scans.png")
+        self.btnScans = tk.Button(frmToolbar, text="Scan Server", image=imgScans, compound=LEFT, command=lambda: UhfApp.scans(self), state="disabled")
+        self.btnScans.pack(side = LEFT, padx=5)
+
         frmToolbar.pack(anchor="w", padx=5, pady=5)
 
         self.txtSupportedChips = Text(shell, height = 2)
@@ -323,11 +377,23 @@ class UhfApp():
 
         # Create Inventory Tab content
         tblFrame = Frame(self.tabInventory)
-        tblFrame.pack(fill=BOTH, expand=True)
+        tblFrame.pack(fill=X)
+        # stores previous content
+        self.ResultBuffer = {}
+        self.Merge = False
 
-        scrollbar = ttk.Scrollbar(tblFrame)
+        # Clear button
+        imgInvClean = PhotoImage(file="icon/clean.png")
+        self.btnInvClean = tk.Button(tblFrame, text="Clean", image=imgInvClean, compound=LEFT, command=lambda: UhfApp.clean(self), state="active")
+        self.btnInvClean.pack(side=LEFT, fill=Y, padx=5, pady=5)
+
+        imgInvMerge = PhotoImage(file="icon/merge.png")
+        self.btnMerge = tk.Button(tblFrame, text="Merge", image=imgInvMerge, compound=LEFT, command=lambda: UhfApp.merge(self), state="active")
+        self.btnMerge.pack(side=LEFT, fill=Y, padx=5, pady=5)
+
+        scrollbar = ttk.Scrollbar(self.tabInventory)
         scrollbar.pack(side=RIGHT, fill=Y)
-        self.tblInventory = ttk.Treeview(tblFrame, yscrollcommand=scrollbar)
+        self.tblInventory = ttk.Treeview(self.tabInventory, yscrollcommand=scrollbar)
         scrollbar.config(command=self.tblInventory.yview)
 
         self.tblInventory.tag_configure("even",background="white")
@@ -445,23 +511,23 @@ class UhfApp():
         # Memory Toolbar
         imgRefresh = PhotoImage(file="icon/load.png")
         btnMemoryRefresh = Button(frmMemory, image=imgRefresh, text="Refresh", compound = LEFT)
-        btnMemoryRefresh.pack(side=LEFT,fill=Y)
+        btnMemoryRefresh.pack(side=LEFT,fill=Y, padx=5, pady=5)
 
         imgWrite = PhotoImage(file="icon/write.png")
         btnWrite = Button(frmMemory, image=imgWrite, text="Write", compound = LEFT)
-        btnWrite.pack(side=LEFT,fill=Y)
+        btnWrite.pack(side=LEFT,fill=Y, padx=5, pady=5)
 
         imgClean = PhotoImage(file="icon/clean.png")
         btnClean = Button(frmMemory, image=imgClean, text="Clean", compound = LEFT)
-        btnClean.pack(side=LEFT,fill=Y)
+        btnClean.pack(side=LEFT,fill=Y, padx=5, pady=5)
 
         imgAuth = PhotoImage(file="icon/key.png")
         btnAuth = Button(frmMemory, image=imgAuth, text="Auth", compound = LEFT)
-        btnAuth.pack(side=LEFT,fill=Y)
+        btnAuth.pack(side=LEFT,fill=Y, padx=5, pady=5)
 
         imgExist = PhotoImage(file="icon/cardread.png")
         btnExist = Button(frmMemory, image=imgExist, text="Clean", compound = LEFT)
-        btnExist.pack(side=LEFT,fill=Y)
+        btnExist.pack(side=LEFT,fill=Y, padx=5, pady=5)
 
         # Chip Information
         frmTagInfo = Frame(self.tabMemory)
