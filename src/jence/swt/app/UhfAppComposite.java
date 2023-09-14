@@ -212,6 +212,7 @@ public class UhfAppComposite extends Composite {
 	private Group grpGpInput;
 	private Timer gpioTimer_ = null;
 	private Button btnDebug;
+	private Hashtable<String, J4210U.ScanResult> previousContent_ = new Hashtable<String, J4210U.ScanResult>();;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
@@ -1295,8 +1296,6 @@ public class UhfAppComposite extends Composite {
 		try {
 			UhfApp.driver_.setQ(6);
 			UhfApp.driver_.setSession(0);
-			if (!merge_)
-				inventory_.removeAll();
 			do {
 				boolean ok = scanonce();
 				if (!ok) {
@@ -1338,30 +1337,16 @@ public class UhfAppComposite extends Composite {
 				return false;
 			}
 			status(n+" Tags detected. Fetching tag details...");
-			Hashtable<String, J4210U.ScanResult> previousContent = new Hashtable<String, J4210U.ScanResult>();
-			if (merge_) {
-				// Get previous content
-				for(int i=0;i<inventory_.getItemCount();i++) {
-					TableItem item = inventory_.getItem(i);
-					final J4210U.ScanResult sr = (J4210U.ScanResult)item.getData();
-					previousContent.put(UhfApp.driver_.toHex(sr.EPC), sr);
-				}
-			}
+
 			HashSet unique = new HashSet();
-			int count = 0;
 			int nonunique = 0;
+			if (!merge_)
+				previousContent_.clear();
+			// Get previous content
 			for (int i = 0; i < n; i++) {
 				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
 				String hex = UhfApp.driver_.toHex(sr.EPC);
-				if (merge_) {					
-//					String hex = UhfApp.driver_.toHex(sr.EPC);
-					J4210U.ScanResult srold = previousContent.get(hex);
-					if (srold != null) {
-						sr.Count += srold.Count;
-						previousContent.remove(hex);
-					}
-				}
-				
+				previousContent_.put(hex, sr);
 				if (!unique.contains(hex))
 					unique.add(hex); // Keep only the unique EPC
 				else {
@@ -1370,12 +1355,25 @@ public class UhfAppComposite extends Composite {
 //					continue;
 				}
 				
+			}
+
+			inventory_.removeAll();
+			int count = 0;
+			Enumeration<String> keys = previousContent_.keys();
+			
+			while (keys.hasMoreElements()) {
+			//for (String key = previousContent.ge; i < previousContent.keys(); i++) {
+				//final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
+				//String hex = UhfApp.driver_.toHex(sr.EPC);
+				String epc = keys.nextElement();
+				J4210U.ScanResult sr = previousContent_.get(epc);
+				
 				// System.out.println(sr);
 				count++;
 				TableItem item = new TableItem(inventory_, SWT.None
 						| SWT.FULL_SELECTION);
-				item.setText(new String[] { (i + 1) + "",
-						UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
+				item.setText(new String[] { (count) + "",
+						epc, sr.EpcLength + "",
 						sr.Ant + "", sr.Count + "", sr.RSSI + "" });
 				item.setData(sr);
 				// if messaging is enabled, send the message now in a thread.
@@ -1389,19 +1387,6 @@ public class UhfAppComposite extends Composite {
 				}
 				status("Fetched Tag Info: "+count+" of "+n+"...");
 				updateGuiTasks();
-			}
-			if (merge_) {
-				// if the previous content is not empty, the add them too
-				int i = inventory_.getItemCount();
-				for(Enumeration keys = previousContent.keys(); keys.hasMoreElements(); i++){
-					J4210U.ScanResult sr = previousContent.get(keys.nextElement());
-					TableItem item = new TableItem(inventory_, SWT.None
-							| SWT.FULL_SELECTION);
-					item.setText(new String[] { (i + 1) + "",
-							UhfApp.driver_.toHex(sr.EPC), sr.EpcLength + "",
-							sr.Ant + "", sr.Count + "", sr.RSSI + "" });
-					item.setData(sr);
-				}
 			}
 			status("Scan Completed. Tags Found: "+n+". Non-Unique: "+nonunique);
 		} catch (Exception e) {
