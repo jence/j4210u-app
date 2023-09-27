@@ -461,6 +461,16 @@ class J4210():
         h = binascii.hexlify(bb).decode('utf-8').upper()
         return h
 
+    def Hex2Bytes(self, hex):
+        """
+           Converts the given HEX string to byte array
+
+           :param bb (string): HEX string to convert.
+           :return (byte[]): byte array of the HEX value.
+        """
+        result = bytes.fromhex(hex)
+        return result
+
     # byte GetTID(byte[] epc, byte epclen, byte[] tid, byte[] tidlen);
     def GetTID(self, epc):
         """

@@ -30,6 +30,15 @@ def Test():
     # load the library
     f = j421xlib.J4210()
 
+    """
+    # test the Hex2Bytes()
+    hex = "feeddeaf"
+    bb = f.Hex2Bytes(hex)
+    hex2 = f.Bytes2Hex(bb)
+    print('HEX: ', hex)
+    print()
+    """
+
     # object method calling
     ports = f.AvailablePorts()
     print("Available Serial Ports:")
