@@ -471,6 +471,24 @@ class J4210():
         result = bytes.fromhex(hex)
         return result
 
+    def Ascii2Bytes(self, s):
+        """
+           Converts the given ASCII string to byte array
+
+           :param bb (string): ASCII string to convert.
+           :return (byte[]): byte array of the HEX value.
+        """
+        return s.encode('utf8')
+
+    def Bytes2Ascii(self, b):
+        """
+           Converts the given byte array into ASCII
+
+           :param bb (byte[]): byte array to convert.
+           :return (string): ASCII string of the array of bytes.
+        """
+        return b.decode('ascii')
+
     # byte GetTID(byte[] epc, byte epclen, byte[] tid, byte[] tidlen);
     def GetTID(self, epc):
         """
