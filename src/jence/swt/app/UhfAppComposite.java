@@ -212,7 +212,9 @@ public class UhfAppComposite extends Composite {
 	private Group grpGpInput;
 	private Timer gpioTimer_ = null;
 	private Button btnDebug;
-	private Hashtable<String, J4210U.ScanResult> previousContent_ = new Hashtable<String, J4210U.ScanResult>();;
+	private Hashtable<String, J4210U.ScanResult> previousContent_ = new Hashtable<String, J4210U.ScanResult>();
+	private Group grpMode;
+	private Button btnSingleTag_;;
 
 	private int prompt(String text, int style) {
 		return UhfApp.prompt(this.getShell(), text, style);
@@ -592,7 +594,7 @@ public class UhfAppComposite extends Composite {
 		composite_3.setLayout(new GridLayout(3, true));
 
 		composite_4 = new Composite(composite_3, SWT.NONE);
-		composite_4.setLayout(new GridLayout(6, false));
+		composite_4.setLayout(new GridLayout(7, false));
 		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
 				3, 1));
 
@@ -649,6 +651,29 @@ public class UhfAppComposite extends Composite {
 		btnLog.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/log.png"));
 		btnLog.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnLog.setText("Log");
+		
+		grpMode = new Group(composite_4, SWT.NONE);
+		grpMode.setText("Scan Mode");
+		grpMode.setLayout(new GridLayout(1, false));
+		
+		btnSingleTag_ = new Button(grpMode, SWT.CHECK);
+		btnSingleTag_.setToolTipText("If you have large number of tags near the reader, selecting this " +
+				"option will select a single tag that has the highest signal strength.");
+		btnSingleTag_.setText("Single Tag");
+		btnSingleTag_.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if (btnSingleTag_.getSelection())
+					UhfApp.prompt(UhfAppComposite.this.getShell(), "This feature is experimental.\n\nWhen Scan button is pressed, " +
+							"only one tag is selected that the reader receives first. This does not mean that the tag is the " +
+							"closest. Dont use this option to find the nearest tag. Instead, you can use RSSI with Transmit " +
+							"Power to determine the nearest tag.", SWT.ICON_INFORMATION);
+			}});
 		
 		grpIterationsPerScan = new Group(composite_4, SWT.NONE);
 		grpIterationsPerScan.setText("Iterations per Scan");
@@ -1331,7 +1356,16 @@ public class UhfAppComposite extends Composite {
 					status("Ignored filter because one of the field is left blank.");
 				}
 			}
-			int n = UhfApp.driver_.inventory(filter);
+			if (!merge_) {
+				previousContent_.clear();
+				inventory_.clearAll();
+			}
+			int n = 0;
+			if (btnSingleTag_.getSelection()) 
+				n = UhfApp.driver_.inventoryOne(); // single tag scan
+			else
+				n = UhfApp.driver_.inventory(filter);
+				
 			if (n == 0) {
 				status("No tags found.");
 				return false;
@@ -1340,8 +1374,6 @@ public class UhfAppComposite extends Composite {
 
 			HashSet unique = new HashSet();
 			int nonunique = 0;
-			if (!merge_)
-				previousContent_.clear();
 			// Get previous content
 			for (int i = 0; i < n; i++) {
 				final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
@@ -1858,5 +1890,4 @@ public class UhfAppComposite extends Composite {
 				btnActivateHttpQuery_, textHttpUrl_, 
 				btnActivateWriteToFile_, textDirectory_, textFilename_);
 	}
-
 }

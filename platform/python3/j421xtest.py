@@ -80,7 +80,17 @@ def Test():
     assert ret != False
 
     # inventory
-    print("Performing Inventory:")
+    # Single tag inventory. If only interested one tag, call InventoryOne
+    n1 = f.InventoryOne()
+    # n1 should be 1 if a tag found, 0 if not foud
+    # list inventory
+    print("One Tag List:")
+    for i in range(n1):
+        sr = f.GetResult(i)
+        #sr.echo()
+        sr.line()
+    
+    print("Performing Bulk Inventory:")
     q = 5
     ret = f.SetQ(q) # Q is 0 to 15
     assert ret == False

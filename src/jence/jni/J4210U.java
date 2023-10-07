@@ -401,6 +401,7 @@ public class J4210U {
 	private native byte LoadSettings(byte[] buff);
 	private native byte SaveSettings(byte[] buff);
 	private native int  Inventory(byte filter);	
+	private native int  InventoryOne();
 	private native byte GetResult(byte[] scanresult, int index);
 	private native byte GetTID(byte[] epc, byte epclen, byte[] tid, byte[] tidlen);
 	
@@ -849,6 +850,21 @@ public class J4210U {
 	public int inventory(boolean filter) throws Exception {
 		int count = Inventory((filter) ? (byte)1 : 0);
 		log("{inventory(filter = "+filter+") : "+count + "}" );
+		return count;
+	}
+
+	/**
+	 * Scans with or without using filter. 
+	 * 
+	 * @param filter if <code>true</code>, the filter specified by {@link #SetFilter(int, int, byte[])}
+	 * will be used.
+	 * 
+	 * @return number of inventory items (tags) scanned.
+	 * @throws Exception
+	 */
+	public int inventoryOne() throws Exception {
+		int count = InventoryOne();
+		log("{inventoryOne(}" );
 		return count;
 	}
 

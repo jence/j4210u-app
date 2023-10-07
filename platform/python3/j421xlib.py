@@ -432,6 +432,17 @@ class J4210():
         ret = self.lib.Inventory(ff)
         return ret
 
+    # int  Inventory(byte filter);	
+    def InventoryOne(self):
+        """
+           Performs single tag Inventory scan.
+
+           :return (int): Single tags that is detected first or 0 if none.
+        """
+        self.lib.Inventory.retypes = [c_uint]
+        ret = self.lib.InventoryOne()
+        return ret
+
     # byte GetResult(byte[] scanresult, int index);
     def GetResult(self, index = 0):
         """
