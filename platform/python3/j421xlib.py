@@ -249,7 +249,7 @@ class ReaderInfo():
         print('\tAntenna:    ', self.Antenna)
         print('\tComAdr:     ', self.ComAdr)
         print('\tReaderType: ', self.ReaderType)
-        print('\tProtocol:   ', self.Protocol)
+        print('\tProtocol:   ', self.Protocol.to_bytes(1,'little').hex().upper())
         print('\tBand:       ', chr(self.Band))
         print('\tPower:      ', self.Power)
         print('\tScanTime:   ', self.ScanTime)

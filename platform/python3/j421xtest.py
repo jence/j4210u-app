@@ -22,7 +22,16 @@
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
 # https://www.soalib.com
-
+#
+#
+# ABOUT THIS EXAMPLE:
+# This single example covers all the methods offered by the library.
+# It initially scans the serial port for any device and connects to the first
+# such serial port then operates on that device.
+# 
+# The use may modify this program in their own code. For a graphycal demo,
+# see another python code UhfApp.py
+#
 
 import j421xlib
 
