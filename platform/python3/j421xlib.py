@@ -21,9 +21,9 @@
 
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
-# Version: 1.10
+# Version: 1.2
 # https://www.soalib.com
-
+#
 # J4210 Class Library for Python version 3.x
 # This is a Python class for use with J4210 series of readers.
 # This is a class library only. This class should be called

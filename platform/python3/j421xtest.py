@@ -22,7 +22,7 @@
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
 # https://www.soalib.com
-#
+# Version: 1.0
 #
 # ABOUT THIS EXAMPLE:
 # This single example covers all the methods offered by the library.

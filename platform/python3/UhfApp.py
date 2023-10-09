@@ -22,6 +22,8 @@
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
 # https://www.soalib.com
+# Version: 1.0
+# 
 
 
 import j421xlib
