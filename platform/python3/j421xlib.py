@@ -659,6 +659,23 @@ class J4210():
         ret = self.lib.WriteEpcWord(epc, len(epc), data, windex)
         return bool(ret)
 	
+    # byte WriteEpc(byte[] epc, byte epclen, byte[] data);
+    def WriteEpc(self, epc, newepc):
+        """
+           Writes EPC for the Tag.
+
+           :param epc (bytep[]): full EPC value.
+           :param newepc (byte[]): New EPC value should be 12 byte or less. If number of bytes
+              is less than 12 bytes, zeros will be padded. EPC will be right justified. That means
+              if you put 0xAB12 as EPC, 0x0000 0000 0000 0000 0000 AB12 will be written.
+
+           :return (boolean): True, if successful, otherwise False.
+        """
+        self.lib.WriteEpc.argtypes = [c_char_p, c_char, c_char_p]
+        self.lib.WriteEpc.retypes = [c_char]
+        ret = self.lib.WriteEpc(epc, len(epc), newepc)
+        return bool(ret)
+	
     # byte GetTagInfo(byte[] tid, byte[] info);
     def GetTagInfo(self, tid):
         """

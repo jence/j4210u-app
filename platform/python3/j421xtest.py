@@ -173,6 +173,24 @@ def Test():
             print("This tag does not have user memory")
         
         # change EPC word
+        # EPC can be changed in two ways:
+        # 1. Changing the entire EPC at once
+        # 2. Changing EPC two bytes at a time
+        # 
+        # 1. Changing EPC with a single write
+        # Use this method, if you are writing an entirely new EPC.
+        print("Changing EPC:")
+        print("Current EPC = ", f.Bytes2Hex(sr.EPC))
+        newepc = b'\x56\x78\xbe\xed\xde\xad\x12\x34\xca\xfa\xfe\xed'
+        f.WriteEpc(sr.EPC, newepc)
+        # Check if the new epc exist
+        found = f.TagExists(newepc)
+        if (found) :
+            print("[CHANGED] Tag FOUND with EPC ", f.Bytes2Hex(newepc))
+            sr.EPC = newepc
+        else :
+            print("[FAILED TO CHANGE]")
+        
         # EPC is change 16-bit (2 bytes) at a time.
         # EPC is usually 12 byte, so to change the EPC
         # you need to write 6 times where the index will

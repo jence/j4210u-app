@@ -416,6 +416,7 @@ public class J4210U {
 	
 	private native byte TagExists(byte[] epc, byte epclen);
 	private native byte WriteEpcWord(byte[] epc, byte epclen, byte[] data, byte windex);
+	private native byte WriteEpc(byte[] epc, byte epclen, byte[] data);
 	
 	private native byte GetTagInfo(byte[] tid, byte[] info);
 	
@@ -799,6 +800,22 @@ public class J4210U {
 	}
 
 	/**
+	 * Writes EPC (96-bit) to the tag pointed by the epc value. 
+	 * 
+	 * @param epc tag's EPC value.
+	 * @param newepc an array of bytes of size 12 or less. The value written is right justified.
+	 *    If only two byte is provided, then the lowest 2 bytes of EPC will be written and the 
+	 *    upper bytes will be zeros.
+	 * @throws Exception a general exception is thrown.
+	 */
+	public void writeEpc(byte[] epc, byte[] newepc) throws Exception {		
+		byte success = WriteEpc(epc, (byte)epc.length, newepc);
+		if (success == 0)
+			throw new Exception("Failed to write EPC word.");
+		log("{writeEpcWord(EPC = "+toHex(epc)+", word = "+toHex(newepc));
+	}
+
+	/**
 	 * Get TagInfo from TID.
 	 * 
 	 * @param tid TID of the tag.
@@ -969,7 +986,7 @@ public class J4210U {
 		J4210U uhf = new J4210U();
 		try {
 			String[] ports = uhf.listPorts();
-			uhf.open("com4", 57600);
+			uhf.open("com2", 57600);
 			int count = uhf.inventory(false);
 			if (count == 0) {
 				System.out.println("No Tag found.");
@@ -981,7 +998,11 @@ public class J4210U {
 				//byte[] tid = uhf.getTID(sr.EPC);
 				//System.out.println("TID="+toHex(tid));
 				epc = sr.EPC;
+				System.out.println(J4210U.toHex(epc));
 			}
+			epc = J4210U.hex2bytes("000000000000000000000000", 12);
+			byte[] newepc = J4210U.hex2bytes("ABCDEF12", 4);
+			uhf.writeEpc(epc, newepc);
 			//System.out.println("Card Name: "+nfc.type());
 			uhf.writeWord(epc, new byte[]{0x11, 0x22}, 0);
 			byte[] data = uhf.readWord(epc, 0);
