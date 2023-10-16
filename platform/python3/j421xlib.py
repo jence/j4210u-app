@@ -82,9 +82,9 @@ class TagType(enum.Enum):
     EM4423 = 25
 
     # Kiloway family
-    KILOWAY_2005BR = 26,
-    KILOWAY_2005BL = 27,
-    KILOWAY_2005BT = 28,
+    KILOWAY_2005BR = 26
+    KILOWAY_2005BL = 27
+    KILOWAY_2005BT = 28
 
 class TagInfo():
     """
