@@ -177,7 +177,7 @@ def Test():
         # 1. Changing the entire EPC at once
         # 2. Changing EPC two bytes at a time
         # 
-        # 1. Changing EPC with a single write
+        # 1. EPC 1st method: Changing EPC with a single write
         # Use this method, if you are writing an entirely new EPC.
         print("Changing EPC:")
         print("Current EPC = ", f.Bytes2Hex(sr.EPC))
@@ -191,13 +191,14 @@ def Test():
         else :
             print("[FAILED TO CHANGE]")
         
-        # EPC is change 16-bit (2 bytes) at a time.
+        # 2. EPC 2nd method: change 16-bit (2 bytes) at a time.
         # EPC is usually 12 byte, so to change the EPC
         # you need to write 6 times where the index will
         # be supplied from 0 to 5
         print("Current EPC = ", f.Bytes2Hex(sr.EPC))
         newepc0 = b'\xba\xba'
         print("Changing the EPC first two bytes to ", f.Bytes2Hex(newepc0))
+
         # our first index is 0
         ret = f.WriteEpcWord(sr.EPC, newepc0, 0)
         assert ret == True
