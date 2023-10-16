@@ -22,7 +22,7 @@
 # Author: Ejaz Jamil
 # Soalib Incorporated, Massachusetts, USA
 # https://www.soalib.com
-# Version: 1.0
+# Version: 1.1
 #
 # ABOUT THIS EXAMPLE:
 # This single example covers all the methods offered by the library.
@@ -181,6 +181,7 @@ def Test():
         # Use this method, if you are writing an entirely new EPC.
         print("Changing EPC:")
         print("Current EPC = ", f.Bytes2Hex(sr.EPC))
+        # Example EPC (hex) = 5678 BEED DEAD 1234 CAFA FEED
         newepc = b'\x56\x78\xbe\xed\xde\xad\x12\x34\xca\xfa\xfe\xed'
         f.WriteEpc(sr.EPC, newepc)
         # Check if the new epc exist
@@ -189,7 +190,7 @@ def Test():
             print("[CHANGED] Tag FOUND with EPC ", f.Bytes2Hex(newepc))
             sr.EPC = newepc
         else :
-            print("[FAILED TO CHANGE]")
+            print("[FAILED TO CHANGE EPC]")
         
         # 2. EPC 2nd method: change 16-bit (2 bytes) at a time.
         # EPC is usually 12 byte, so to change the EPC

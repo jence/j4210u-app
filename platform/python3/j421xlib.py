@@ -49,34 +49,42 @@ class TagType(enum.Enum):
     UNKNOWN = 0
 
     # ALIEN Family
-    HIGGS_3 =  1
-    HIGGS_4 =  2
-    HIGGS_EC = 3
-    HIGGS_9 =  4
+    HIGGS_3 =   1
+    HIGGS_4 =   2
+    HIGGS_EC =  3
+    HIGGS_9 =   4
+    HIGGS_10 =  5
 
     # IMPINJ Family
-    MONZA_4QT =   5
-    MONZA_4E =    6
-    MONZA_4D =    7
-    MONZA_4I =    8
-    MONZA_5 =     9
-    MONZA_R6 =    10
-    MONZA_R6P =   11
-    MONZA_X2K =   12
-    MONZA_X8K =   13
-    IMPINJ_M730 = 14
-    IMPINJ_M750 = 15
+    MONZA_4QT =   6
+    MONZA_4E =    7
+    MONZA_4D =    8
+    MONZA_4I =    9
+    MONZA_5 =     10
+    MONZA_R6 =    11
+    MONZA_R6P =   12
+    MONZA_X2K =   13
+    MONZA_X8K =   14
+    IMPINJ_M730 = 15
+    IMPINJ_M750 = 16
+    IMPINJ_M770 = 17
+    IMPINJ_M775 = 18
 
     # NXP Family
-    UCODE_7 =         16
-    UCODE_8 =         17
-    UCODE_8M =        18
-    UCODE_DNA =       19
-    UCODE_DNA_CITY =  20
-    UCODE_DNA_TRACK = 21
+    UCODE_7 =         19
+    UCODE_8 =         20
+    UCODE_8M =        21
+    UCODE_DNA =       22
+    UCODE_DNA_CITY =  23
+    UCODE_DNA_TRACK = 24
 
     # EM Family
-    EM4423 = 22
+    EM4423 = 25
+
+    # Kiloway family
+    KILOWAY_2005BR = 26,
+    KILOWAY_2005BL = 27,
+    KILOWAY_2005BT = 28,
 
 class TagInfo():
     """
