@@ -57,6 +57,7 @@ public class J4210U {
         UCODE_7,
         UCODE_8,
         UCODE_8M,
+        UCODE_9,
         UCODE_DNA,
         UCODE_DNA_CITY,
         UCODE_DNA_TRACK,

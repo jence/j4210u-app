@@ -318,6 +318,8 @@ public class UhfAppComposite extends Composite {
 							final int column = i;
 							if (column < 1)
 								continue; // thse are read only type
+							if (index == 0 && column > 6)
+								continue; // avoid EPC over 6 bytes.
 							// do not allow to edit TID
 							if (index == 1)
 								continue;
@@ -1666,6 +1668,7 @@ public class UhfAppComposite extends Composite {
 						| SWT.ICON_INFORMATION);
 				usrlen_.setText(lastusrindex * 2 + "");
 				usrlen2_.setText(lastusrindex * 16 + "");
+				createEditableTable(memory_);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

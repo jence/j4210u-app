@@ -74,17 +74,18 @@ class TagType(enum.Enum):
     UCODE_7 =         19
     UCODE_8 =         20
     UCODE_8M =        21
-    UCODE_DNA =       22
-    UCODE_DNA_CITY =  23
-    UCODE_DNA_TRACK = 24
+    UCODE_9 =         22
+    UCODE_DNA =       23
+    UCODE_DNA_CITY =  24
+    UCODE_DNA_TRACK = 25
 
     # EM Family
-    EM4423 = 25
+    EM4423 =          26
 
     # Kiloway family
-    KILOWAY_2005BR = 26
-    KILOWAY_2005BL = 27
-    KILOWAY_2005BT = 28
+    KILOWAY_2005BR =  27
+    KILOWAY_2005BL =  28
+    KILOWAY_2005BT =  29
 
 class TagInfo():
     """
