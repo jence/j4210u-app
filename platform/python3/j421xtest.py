@@ -182,15 +182,19 @@ def Test():
         print("Changing EPC:")
         print("Current EPC = ", f.Bytes2Hex(sr.EPC))
         # Example EPC (hex) = 5678 BEED DEAD 1234 CAFA FEED
-        newepc = b'\x56\x78\xbe\xed\xde\xad\x12\x34\xca\xfa\xfe\xed'
+        newepc = b'\x56\x78\xbe\xed\xde\xad\x12\x34\xca\44\xbe\xef'
         f.WriteEpc(sr.EPC, newepc)
-        # Check if the new epc exist
+        # Check if the old epc exist
+        found = f.TagExists(sr.EPC)
+        assert found == False   # old tag should not exist
+
         found = f.TagExists(newepc)
-        if (found) :
+        if (found) : # check the new tag
             print("[CHANGED] Tag FOUND with EPC ", f.Bytes2Hex(newepc))
             sr.EPC = newepc
         else :
             print("[FAILED TO CHANGE EPC]")
+        return
         
         # 2. EPC 2nd method: change 16-bit (2 bytes) at a time.
         # EPC is usually 12 byte, so to change the EPC

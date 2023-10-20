@@ -636,7 +636,7 @@ class J4210():
         """
         self.lib.SetFilter.argtypes = [c_int, c_int, c_char_p]
         self.lib.SetFilter.retypes = [c_char]
-        ret = self.lib.SetFilter(adr, len, mask)
+        ret = self.lib.SetFilter(adr, len, mask) & 0xFF
         return bool(ret)
 	
     # byte TagExists(byte[] epc, byte epclen);
@@ -647,9 +647,10 @@ class J4210():
            :param epc (bytep[]): full EPC value.
            :return (boolean): True, if found, otherwise False.
         """
-        self.lib.TagExists.argtypes = [c_char_p]
+        self.lib.TagExists.argtypes = [c_char_p, c_char]
         self.lib.TagExists.retypes = [c_char]
-        ret = self.lib.TagExists(epc, len(epc))
+        ret = self.lib.TagExists(epc, len(epc)) & 0xFF
+        #print(ret)
         return bool(ret)
 
     # byte WriteEpcWord(byte[] epc, byte epclen, byte[] data, byte windex);
