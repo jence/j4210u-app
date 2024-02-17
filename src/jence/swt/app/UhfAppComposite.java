@@ -495,6 +495,7 @@ public class UhfAppComposite extends Composite {
 			public void widgetSelected(SelectionEvent arg0) {
 				monitorStop();
 				if (disconnect()) {
+					btnScanServer_.setSelection(false);
 					setEnabled(true, btnRefresh_, btnConnect_);
 					setEnabled(false, btnDisconnect_, btnScan_, btnScanServer_, btnScanOnTrigger_, tabFolder);
 					status("Disconnected.");
