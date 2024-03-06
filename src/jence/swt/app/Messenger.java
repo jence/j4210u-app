@@ -79,11 +79,12 @@ public class Messenger implements Runnable {
 			socket_.getOutputStream().flush();
 		}
 		if (httpMode) {
-			httpUrl_ = "http://localhost/soalib.com/main/messenger.php?json=";
-			httpUrl_ += URLEncoder.encode(json, "UTF-8");
-			URL url = new URL(httpUrl_);
+//			httpUrl_ = "http://localhost/soalib.com/main/messenger.php?json=";
+			String httpUrl1_ = httpUrl_ + "?json=";
+			httpUrl1_ += URLEncoder.encode(json, "UTF-8");
+			URL url = new URL(httpUrl1_);
 			HttpURLConnection httpscon = null;
-			if (httpUrl_.toLowerCase().startsWith("https"))
+			if (httpUrl1_.toLowerCase().startsWith("https"))
 				httpscon = (HttpsURLConnection)url.openConnection();
 			else
 				httpscon = (HttpURLConnection)url.openConnection();
@@ -96,7 +97,7 @@ public class Messenger implements Runnable {
 					}
 				  });
 			}
-			System.out.println("URL : " + httpUrl_);
+			System.out.println("URL : " + httpUrl1_);
 			int responseCode = httpscon.getResponseCode();
 			System.out.println("GET Response Code :: " + responseCode);
 		}

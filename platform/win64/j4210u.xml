@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project j4210u-driver">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-    <!--ANT 1.7 is required                                        -->
+    <!--ANT 1.7 is required             
+                               -->
+    <target name="clean">
+        <delete dir="bin" failonerror="false"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="bin"/>
+    </target>
+
+    <target name="compile">
+        <javac srcdir="../../src" destdir="bin" includeantruntime="false" encoding="UTF-8">
+            <classpath>
+                <pathelement location="lib/swt.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
     <target name="create_run_jar">
         <jar destfile="j4210u.jar" filesetmanifest="mergewithoutmain">
             <manifest>
