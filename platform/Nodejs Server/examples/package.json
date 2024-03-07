@@ -1,0 +1,20 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "main": "http-server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node http-express-server.js",
+        "dev-http": "nodemon http-server.js",
+        "dev-socket": "nodemon socket"
+    },
+    "author": "Jence",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.18.3"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.0"
+    },
+    "description": ""
+}
