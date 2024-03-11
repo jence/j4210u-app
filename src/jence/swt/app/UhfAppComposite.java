@@ -1,16 +1,16 @@
 /**
  * MIT LICENSE
  * 
- * Copyright � 2021 Jence, Ejaz Jamil.
+ * Copyright (c) 2021 Jence, Ejaz Jamil.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
- * files (the �Software�), to deal in the Software without restriction, including without limitation the rights to use, copy, 
+ * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, 
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
  * Software is furnished to do so, subject to the following conditions:
  * 
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED �AS IS�, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
@@ -56,6 +56,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -154,14 +155,10 @@ public class UhfAppComposite extends Composite {
 
 	public static final String DOWNLOAD_PAGE = "https://jence.com/web/index.php?route=product/product&path=69_25_225&product_id=792";
 	public static final String LATEST_VERSION_PAGE = "https://jence.com/downloads/version.properties";
-	public static final String[] AUTODETECTED_CHIPS = {
-			TagType.HIGGS_3.toString(), TagType.HIGGS_4.name(),
-			TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(),
-			TagType.IMPINJ_M750.name(), TagType.IMPINJ_M770.name(), 
-			TagType.IMPINJ_M775.name(), TagType.MONZA_4D.name(),
-			TagType.MONZA_4E.name(), TagType.MONZA_4I.name(),
-			TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(),
-			TagType.MONZA_R6P.name(), TagType.UCODE_8.name(), 
+	public static final String[] AUTODETECTED_CHIPS = { TagType.HIGGS_3.toString(), TagType.HIGGS_4.name(),
+			TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(), TagType.IMPINJ_M750.name(), TagType.IMPINJ_M770.name(),
+			TagType.IMPINJ_M775.name(), TagType.MONZA_4D.name(), TagType.MONZA_4E.name(), TagType.MONZA_4I.name(),
+			TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(), TagType.MONZA_R6P.name(), TagType.UCODE_8.name(),
 			TagType.KILOWAY_2005BL.name() };
 	private Text epclen2_;
 	private Text pwdlen2_;
@@ -201,7 +198,7 @@ public class UhfAppComposite extends Composite {
 	private Button btnScanServer_;
 	private Button btnHelp;
 	private Button btnClearSetting_;
-	
+
 	private Messenger messenger_ = null;
 	private Button btnGpo1;
 	private Button btnGpo2;
@@ -226,7 +223,8 @@ public class UhfAppComposite extends Composite {
 			@Override
 			public void run() {
 				lblStatus_.setText(text);
-			}});
+			}
+		});
 	}
 
 	private void syncstatus(final String text) {
@@ -238,13 +236,13 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 	}
-	
+
 	private void monitorStop() {
 		if (gpioTimer_ != null) {
 			monitor();
 		}
 	}
-	
+
 	private void monitor() {
 		if (gpioTimer_ != null) {
 			btnMonitor_.setText("Monitor Input");
@@ -253,25 +251,27 @@ public class UhfAppComposite extends Composite {
 		} else {
 			gpioTimer_ = new Timer();
 			btnMonitor_.setText("Monitor {STOP]");
-			gpioTimer_.schedule(new TimerTask(){
+			gpioTimer_.schedule(new TimerTask() {
 
 				@Override
 				public void run() {
 					try {
 						final boolean gpi1 = UhfApp.driver_.getGPInput(1);
 						final boolean gpi2 = UhfApp.driver_.getGPInput(2);
-						
-						syncExec(new Runnable(){
+
+						syncExec(new Runnable() {
 
 							@Override
 							public void run() {
 								btnGpi1.setSelection(gpi1);
 								btnGpi2.setSelection(gpi2);
-							}});
+							}
+						});
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}}, 0, 500);
+				}
+			}, 0, 500);
 		}
 	}
 
@@ -284,21 +284,20 @@ public class UhfAppComposite extends Composite {
 	private void setClear(boolean state, Widget... w) {
 		for (int i = 0; i < w.length; i++) {
 			if (w[i] instanceof Button) {
-				((Button)w[i]).setSelection(false);
+				((Button) w[i]).setSelection(false);
 			} else if (w[i] instanceof Text) {
-				((Text)w[i]).setText("");
+				((Text) w[i]).setText("");
 			}
 		}
 	}
 
 	private void createEditableTable(final Table table) {
-		final Color COLOR_ORANGE = Display.getDefault().getSystemColor(
-				SWT.COLOR_GRAY);
+		final Color COLOR_ORANGE = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
 
 		FontData fd = table.getFont().getFontData()[0];
 		fd.setStyle(SWT.BOLD);
 		final Font FONT_BOLD = new Font(Display.getDefault(), fd);
-		
+
 		final TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
@@ -338,12 +337,10 @@ public class UhfAppComposite extends Composite {
 											newText = oldText;
 										}
 										newText = "0000" + newText;
-										newText = newText.substring(newText
-												.length() - 4);
+										newText = newText.substring(newText.length() - 4);
 										item.setText(column, newText);
 										if (!oldText.equalsIgnoreCase(newText)) {
-											item.setData(column + "",
-													oldText.toUpperCase());
+											item.setData(column + "", oldText.toUpperCase());
 											Font ft = item.getFont();
 											item.setFont(column, FONT_BOLD);
 										}
@@ -416,18 +413,16 @@ public class UhfAppComposite extends Composite {
 				HelpDialog.show(UhfAppComposite.this.getDisplay());
 			}
 		});
-		btnHelp.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/help.png"));
+		btnHelp.setImage( new Image(this.getDisplay(), "icon/help.png"));
 		btnHelp.setText("Help");
 		
+		final Image usbImg = new Image(this.getDisplay(), "icon/usb.png");
 		composite_7 = new Composite(composite_1, SWT.NONE);
 		GridData gd_composite_7 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_composite_7.widthHint = 155;
 		composite_7.setLayoutData(gd_composite_7);
 		composite_7.setLayout(new GridLayout(2, false));
-		
 				Label lblPort = new Label(composite_7, SWT.NONE);
-				lblPort.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-						"/jence/icon/usb.png"));
 				lblPort.setText("Port");
 
 		comboPorts_ = new Combo(composite_7, SWT.READ_ONLY);
@@ -448,8 +443,7 @@ public class UhfAppComposite extends Composite {
 
 		btnRefresh_ = new Button(composite_1, SWT.NONE);
 		btnRefresh_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
-		btnRefresh_.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-				"/jence/icon/usb.png"));
+		btnRefresh_.setImage(usbImg);
 		btnRefresh_.setToolTipText("Refresh available serial ports.");
 		btnRefresh_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -468,8 +462,7 @@ public class UhfAppComposite extends Composite {
 		btnConnect_ = new Button(composite_1, SWT.NONE);
 		btnConnect_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnConnect_.setToolTipText("Connect to Device.");
-		btnConnect_.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-				"/jence/icon/connect.png"));
+		btnConnect_.setImage( new Image(this.getDisplay(), "icon/connect.png"));
 		btnConnect_.setEnabled(false);
 		btnConnect_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -487,8 +480,7 @@ public class UhfAppComposite extends Composite {
 		btnDisconnect_ = new Button(composite_1, SWT.NONE);
 		btnDisconnect_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnDisconnect_.setToolTipText("Disconnect Device.");
-		btnDisconnect_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/disconnect.png"));
+		btnDisconnect_.setImage(new Image(this.getDisplay(), "icon/disconnect.png"));
 		btnDisconnect_.setEnabled(false);
 		btnDisconnect_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -507,8 +499,7 @@ public class UhfAppComposite extends Composite {
 		btnScan_ = new Button(composite_1, SWT.NONE);
 		btnScan_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnScan_.setToolTipText("Scan Tags.");
-		btnScan_.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-				"/jence/icon/scan.png"));
+		btnScan_.setImage(new Image(this.getDisplay(), "icon/scan.png"));
 		btnScan_.setEnabled(false);
 		btnScan_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -536,7 +527,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnScanServer_.setEnabled(false);
-		btnScanServer_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/scans.png"));
+		btnScanServer_.setImage(new Image(this.getDisplay(), "icon/scans.png"));
 		btnScanServer_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnScanServer_.setText("Scan Server");
 
@@ -551,8 +542,7 @@ public class UhfAppComposite extends Composite {
 				scant();
 			}
 		});
-		btnScanOnTrigger_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/scant.png"));
+		btnScanOnTrigger_.setImage(new Image(this.getDisplay(), "icon/scant.png"));
 		btnScanOnTrigger_.setText("Scan On Trigger");
 
 		txtSupportedChips_ = new Text(this, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
@@ -616,8 +606,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnAuth_.setToolTipText("Scan Tags with Specified Passwords.");
-		btnAuth_.setImage(SWTResourceManager.getImage(UhfAppComposite.class,
-				"/jence/icon/key.png"));
+		btnAuth_.setImage( new Image(this.getDisplay(), "icon/key.png"));
 		btnAuth_.setText("Auth");
 		
 		btnClear = new Button(composite_4, SWT.NONE);
@@ -629,13 +618,13 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnClear.setToolTipText("Clears the Inventory table.");
-		btnClear.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
+		btnClear.setImage(new Image(this.getDisplay(), "icon/clean.png"));
 		btnClear.setText("Clear");
 		
 		btnMerge = new Button(composite_4, SWT.TOGGLE);
 		btnMerge.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnMerge.setToolTipText("Previous scan result will be merge with new scan result.");
-		btnMerge.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/merge.png"));
+		btnMerge.setImage(new Image(this.getDisplay(), "icon/merge.png"));
 		btnMerge.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -651,7 +640,7 @@ public class UhfAppComposite extends Composite {
 				UhfApp.driver_.setLog(btnLog.getSelection());
 			}
 		});
-		btnLog.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/log.png"));
+		btnLog.setImage(new Image(this.getDisplay(), "icon/log.png"));
 		btnLog.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnLog.setText("Log");
 		
@@ -773,8 +762,7 @@ public class UhfAppComposite extends Composite {
 
 		btnNdefRead_ = new Button(grpNdef, SWT.NONE);
 		btnNdefRead_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-		btnNdefRead_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/read.png"));
+		btnNdefRead_.setImage(new Image(this.getDisplay(), "icon/read.png"));
 		btnNdefRead_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -798,8 +786,7 @@ public class UhfAppComposite extends Composite {
 				}
 			}
 		});
-		btnNdefWrite_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/write.png"));
+		btnNdefWrite_.setImage(new Image(this.getDisplay(), "icon/write.png"));
 		btnNdefWrite_.setToolTipText("Writes an new NDEF record.");
 		btnNdefWrite_.setText("Write");
 
@@ -812,8 +799,7 @@ public class UhfAppComposite extends Composite {
 				clean();
 			}
 		});
-		btnNdefClean_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/clean.png"));
+		btnNdefClean_.setImage(new Image(this.getDisplay(), "icon/clean.png"));
 		btnNdefClean_
 				.setToolTipText("This feature is not currently implemented.");
 		btnNdefClean_.setText("Clean");
@@ -833,8 +819,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnAuthWrite_.setToolTipText("Change Password and Kill Password");
-		btnAuthWrite_.setImage(SWTResourceManager.getImage(
-				UhfAppComposite.class, "/jence/icon/key.png"));
+		btnAuthWrite_.setImage(new Image(this.getDisplay(), "icon/key.png"));
 		btnAuthWrite_.setText("Auth");
 		
 		btnExists = new Button(grpNdef, SWT.NONE);
@@ -856,7 +841,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnExists.setToolTipText("Check if this tag is in the inventory.");
-		btnExists.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/cardread.png"));
+		btnExists.setImage(new Image(this.getDisplay(), "icon/cardread.png"));
 		btnExists.setText("Exists");
 
 		Composite composite_10 = new Composite(composite_2, SWT.NONE);
@@ -1155,7 +1140,7 @@ public class UhfAppComposite extends Composite {
 				clearMessaging();
 			}
 		});
-		btnClearSetting_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
+		btnClearSetting_.setImage(new Image(this.getDisplay(), "icon/clean.png"));
 		btnClearSetting_.setText("Clear");
 		
 		Button btnSave = new Button(grpSaveYourOptions, SWT.NONE);
@@ -1165,7 +1150,7 @@ public class UhfAppComposite extends Composite {
 				saveMessagingSetting();
 			}
 		});
-		btnSave.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/save.png"));
+		btnSave.setImage(new Image(this.getDisplay(), "icon/save.png"));
 		btnSave.setText("Save");
 		
 		Button btnLoad = new Button(grpSaveYourOptions, SWT.NONE);
@@ -1175,7 +1160,7 @@ public class UhfAppComposite extends Composite {
 				loadMessagingSetting();
 			}
 		});
-		btnLoad.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/load.png"));
+		btnLoad.setImage(new Image(this.getDisplay(), "icon/load.png"));
 		btnLoad.setText("Load");
 		tabFolder.addSelectionListener(new SelectionListener() {
 
@@ -1254,27 +1239,24 @@ public class UhfAppComposite extends Composite {
 	private void checkVersion() {
 		try {
 			URL url = new URL(LATEST_VERSION_PAGE);
-			HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 			// avoid the annoying certificate error if it occurs.
 			con.setHostnameVerifier(new HostnameVerifier() {
 				@Override
 				public boolean verify(String arg0, SSLSession arg1) {
 					return true;
 				}
-			  });
+			});
 			InputStream stream = con.getInputStream();
 			Properties properties = new Properties();
 			properties.load(stream);
 			String version = properties.getProperty("J4210U");
 			if (version != null && version.compareTo(UhfApp.VERSION) > 0) {
-				if (UhfApp
-						.prompt(getShell(),
-								"New version "
-										+ version
-										+ " found. You can download the latest version by clicking the OK button.",
-								SWT.OK | SWT.CANCEL) == SWT.OK) {
-					java.awt.Desktop.getDesktop()
-							.browse(new URI(DOWNLOAD_PAGE));
+				if (UhfApp.prompt(getShell(),
+						"New version " + version
+								+ " found. You can download the latest version by clicking the OK button.",
+						SWT.OK | SWT.CANCEL) == SWT.OK) {
+					java.awt.Desktop.getDesktop().browse(new URI(DOWNLOAD_PAGE));
 				}
 			}
 			System.out.println(properties);
@@ -1307,13 +1289,11 @@ public class UhfAppComposite extends Composite {
 			clearMessaging();
 			return true;
 		} catch (Exception e) {
-			prompt(e.getMessage()
-					+ " Could not connect to this port. Try another port.",
-					SWT.ICON_WARNING);
+			prompt(e.getMessage() + " Could not connect to this port. Try another port.", SWT.ICON_WARNING);
 		}
 		return false;
 	}
-	
+
 	private boolean scan() {
 		if (!startMessenger())
 			return false;
@@ -1329,8 +1309,8 @@ public class UhfAppComposite extends Composite {
 				if (!ok) {
 					return false;
 				}
-			} while(--iterations > 0);
-		} catch(Throwable t) {
+			} while (--iterations > 0);
+		} catch (Throwable t) {
 			prompt(t.getLocalizedMessage(), SWT.ICON_WARNING);
 		} finally {
 			merge_ = ismerging;
@@ -1350,8 +1330,7 @@ public class UhfAppComposite extends Composite {
 				String filt = filter_.getText().trim();
 				if (off.length() > 0 && filt.length() > 0) {
 					int offset = Integer.parseInt(off);
-					byte[] hex = UhfApp.driver_.hex2bytes(filt,
-							filt.length() / 2);
+					byte[] hex = UhfApp.driver_.hex2bytes(filt, filt.length() / 2);
 					UhfApp.driver_.filter(offset, hex);
 					filter = true;
 					status("Filter is used during scan.");
@@ -1364,16 +1343,16 @@ public class UhfAppComposite extends Composite {
 				inventory_.clearAll();
 			}
 			int n = 0;
-			if (btnSingleTag_.getSelection()) 
+			if (btnSingleTag_.getSelection())
 				n = UhfApp.driver_.inventoryOne(); // single tag scan
 			else
 				n = UhfApp.driver_.inventory(filter);
-				
+
 			if (n == 0) {
 				status("No tags found.");
 				return false;
 			}
-			status(n+" Tags detected. Fetching tag details...");
+			status(n + " Tags detected. Fetching tag details...");
 
 			HashSet unique = new HashSet();
 			int nonunique = 0;
@@ -1389,27 +1368,25 @@ public class UhfAppComposite extends Composite {
 					// If only unique tags are needed, uncomment this line
 //					continue;
 				}
-				
+
 			}
 
 			inventory_.removeAll();
 			int count = 0;
 			Enumeration<String> keys = previousContent_.keys();
-			
+
 			while (keys.hasMoreElements()) {
-			//for (String key = previousContent.ge; i < previousContent.keys(); i++) {
-				//final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
-				//String hex = UhfApp.driver_.toHex(sr.EPC);
+				// for (String key = previousContent.ge; i < previousContent.keys(); i++) {
+				// final J4210U.ScanResult sr = UhfApp.driver_.getResult(i);
+				// String hex = UhfApp.driver_.toHex(sr.EPC);
 				String epc = keys.nextElement();
 				J4210U.ScanResult sr = previousContent_.get(epc);
-				
+
 				// System.out.println(sr);
 				count++;
-				TableItem item = new TableItem(inventory_, SWT.None
-						| SWT.FULL_SELECTION);
-				item.setText(new String[] { (count) + "",
-						epc, sr.EpcLength + "",
-						sr.Ant + "", sr.Count + "", sr.RSSI + "" });
+				TableItem item = new TableItem(inventory_, SWT.None | SWT.FULL_SELECTION);
+				item.setText(new String[] { (count) + "", epc, sr.EpcLength + "", sr.Ant + "", sr.Count + "",
+						sr.RSSI + "" });
 				item.setData(sr);
 				// if messaging is enabled, send the message now in a thread.
 				if (messenger_ != null) {
@@ -1420,36 +1397,39 @@ public class UhfAppComposite extends Composite {
 						e.printStackTrace();
 					}
 				}
-				status("Fetched Tag Info: "+count+" of "+n+"...");
+				status("Fetched Tag Info: " + count + " of " + n + "...");
 				updateGuiTasks();
 			}
-			status("Scan Completed. Tags Found: "+n+". Non-Unique: "+nonunique);
+			status("Scan Completed. Tags Found: " + n + ". Non-Unique: " + nonunique);
 		} catch (Exception e) {
 			prompt(e.getMessage(), SWT.ICON_WARNING | SWT.OK);
 		}
 		return true;
 	}
-	
+
 	private void updateGuiTasks() {
-		while(UhfApp.display_.readAndDispatch());
+		while (UhfApp.display_.readAndDispatch())
+			;
 	}
-	
+
 	private void scans() {
 		if (!startMessenger())
 			return;
-		while(btnScanServer_.getSelection()) {
+		while (btnScanServer_.getSelection()) {
 			scan();
 			updateGuiTasks();
 		}
 	}
-	
+
 	private boolean startMessenger() {
 		try {
 			messenger_ = new Messenger(getMessagingProperties());
 			return true;
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			UhfApp.prompt(getShell(), "You have incorrect Messenger Settings. "+e1.getLocalizedMessage()+"\n\nScan Aborted.", SWT.ABORT);
+			UhfApp.prompt(getShell(),
+					"You have incorrect Messenger Settings. " + e1.getLocalizedMessage() + "\n\nScan Aborted.",
+					SWT.ABORT);
 			return false;
 		}
 	}
@@ -1474,9 +1454,9 @@ public class UhfAppComposite extends Composite {
 			if (timer_ == null)
 				timer_ = new Timer();
 			btnScan_.setEnabled(false);
-			//btnScanOnTrigger_.setEnabled(false);
+			// btnScanOnTrigger_.setEnabled(false);
 			timer_.schedule(new TimerTask() {
-	
+
 				@Override
 				public void run() {
 					try {
@@ -1488,31 +1468,30 @@ public class UhfAppComposite extends Composite {
 						if (trigger == false) {
 							scanning_ = true;
 							/// System.out.println("Trigger Pressed.");
-							UhfAppComposite.this.getDisplay().syncExec(
-									new Runnable() {
-										@Override
-										public void run() {
-											UhfAppComposite.this.status("Trigger Pressed.");
-											scan();
-										}
-									});
+							UhfAppComposite.this.getDisplay().syncExec(new Runnable() {
+								@Override
+								public void run() {
+									UhfAppComposite.this.status("Trigger Pressed.");
+									scan();
+								}
+							});
 						} else {
 							syncExec(new Runnable() {
-										@Override
-										public void run() {
-											UhfAppComposite.this.status("Trigger Released.");
-										}
-									});
+								@Override
+								public void run() {
+									UhfAppComposite.this.status("Trigger Released.");
+								}
+							});
 						}
 						scanning_ = false;
 					} catch (Exception e) {
-						//e.printStackTrace();
+						// e.printStackTrace();
 					}
 				}
 			}, 0, 100);
 		}
 	}
-	
+
 	private void syncExec(final Runnable runnable) {
 		UhfAppComposite.this.getDisplay().syncExec(runnable);
 	}
@@ -1536,17 +1515,14 @@ public class UhfAppComposite extends Composite {
 			}
 			return true;
 		} catch (Exception e) {
-			prompt(e.getMessage()
-					+ " Please check if the device is attached to an USB port.",
-					SWT.ICON_WARNING);
+			prompt(e.getMessage() + " Please check if the device is attached to an USB port.", SWT.ICON_WARNING);
 		}
 		return false;
 	}
 
 	private boolean clean() {
 		try {
-			if (prompt(
-					"This operation will reset all the data in the card. Do you want to proceed?",
+			if (prompt("This operation will reset all the data in the card. Do you want to proceed?",
 					SWT.ICON_WARNING | SWT.OK | SWT.CANCEL) == SWT.CANCEL) {
 				return false;
 			}
@@ -1557,10 +1533,8 @@ public class UhfAppComposite extends Composite {
 		return false;
 	}
 
-	private void openAuthDialog(byte[] epc, byte[] password, byte[] killpass,
-			boolean enableWrite) {
-		Shell dialog = new Shell(this.getShell(), SWT.DIALOG_TRIM
-				| SWT.APPLICATION_MODAL);
+	private void openAuthDialog(byte[] epc, byte[] password, byte[] killpass, boolean enableWrite) {
+		Shell dialog = new Shell(this.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		AuthComposite composite = new AuthComposite(dialog, SWT.NONE);
 		composite.setEPC(epc, password, killpass, enableWrite);
 		dialog.setLayout(new GridLayout(1, true));
@@ -1580,7 +1554,7 @@ public class UhfAppComposite extends Composite {
 	private void loadMemory(ScanResult sr) {
 		int lastusrindex = 0;
 		try {
-			memory_.setData("epc",sr);
+			memory_.setData("epc", sr);
 			// delete all rows
 			for (int i = memory_.getItemCount() - 1; i <= 0; i--) {
 				// TableItem item = memory_.getItem(i);
@@ -1641,8 +1615,7 @@ public class UhfAppComposite extends Composite {
 					userrow = new TableItem(memory_, SWT.FULL_SELECTION);
 					final String label = "USER[" + i + ".." + (i + 8 - 1) + "]";
 					userrow.setText(0, label);
-					userrow.setBackground(SWTResourceManager
-							.getColor(SWT.COLOR_CYAN));
+					userrow.setBackground(SWTResourceManager.getColor(SWT.COLOR_CYAN));
 				}
 				byte[] word = new byte[2];
 				status("Reading User Memory address " + i);
@@ -1664,9 +1637,8 @@ public class UhfAppComposite extends Composite {
 			tabFolder.setSelection(1); // selects MEMORY folder
 		} catch (Exception e) {
 			try {
-				UhfApp.prompt(this.getShell(), e.getLocalizedMessage()
-						+ UhfApp.driver_.error(), SWT.Close
-						| SWT.ICON_INFORMATION);
+				UhfApp.prompt(this.getShell(), e.getLocalizedMessage() + UhfApp.driver_.error(),
+						SWT.Close | SWT.ICON_INFORMATION);
 				usrlen_.setText(lastusrindex * 2 + "");
 				usrlen2_.setText(lastusrindex * 16 + "");
 				createEditableTable(memory_);
@@ -1713,8 +1685,7 @@ public class UhfAppComposite extends Composite {
 					data[0] = (byte) ((d >> 8) & 0xFF);
 
 					int jj = (i - 2) * 8 + (j - 1);
-					syncstatus("Writing User Memory address " + jj + " = "
-							+ UhfApp.driver_.toHex(data));
+					syncstatus("Writing User Memory address " + jj + " = " + UhfApp.driver_.toHex(data));
 					UhfApp.driver_.writeWord(epc, data, jj);
 				}
 			}
@@ -1735,8 +1706,7 @@ public class UhfAppComposite extends Composite {
 
 				int n = (j - 1) * 2;
 				int jj = j - 1;
-				status("Writing EPC Word " + jj + " = "
-						+ UhfApp.driver_.toHex(data));
+				status("Writing EPC Word " + jj + " = " + UhfApp.driver_.toHex(data));
 				UhfApp.driver_.writeEpcWord(epc, data, jj);
 				epc[n] = data[0];
 				epc[n + 1] = data[1];
@@ -1758,37 +1728,34 @@ public class UhfAppComposite extends Composite {
 			}
 			status("Writing to Tag completed.");
 		} catch (Exception e) {
-			UhfApp.prompt(this.getShell(), e.getLocalizedMessage(), SWT.OK
-					| SWT.ICON_WARNING);
+			UhfApp.prompt(this.getShell(), e.getLocalizedMessage(), SWT.OK | SWT.ICON_WARNING);
 			return;
 		}
 	}
-	
+
 	private void getMemoryDetail() {
 		int selection = inventory_.getSelectionIndex();
 		if (selection >= 0) {
 			tabFolder.setSelection(1); // go to memory folder
 		} else {
-			UhfApp.prompt(
-					getShell(),
-					"You must select a row in the inventory result to get memory detail.",
+			UhfApp.prompt(getShell(), "You must select a row in the inventory result to get memory detail.",
 					SWT.OK | SWT.ICON_WARNING);
 			return;
 		}
 		TableItem item = inventory_.getItem(selection);
-		ScanResult sr = (ScanResult)item.getData();
+		ScanResult sr = (ScanResult) item.getData();
 
 		loadMemory(sr);
 	}
-	
+
 	private byte[] getLastEPC() throws Exception {
-		ScanResult sr = (ScanResult)memory_.getData("epc");
+		ScanResult sr = (ScanResult) memory_.getData("epc");
 		if (sr == null) {
 			throw new Exception("No EPC found.");
 		}
 		return sr.EPC;
 	}
-	
+
 	private void gpi() throws Exception {
 		boolean gpi1 = UhfApp.driver_.getGPInput(1);
 		Thread.sleep(20);
@@ -1800,85 +1767,86 @@ public class UhfAppComposite extends Composite {
 		btnGpi1.setSelection(gpi1);
 		btnGpi2.setSelection(gpi2);
 	}
-	
+
 	private void gpo() throws Exception {
 //		UhfApp.driver_.setGPOutput((byte)0x01);
 //		UhfApp.driver_.setGPOutput((byte)0x02);
-		
+
 		boolean gpo1 = btnGpo1.getSelection();
 		boolean gpo2 = btnGpo2.getSelection();
-		byte gpoVal = (gpo1) ? (byte)0x01 : (byte)0x00;
-		gpoVal |= (gpo2) ? (byte)0x02 : (byte)0x00;
+		byte gpoVal = (gpo1) ? (byte) 0x01 : (byte) 0x00;
+		gpoVal |= (gpo2) ? (byte) 0x02 : (byte) 0x00;
 		UhfApp.driver_.setGPOutput(gpoVal);
 	}
-	
+
 	private Properties getMessagingProperties() {
-        Properties properties = new Properties();
-		
+		Properties properties = new Properties();
+
 		properties.setProperty("socket.messaging", btnActivateJsonMessaging_.getSelection() + "");
 		properties.setProperty("socket.ip", textIP_.getText());
 		properties.setProperty("socket.port", textPort_.getText());
 
 		properties.setProperty("http.messaging", btnActivateHttpQuery_.getSelection() + "");
 		properties.setProperty("http.url", textHttpUrl_.getText());
-		
+
 		properties.setProperty("file.messaging", btnActivateWriteToFile_.getSelection() + "");
 		properties.setProperty("file.dir", textDirectory_.getText());
 		properties.setProperty("file.name", textFilename_.getText());
-		
+
 		return properties;
 	}
-	
+
 	private void saveMessagingSetting() {
 		FileDialog fd = new FileDialog(this.getShell(), SWT.SAVE);
-        fd.setText("Save");
-        fd.setFilterPath("./");
-        String[] filterExt = { "*.properties", "*.*" };
-        fd.setFilterExtensions(filterExt);
-        fd.setOverwrite(true);
-        String selected = fd.open();
-        if (selected == null || selected.trim().length() == 0) {
-        	UhfApp.prompt(getShell(), "Settings will not be saved. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
-        	return;
-        }
-        try {
+		fd.setText("Save");
+		fd.setFilterPath("./");
+		String[] filterExt = { "*.properties", "*.*" };
+		fd.setFilterExtensions(filterExt);
+		fd.setOverwrite(true);
+		String selected = fd.open();
+		if (selected == null || selected.trim().length() == 0) {
+			UhfApp.prompt(getShell(), "Settings will not be saved. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
+			return;
+		}
+		try {
 			Properties properties = getMessagingProperties();
-			properties.store(new FileOutputStream(new File(selected)), "# UhfApp Messaging Setting created on "+new Date());
-        } catch(Exception e) {
-        	e.printStackTrace();
+			properties.store(new FileOutputStream(new File(selected)),
+					"# UhfApp Messaging Setting created on " + new Date());
+		} catch (Exception e) {
+			e.printStackTrace();
 			UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.APPLICATION_MODAL);
-        }
+		}
 	}
-	
+
 	private void loadMessagingSetting() {
 		FileDialog fd = new FileDialog(this.getShell(), SWT.OPEN);
-        fd.setText("Open");
-        fd.setFilterPath("./");
-        String[] filterExt = { "*.properties", "*.*" };
-        fd.setFilterExtensions(filterExt);
-        String selected = fd.open();
-        if (selected == null) {
-        	UhfApp.prompt(getShell(), "No settings to load. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
-        	return;
-        }
-        try {
+		fd.setText("Open");
+		fd.setFilterPath("./");
+		String[] filterExt = { "*.properties", "*.*" };
+		fd.setFilterExtensions(filterExt);
+		String selected = fd.open();
+		if (selected == null) {
+			UhfApp.prompt(getShell(), "No settings to load. No filename provided.", SWT.ERROR_CANNOT_BE_ZERO);
+			return;
+		}
+		try {
 			InputStream is = new FileInputStream(new File(selected));
-	        Properties properties = new Properties();
+			Properties properties = new Properties();
 			properties.load(is);
-			
-			String value = properties.getProperty("socket.messaging","false");
+
+			String value = properties.getProperty("socket.messaging", "false");
 			btnActivateJsonMessaging_.setSelection(Boolean.parseBoolean(value));
 			textIP_.setText(properties.getProperty("socket.ip", ""));
 			textPort_.setText(properties.getProperty("socket.port", ""));
 
-			value = properties.getProperty("http.messaging","false");
+			value = properties.getProperty("http.messaging", "false");
 			btnActivateHttpQuery_.setSelection(Boolean.parseBoolean(value));
-			textHttpUrl_.setText(properties.getProperty("http.url",""));
+			textHttpUrl_.setText(properties.getProperty("http.url", ""));
 
-			value = properties.getProperty("file.messaging","false");
+			value = properties.getProperty("file.messaging", "false");
 			btnActivateWriteToFile_.setSelection(Boolean.parseBoolean(value));
 			textDirectory_.setText(properties.getProperty("file.dir", ""));
-			textFilename_.setText(properties.getProperty("file.name",""));
+			textFilename_.setText(properties.getProperty("file.name", ""));
 
 			if (messenger_ != null) {
 				messenger_.close();
@@ -1887,11 +1855,10 @@ public class UhfAppComposite extends Composite {
 			e.printStackTrace();
 			UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.APPLICATION_MODAL);
 		}
-    }
-	
+	}
+
 	private void clearMessaging() {
-		setClear(false,btnActivateJsonMessaging_, textIP_, textPort_, 
-				btnActivateHttpQuery_, textHttpUrl_, 
+		setClear(false, btnActivateJsonMessaging_, textIP_, textPort_, btnActivateHttpQuery_, textHttpUrl_,
 				btnActivateWriteToFile_, textDirectory_, textFilename_);
 	}
 }

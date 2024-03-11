@@ -1,16 +1,16 @@
 /**
  * MIT LICENSE
  * 
- * Copyright © 2021 Jence, Ejaz Jamil.
+ * Copyright (c) 2021 Jence, Ejaz Jamil.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
- * files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, 
+ * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, 
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
  * Software is furnished to do so, subject to the following conditions:
  * 
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * 
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
@@ -28,6 +28,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -224,8 +225,7 @@ public class AuthComposite extends Composite {
 		});
 
 		btnDefault_A = new Button(this, SWT.NONE);
-		btnDefault_A.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/default16.png"));
+		btnDefault_A.setImage(new Image(this.getDisplay(), "icon/default16.png"));
 		btnDefault_A.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -283,8 +283,7 @@ public class AuthComposite extends Composite {
 		});
 
 		btnDefault_B = new Button(this, SWT.NONE);
-		btnDefault_B.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/default16.png"));
+		btnDefault_B.setImage(new Image(this.getDisplay(), "icon/default16.png"));
 		btnDefault_B.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -309,8 +308,7 @@ public class AuthComposite extends Composite {
 				saveFile();
 			}
 		});
-		btnSave.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/save.png"));
+		btnSave.setImage(new Image(this.getDisplay(), "icon/save.png"));
 		btnSave.setText("Save");
 
 		btnLoad = new Button(composite, SWT.NONE);
@@ -326,8 +324,7 @@ public class AuthComposite extends Composite {
 				}
 			}
 		});
-		btnLoad.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/load.png"));
+		btnLoad.setImage(new Image(this.getDisplay(), "icon/load.png"));
 		btnLoad.setText("Load");
 
 		btnUse = new Button(composite, SWT.NONE);
@@ -339,8 +336,7 @@ public class AuthComposite extends Composite {
 			}
 		});
 		btnUse.setToolTipText("Use these keys for all subsequent read/write operations.");
-		btnUse.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/cardread.png"));
+		btnUse.setImage(new Image(this.getDisplay(), "icon/cardread.png"));
 		btnUse.setText("Use");
 
 		btnWrite = new Button(composite, SWT.NONE);
@@ -352,8 +348,7 @@ public class AuthComposite extends Composite {
 				writeAuth(false);
 			}
 		});
-		btnWrite.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/write.png"));
+		btnWrite.setImage(new Image(this.getDisplay(), "icon/write.png"));
 		btnWrite.setToolTipText("Write NDEF data.");
 		btnWrite.setText("Write");
 
@@ -368,8 +363,7 @@ public class AuthComposite extends Composite {
 				writeAuth(true);
 			}
 		});
-		btnDefaultKey.setImage(SWTResourceManager.getImage(AuthComposite.class,
-				"/jence/icon/default.png"));
+		btnDefaultKey.setImage(new Image(this.getDisplay(), "icon/default.png"));
 		btnDefaultKey.setText("Default");
 
 		label_4 = new Label(this, SWT.BORDER | SWT.SEPARATOR | SWT.HORIZONTAL);
