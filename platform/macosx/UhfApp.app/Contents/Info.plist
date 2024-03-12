@@ -33,7 +33,7 @@
 			<string>$APP_PACKAGE/Contents/MacOS/j4210u.jar</string>
 		</array>
 		<key>WorkingDirectory</key>
-		<string>$APP_PACKAGE/Contents/MacOS</string>
+		<string>.</string>
 		<key>StartOnMainThread</key>
 		<true/>
 	</dict>
