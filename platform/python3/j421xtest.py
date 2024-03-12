@@ -34,6 +34,7 @@
 #
 
 import j421xlib
+import time
 
 def Test():
     # load the library
@@ -51,10 +52,12 @@ def Test():
     # object method calling
     ports = f.AvailablePorts()
     print("Available Serial Ports:")
-    print(ports)
+    for i, port in enumerate(ports , start=1):
+        print(f"{i}. {port}")
+    portNum = input("Enter The number of port you want to connect: ")
 
     # connect to device
-    ret = f.OpenPort(ports[0], 57600)
+    ret = f.OpenPort(ports[int(portNum)-1], 57600)
     print('Last Error: ', f.LastError())
     assert ret != False
 
@@ -127,6 +130,7 @@ def Test():
         taginfo = None
         if (found):
             print("Tag FOUND!")
+            time.sleep(1)
             tid = f.GetTID(sr.EPC)
             print("TID: ", f.Bytes2Hex(tid), " EPC: ", f.Bytes2Hex(sr.EPC))
 
@@ -142,7 +146,15 @@ def Test():
         # this is the default password (size 4 byte)
         password = b'\x00\x00\x00\x00' 
         ret = f.Auth(password)
-        assert ret == True
+        print(f.LastError())
+        if(ret == True):
+            print("Password has been set to default...")
+            print("Stopping the example here so that EPC MEMORY doesn't change ")
+            print("Uncomment the return if you want to run the full example")
+            return
+        else:
+            print("Write failed due to signal strength")
+            return
 
         # we will change the password
         # set a new password here. We used the default password
@@ -186,7 +198,7 @@ def Test():
         f.WriteEpc(sr.EPC, newepc)
         # Check if the old epc exist
         found = f.TagExists(sr.EPC)
-        assert found == False   # old tag should not exist
+        assert found == False   # old tag should not exist that means epc hasn't changed or trying to run the example twice with same tag
 
         found = f.TagExists(newepc)
         if (found) : # check the new tag

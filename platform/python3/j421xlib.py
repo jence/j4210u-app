@@ -325,7 +325,15 @@ class J4210():
             self.lib = cdll.LoadLibrary('libj4210u.so')
         elif (platform.system() == 'Mac OS X'):
             self.lib = cdll.LoadLibrary('libj4210u.dylib')
+            print("MACOS x86_64 library Loaded...")
+        elif (platform.system() == "Darwin"):
+            self.lib = cdll.LoadLibrary('libj4210u.dylib')
+            print("MACOS Aarch64 library Loaded...")
+        else:
+            print("Your Platform is " + platform.system())
+            print("No library Found For your platform...")
         lib = self.lib
+
         return
 
     def getSupportedChips(self):
@@ -584,7 +592,7 @@ class J4210():
            :param (byte[]): 4 byte default password.
            :return (boolean): True, if successful, otherwise False.
         """
-        self.lib.Auth.argtypes = [c_char_p]
+        self.lib.Auth.argtypes = [c_char_p, c_char]
         self.lib.Auth.retypes = [c_char]
         ret = self.lib.Auth(password, len(password))
         return bool(ret)
