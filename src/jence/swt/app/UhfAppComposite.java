@@ -21,6 +21,7 @@ package jence.swt.app;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -43,13 +44,10 @@ import jence.jni.J4210U.TagType;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -57,6 +55,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -382,10 +381,9 @@ public class UhfAppComposite extends Composite {
 	public UhfAppComposite(Composite arg0, int arg1) {
 		super(arg0, arg1);
 		Composite composite = this;
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 1, 1));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		composite.setLayout(new GridLayout(3, false));
-		getShell().addListener(SWT.Close, new Listener(){
+		getShell().addListener(SWT.Close, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
 				try {
@@ -395,16 +393,15 @@ public class UhfAppComposite extends Composite {
 					// do nothing
 				}
 				e.doit = true;
-			}});
-
+			}
+		});
 
 		composite_1 = new Composite(this, SWT.NONE);
 		composite_1.setLayout(new GridLayout(8, false));
-		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 3, 1);
+		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1);
 		gd_composite_1.heightHint = 69;
 		composite_1.setLayoutData(gd_composite_1);
-		
+
 		btnHelp = new Button(composite_1, SWT.NONE);
 		btnHelp.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnHelp.addSelectionListener(new SelectionAdapter() {
@@ -413,17 +410,18 @@ public class UhfAppComposite extends Composite {
 				HelpDialog.show(UhfAppComposite.this.getDisplay());
 			}
 		});
-		btnHelp.setImage( new Image(this.getDisplay(), "icon/help.png"));
+		btnHelp.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/help.png"));
 		btnHelp.setText("Help");
-		
-		final Image usbImg = new Image(this.getDisplay(), "icon/usb.png");
+
 		composite_7 = new Composite(composite_1, SWT.NONE);
 		GridData gd_composite_7 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_composite_7.widthHint = 155;
 		composite_7.setLayoutData(gd_composite_7);
 		composite_7.setLayout(new GridLayout(2, false));
-				Label lblPort = new Label(composite_7, SWT.NONE);
-				lblPort.setText("Port");
+
+		Label lblPort = new Label(composite_7, SWT.NONE);
+		lblPort.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/usb.png"));
+		lblPort.setText("Port");
 
 		comboPorts_ = new Combo(composite_7, SWT.READ_ONLY);
 		comboPorts_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -431,19 +429,19 @@ public class UhfAppComposite extends Composite {
 			comboPorts_.add(UhfApp.LAST_USE_SERIAL_PORT);
 			comboPorts_.setText(UhfApp.LAST_USE_SERIAL_PORT);
 		}
-		
+
 		lblBaud = new Label(composite_7, SWT.NONE);
 		lblBaud.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblBaud.setText("Baud");
-		
+
 		comboBaudrate_ = new Combo(composite_7, SWT.READ_ONLY);
-		comboBaudrate_.setItems(new String[] {"9600", "19200", "38400", "57600", "115200"});
+		comboBaudrate_.setItems(new String[] { "9600", "19200", "38400", "57600", "115200" });
 		comboBaudrate_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		comboBaudrate_.select(3);
 
 		btnRefresh_ = new Button(composite_1, SWT.NONE);
 		btnRefresh_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
-		btnRefresh_.setImage(usbImg);
+		btnRefresh_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/usb.png"));
 		btnRefresh_.setToolTipText("Refresh available serial ports.");
 		btnRefresh_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -452,17 +450,16 @@ public class UhfAppComposite extends Composite {
 					btnConnect_.setEnabled(true);
 					status("Completed listing available ports.");
 				} else {
-					
+
 				}
 			}
 		});
 		btnRefresh_.setText("Refresh");
-	
 
 		btnConnect_ = new Button(composite_1, SWT.NONE);
 		btnConnect_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnConnect_.setToolTipText("Connect to Device.");
-		btnConnect_.setImage( new Image(this.getDisplay(), "icon/connect.png"));
+		btnConnect_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/connect.png"));
 		btnConnect_.setEnabled(false);
 		btnConnect_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -480,7 +477,7 @@ public class UhfAppComposite extends Composite {
 		btnDisconnect_ = new Button(composite_1, SWT.NONE);
 		btnDisconnect_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnDisconnect_.setToolTipText("Disconnect Device.");
-		btnDisconnect_.setImage(new Image(this.getDisplay(), "icon/disconnect.png"));
+		btnDisconnect_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/disconnect.png"));
 		btnDisconnect_.setEnabled(false);
 		btnDisconnect_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -499,13 +496,13 @@ public class UhfAppComposite extends Composite {
 		btnScan_ = new Button(composite_1, SWT.NONE);
 		btnScan_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnScan_.setToolTipText("Scan Tags.");
-		btnScan_.setImage(new Image(this.getDisplay(), "icon/scan.png"));
+		btnScan_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/scan.png"));
 		btnScan_.setEnabled(false);
 		btnScan_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				monitorStop();
-				
+
 				setEnabled(false, btnScanServer_);
 				if (scan()) {
 					// setEnabled(true,);
@@ -514,7 +511,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnScan_.setText("Scan");
-		
+
 		btnScanServer_ = new Button(composite_1, SWT.TOGGLE);
 		btnScanServer_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -527,7 +524,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnScanServer_.setEnabled(false);
-		btnScanServer_.setImage(new Image(this.getDisplay(), "icon/scans.png"));
+		btnScanServer_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/scans.png"));
 		btnScanServer_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnScanServer_.setText("Scan Server");
 
@@ -542,12 +539,11 @@ public class UhfAppComposite extends Composite {
 				scant();
 			}
 		});
-		btnScanOnTrigger_.setImage(new Image(this.getDisplay(), "icon/scant.png"));
+		btnScanOnTrigger_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/scant.png"));
 		btnScanOnTrigger_.setText("Scan On Trigger");
 
 		txtSupportedChips_ = new Text(this, SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
-		txtSupportedChips_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
-				false, false, 3, 1));
+		txtSupportedChips_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < AUTODETECTED_CHIPS.length; i++) {
 			if (i > 0)
@@ -559,10 +555,9 @@ public class UhfAppComposite extends Composite {
 		tabFolder = new TabFolder(this, SWT.NONE);
 		tabFolder.setEnabled(false);
 		tabFolder.setSelection(0);
-		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3,
-				1));
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
-		tabFolder.addFocusListener(new FocusListener(){
+		tabFolder.addFocusListener(new FocusListener() {
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
@@ -576,8 +571,9 @@ public class UhfAppComposite extends Composite {
 				if (gpioTimer_ != null) {
 					monitor();
 				}
-				
-			}});
+
+			}
+		});
 
 		tbtmRaw = new TabItem(tabFolder, SWT.NONE);
 		tbtmRaw.setText("INVENTORY");
@@ -588,8 +584,7 @@ public class UhfAppComposite extends Composite {
 
 		composite_4 = new Composite(composite_3, SWT.NONE);
 		composite_4.setLayout(new GridLayout(7, false));
-		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
-				3, 1));
+		composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 
 		btnAuth_ = new Button(composite_4, SWT.NONE);
 		btnAuth_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -606,9 +601,9 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnAuth_.setToolTipText("Scan Tags with Specified Passwords.");
-		btnAuth_.setImage( new Image(this.getDisplay(), "icon/key.png"));
+		btnAuth_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/key.png"));
 		btnAuth_.setText("Auth");
-		
+
 		btnClear = new Button(composite_4, SWT.NONE);
 		btnClear.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnClear.addSelectionListener(new SelectionAdapter() {
@@ -617,14 +612,14 @@ public class UhfAppComposite extends Composite {
 				inventory_.removeAll();
 			}
 		});
-		btnClear.setToolTipText("Clears the Inventory table.");
-		btnClear.setImage(new Image(this.getDisplay(), "icon/clean.png"));
+		btnClear.setToolTipText("Clears the Invent	ory table.");
+		btnClear.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
 		btnClear.setText("Clear");
-		
+
 		btnMerge = new Button(composite_4, SWT.TOGGLE);
 		btnMerge.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnMerge.setToolTipText("Previous scan result will be merge with new scan result.");
-		btnMerge.setImage(new Image(this.getDisplay(), "icon/merge.png"));
+		btnMerge.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/merge.png"));
 		btnMerge.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -632,7 +627,7 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnMerge.setText("Merge");
-		
+
 		btnLog = new Button(composite_4, SWT.TOGGLE);
 		btnLog.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -640,19 +635,19 @@ public class UhfAppComposite extends Composite {
 				UhfApp.driver_.setLog(btnLog.getSelection());
 			}
 		});
-		btnLog.setImage(new Image(this.getDisplay(), "icon/log.png"));
+		btnLog.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/log.png"));
 		btnLog.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 		btnLog.setText("Log");
-		
+
 		grpMode = new Group(composite_4, SWT.NONE);
 		grpMode.setText("Scan Mode");
 		grpMode.setLayout(new GridLayout(1, false));
-		
+
 		btnSingleTag_ = new Button(grpMode, SWT.CHECK);
-		btnSingleTag_.setToolTipText("If you have large number of tags near the reader, selecting this " +
-				"option will select a single tag that has the highest signal strength.");
+		btnSingleTag_.setToolTipText("If you have large number of tags near the reader, selecting this "
+				+ "option will select a single tag that has the highest signal strength.");
 		btnSingleTag_.setText("Single Tag");
-		btnSingleTag_.addSelectionListener(new SelectionListener(){
+		btnSingleTag_.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
@@ -661,16 +656,19 @@ public class UhfAppComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if (btnSingleTag_.getSelection())
-					UhfApp.prompt(UhfAppComposite.this.getShell(), "This feature is experimental.\n\nWhen Scan button is pressed, " +
-							"only one tag is selected that the reader receives first. This does not mean that the tag is the " +
-							"closest. Dont use this option to find the nearest tag. Instead, you can use RSSI with Transmit " +
-							"Power to determine the nearest tag.", SWT.ICON_INFORMATION);
-			}});
-		
+					UhfApp.prompt(UhfAppComposite.this.getShell(),
+							"This feature is experimental.\n\nWhen Scan button is pressed, "
+									+ "only one tag is selected that the reader receives first. This does not mean that the tag is the "
+									+ "closest. Dont use this option to find the nearest tag. Instead, you can use RSSI with Transmit "
+									+ "Power to determine the nearest tag.",
+							SWT.ICON_INFORMATION);
+			}
+		});
+
 		grpIterationsPerScan = new Group(composite_4, SWT.NONE);
 		grpIterationsPerScan.setText("Iterations per Scan");
 		grpIterationsPerScan.setLayout(new GridLayout(1, false));
-		
+
 		comboIterations_ = new Spinner(grpIterationsPerScan, SWT.BORDER);
 		comboIterations_.setToolTipText("Sets the number of internal scans done per scan button press. Default is 1.");
 		comboIterations_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -678,8 +676,7 @@ public class UhfAppComposite extends Composite {
 
 		grpFilter = new Group(composite_4, SWT.NONE);
 		grpFilter.setLayout(new GridLayout(5, false));
-		grpFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		grpFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpFilter.setText("Filter");
 
 		btnUseFilter = new Button(grpFilter, SWT.CHECK);
@@ -697,8 +694,7 @@ public class UhfAppComposite extends Composite {
 		lblNewLabel_2.setText("Data");
 
 		filter_ = new Text(grpFilter, SWT.BORDER);
-		filter_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		filter_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		UhfApp.hexKeyListener(filter_);
 
 		inventory_ = new Table(composite_3, SWT.BORDER | SWT.FULL_SELECTION);
@@ -753,8 +749,7 @@ public class UhfAppComposite extends Composite {
 		composite_2.setLayout(new GridLayout(1, false));
 
 		grpNdef = new Group(composite_2, SWT.NONE);
-		GridData gd_grpNdef = new GridData(SWT.FILL, SWT.CENTER, false, false,
-				1, 1);
+		GridData gd_grpNdef = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		gd_grpNdef.heightHint = 73;
 		grpNdef.setLayoutData(gd_grpNdef);
 		grpNdef.setText("Operations");
@@ -762,7 +757,7 @@ public class UhfAppComposite extends Composite {
 
 		btnNdefRead_ = new Button(grpNdef, SWT.NONE);
 		btnNdefRead_.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
-		btnNdefRead_.setImage(new Image(this.getDisplay(), "icon/read.png"));
+		btnNdefRead_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/read.png"));
 		btnNdefRead_.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -786,7 +781,7 @@ public class UhfAppComposite extends Composite {
 				}
 			}
 		});
-		btnNdefWrite_.setImage(new Image(this.getDisplay(), "icon/write.png"));
+		btnNdefWrite_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/write.png"));
 		btnNdefWrite_.setToolTipText("Writes an new NDEF record.");
 		btnNdefWrite_.setText("Write");
 
@@ -799,9 +794,8 @@ public class UhfAppComposite extends Composite {
 				clean();
 			}
 		});
-		btnNdefClean_.setImage(new Image(this.getDisplay(), "icon/clean.png"));
-		btnNdefClean_
-				.setToolTipText("This feature is not currently implemented.");
+		btnNdefClean_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
+		btnNdefClean_.setToolTipText("This feature is not currently implemented.");
 		btnNdefClean_.setText("Clean");
 
 		btnAuthWrite_ = new Button(grpNdef, SWT.NONE);
@@ -819,9 +813,9 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnAuthWrite_.setToolTipText("Change Password and Kill Password");
-		btnAuthWrite_.setImage(new Image(this.getDisplay(), "icon/key.png"));
+		btnAuthWrite_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/key.png"));
 		btnAuthWrite_.setText("Auth");
-		
+
 		btnExists = new Button(grpNdef, SWT.NONE);
 		btnExists.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 		btnExists.addSelectionListener(new SelectionAdapter() {
@@ -841,12 +835,11 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnExists.setToolTipText("Check if this tag is in the inventory.");
-		btnExists.setImage(new Image(this.getDisplay(), "icon/cardread.png"));
+		btnExists.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/cardread.png"));
 		btnExists.setText("Exists");
 
 		Composite composite_10 = new Composite(composite_2, SWT.NONE);
-		composite_10.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 1, 1));
+		composite_10.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		composite_10.setLayout(new GridLayout(10, false));
 
 		lblNewLabel = new Label(composite_10, SWT.NONE);
@@ -854,8 +847,7 @@ public class UhfAppComposite extends Composite {
 		lblNewLabel.setText("Chip Type");
 
 		chip_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
-		chip_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3,
-				1));
+		chip_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		chip_.setSize(212, 21);
 		chip_.setToolTipText("Type of detected tag.");
 
@@ -863,15 +855,13 @@ public class UhfAppComposite extends Composite {
 		lblUid.setText("Total Memory");
 
 		total_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
-		total_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
-				1, 1));
+		total_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		total_.setToolTipText("Total Memory in Byte");
 
 		total2_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		total2_.setToolTipText("Total Memory in Bits");
 		total2_.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		total2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		total2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		lblNdef = new Label(composite_10, SWT.NONE);
 		lblNdef.setText("PWD Size");
@@ -882,22 +872,19 @@ public class UhfAppComposite extends Composite {
 		pwdlen2_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		pwdlen2_.setToolTipText("Password Length in Bits");
 		pwdlen2_.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		pwdlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		pwdlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		lblAuth = new Label(composite_10, SWT.NONE);
 		lblAuth.setText("EPC Size");
 
 		epclen_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		epclen_.setToolTipText("EPC Length in Byte");
-		epclen_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
-				2, 1));
+		epclen_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 
 		epclen2_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		epclen2_.setToolTipText("EPC Length in Bits");
 		epclen2_.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		epclen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		epclen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		lblBlocks = new Label(composite_10, SWT.NONE);
 		lblBlocks.setText("TID Size");
@@ -908,8 +895,7 @@ public class UhfAppComposite extends Composite {
 		tidlen2_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		tidlen2_.setToolTipText("TID Length in Bits");
 		tidlen2_.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		tidlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		tidlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		lblBlockSizebyte = new Label(composite_10, SWT.NONE);
 		lblBlockSizebyte.setText("USER Size");
@@ -920,8 +906,7 @@ public class UhfAppComposite extends Composite {
 		usrlen2_ = new Text(composite_10, SWT.BORDER | SWT.READ_ONLY);
 		usrlen2_.setToolTipText("User Memory Size in Bits");
 		usrlen2_.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		usrlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		usrlen2_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		memory_ = new Table(composite_2, SWT.BORDER);
 		memory_.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -969,8 +954,7 @@ public class UhfAppComposite extends Composite {
 		tableItem.setText("EPC");
 
 		tableItem_1 = new TableItem(memory_, SWT.NONE);
-		tableItem_1.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		tableItem_1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		tableItem_1.setText("TID");
 
 		tbtmEmulate = new TabItem(tabFolder, SWT.NONE);
@@ -985,11 +969,11 @@ public class UhfAppComposite extends Composite {
 		tbtmGpio.setControl(composite_5);
 		composite_5.setLayout(new GridLayout(3, false));
 		new Label(composite_5, SWT.NONE);
-		
+
 		grpGpOutput = new Group(composite_5, SWT.NONE);
 		grpGpOutput.setText("GP Output");
 		grpGpOutput.setLayout(new GridLayout(2, false));
-		
+
 		btnSetGpOutput = new Button(grpGpOutput, SWT.NONE);
 		btnSetGpOutput.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnSetGpOutput.addSelectionListener(new SelectionAdapter() {
@@ -1003,10 +987,10 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnSetGpOutput.setText("Set GP Output");
-		
+
 		btnGpo2 = new Button(grpGpOutput, SWT.CHECK);
 		btnGpo2.setText("GPO2");
-		
+
 		btnGpo1 = new Button(grpGpOutput, SWT.CHECK);
 		btnGpo1.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -1014,125 +998,127 @@ public class UhfAppComposite extends Composite {
 			}
 		});
 		btnGpo1.setText("GPO1");
-		
+
 		grpGpInput = new Group(composite_5, SWT.NONE);
 		grpGpInput.setText("GP Input");
 		grpGpInput.setLayout(new GridLayout(2, false));
-				
-						btnGetGpInput = new Button(grpGpInput, SWT.NONE);
-						btnGetGpInput.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent arg0) {
-								try {
-									gpi();
-								} catch (Exception e) {
-									UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
-								}
-							}
-						});
-						btnGetGpInput.setText("Get GP Input");
-						
-						btnMonitor_ = new Button(grpGpInput, SWT.NONE);
-						btnMonitor_.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent arg0) {
-								monitor();
-							}
-						});
-						btnMonitor_.setToolTipText("Monitor the input and display status at real time.");
-						btnMonitor_.setText("Monitor Input");
-						
-						btnGpi2 = new Button(grpGpInput, SWT.CHECK);
-						btnGpi2.setText("GPI2");
-						
-						btnGpi1 = new Button(grpGpInput, SWT.CHECK);
-						btnGpi1.setText("GPI1");
-		
+
+		btnGetGpInput = new Button(grpGpInput, SWT.NONE);
+		btnGetGpInput.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				try {
+					gpi();
+				} catch (Exception e) {
+					UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(), SWT.ERROR);
+				}
+			}
+		});
+		btnGetGpInput.setText("Get GP Input");
+
+		btnMonitor_ = new Button(grpGpInput, SWT.NONE);
+		btnMonitor_.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				monitor();
+			}
+		});
+		btnMonitor_.setToolTipText("Monitor the input and display status at real time.");
+		btnMonitor_.setText("Monitor Input");
+
+		btnGpi2 = new Button(grpGpInput, SWT.CHECK);
+		btnGpi2.setText("GPI2");
+
+		btnGpi1 = new Button(grpGpInput, SWT.CHECK);
+		btnGpi1.setText("GPI1");
+
 		tbtmMessaging = new TabItem(tabFolder, SWT.NONE);
 		tbtmMessaging.setText("Messaging");
-		
+
 		composite_8 = new Composite(tabFolder, SWT.NONE);
 		tbtmMessaging.setControl(composite_8);
 		composite_8.setLayout(new GridLayout(1, false));
-		
+
 		lblThisTabIs = new Label(composite_8, SWT.NONE);
 		lblThisTabIs.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		lblThisTabIs.setText("When a tag is detected, its EPC and other relevent information can be sent to one of the following targets:");
-		
+		lblThisTabIs.setText(
+				"When a tag is detected, its EPC and other relevent information can be sent to one of the following targets:");
+
 		grpTargets = new Group(composite_8, SWT.NONE);
 		grpTargets.setLayout(new GridLayout(4, false));
 		grpTargets.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpTargets.setText("Send JSON message to a remote socket with port.");
-		
+
 		btnActivateJsonMessaging_ = new Button(grpTargets, SWT.CHECK);
 		btnActivateJsonMessaging_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnActivateJsonMessaging_.setText("Activate This Option");
 		new Label(grpTargets, SWT.NONE);
 		new Label(grpTargets, SWT.NONE);
-		
+
 		Label lblIpOrDomain = new Label(grpTargets, SWT.NONE);
 		lblIpOrDomain.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblIpOrDomain.setText("IP or Domain");
-		
+
 		textIP_ = new Text(grpTargets, SWT.BORDER);
 		textIP_.setToolTipText("Provide a server IP that accepts this message.");
 		textIP_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Label lblPort_1 = new Label(grpTargets, SWT.NONE);
 		lblPort_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPort_1.setText("Port");
-		
+
 		textPort_ = new Text(grpTargets, SWT.BORDER);
-		textPort_.setToolTipText("Provide the listening port of the server. Port number must be an integer under 65535");
+		textPort_
+				.setToolTipText("Provide the listening port of the server. Port number must be an integer under 65535");
 		textPort_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Group grpSendToHtpp = new Group(composite_8, SWT.NONE);
 		grpSendToHtpp.setLayout(new GridLayout(2, false));
 		grpSendToHtpp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpSendToHtpp.setText("Send to HTPP url as query string");
-		
+
 		btnActivateHttpQuery_ = new Button(grpSendToHtpp, SWT.CHECK);
 		btnActivateHttpQuery_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnActivateHttpQuery_.setText("Activate This Option");
-		
+
 		Label lblHttpsUrl = new Label(grpSendToHtpp, SWT.NONE);
 		lblHttpsUrl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblHttpsUrl.setText("Http(s) URL:");
-		
+
 		textHttpUrl_ = new Text(grpSendToHtpp, SWT.BORDER);
 		textHttpUrl_.setToolTipText("Provide a valid http url which accepts this query.");
 		textHttpUrl_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Group grpWriteToDatabase = new Group(composite_8, SWT.NONE);
 		grpWriteToDatabase.setLayout(new GridLayout(4, false));
 		grpWriteToDatabase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpWriteToDatabase.setText("Write to a File:");
-		
+
 		btnActivateWriteToFile_ = new Button(grpWriteToDatabase, SWT.CHECK);
 		btnActivateWriteToFile_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1));
 		btnActivateWriteToFile_.setText("Activate This Option (file extension will be .json)");
-		
+
 		Label lblDatabaseHost = new Label(grpWriteToDatabase, SWT.NONE);
 		lblDatabaseHost.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDatabaseHost.setText("Directory");
-		
+
 		textDirectory_ = new Text(grpWriteToDatabase, SWT.BORDER);
 		textDirectory_.setToolTipText("Leave this blank if you want to save in current directory.");
 		textDirectory_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Label lblDatabasePort = new Label(grpWriteToDatabase, SWT.NONE);
 		lblDatabasePort.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblDatabasePort.setText("Filename");
-		
+
 		textFilename_ = new Text(grpWriteToDatabase, SWT.BORDER);
 		textFilename_.setToolTipText("Leave this field if you like to save in j4210u.json file.");
 		textFilename_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		
+
 		Group grpSaveYourOptions = new Group(composite_8, SWT.NONE);
 		grpSaveYourOptions.setLayout(new GridLayout(3, false));
 		grpSaveYourOptions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		grpSaveYourOptions.setText("Save or Load your these settings for later");
-		
+
 		btnClearSetting_ = new Button(grpSaveYourOptions, SWT.NONE);
 		btnClearSetting_.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -1140,9 +1126,9 @@ public class UhfAppComposite extends Composite {
 				clearMessaging();
 			}
 		});
-		btnClearSetting_.setImage(new Image(this.getDisplay(), "icon/clean.png"));
+		btnClearSetting_.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/clean.png"));
 		btnClearSetting_.setText("Clear");
-		
+
 		Button btnSave = new Button(grpSaveYourOptions, SWT.NONE);
 		btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -1150,9 +1136,9 @@ public class UhfAppComposite extends Composite {
 				saveMessagingSetting();
 			}
 		});
-		btnSave.setImage(new Image(this.getDisplay(), "icon/save.png"));
+		btnSave.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/save.png"));
 		btnSave.setText("Save");
-		
+
 		Button btnLoad = new Button(grpSaveYourOptions, SWT.NONE);
 		btnLoad.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -1160,7 +1146,7 @@ public class UhfAppComposite extends Composite {
 				loadMessagingSetting();
 			}
 		});
-		btnLoad.setImage(new Image(this.getDisplay(), "icon/load.png"));
+		btnLoad.setImage(SWTResourceManager.getImage(UhfAppComposite.class, "/jence/icon/load.png"));
 		btnLoad.setText("Load");
 		tabFolder.addSelectionListener(new SelectionListener() {
 
@@ -1177,23 +1163,20 @@ public class UhfAppComposite extends Composite {
 					settings();
 				} catch (Exception e) {
 					status("");
-					UhfApp.prompt(UhfAppComposite.this.getShell(),
-							e.getLocalizedMessage(), SWT.Close
-									| SWT.ICON_WARNING);
+					UhfApp.prompt(UhfAppComposite.this.getShell(), e.getLocalizedMessage(),
+							SWT.Close | SWT.ICON_WARNING);
 				}
 			}
 		});
 
 		composite_6 = new Composite(this, SWT.NONE);
-		composite_6.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 3, 1));
+		composite_6.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		composite_6.setLayout(new GridLayout(6, false));
 
 		lblStatus_ = new Label(composite_6, SWT.NONE);
-		lblStatus_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 2, 1));
+		lblStatus_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		lblStatus_.setSize(0, 15);
-		
+
 		btnDebug = new Button(composite_6, SWT.CHECK);
 		btnDebug.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -1201,40 +1184,38 @@ public class UhfAppComposite extends Composite {
 				try {
 					UhfApp.driver_.SetDebug(btnDebug.getSelection());
 				} catch (Exception e) {
-					//e.printStackTrace();
+					// e.printStackTrace();
 					UhfApp.prompt(getShell(), e.getLocalizedMessage(), SWT.ERROR);
 				}
 			}
 		});
 		btnDebug.setText("Debug");
-		
+
 		lblLibraryVersion = new Label(composite_6, SWT.NONE);
 		lblLibraryVersion.setText("Library Version");
-		
+
 		lblLibVersion_ = new Label(composite_6, SWT.NONE);
 		String v = UhfApp.driver_.getVersion();
 		lblLibVersion_.setText(v);
-		
 
 		Label lblNewLabel_1 = new Label(composite_6, SWT.NONE);
-		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
+		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblNewLabel_1.setBounds(0, 0, 55, 15);
 		lblNewLabel_1.setText("| Application Version: " + UhfApp.VERSION);
 
 		// this.pack();
 		checkVersion();
 		this.getShell().addListener(SWT.Close, new Listener() {
-		      public void handleEvent(Event event) {
-		        event.doit = true;
-		        try {
+			public void handleEvent(Event event) {
+				event.doit = true;
+				try {
 					UhfApp.driver_.close();
 				} catch (Exception e) {
 				}
-		      }
-		    });
+			}
+		});
 		this.getShell().pack();
-		}
+	}
 
 	private void checkVersion() {
 		try {
@@ -1387,18 +1368,18 @@ public class UhfAppComposite extends Composite {
 				TableItem item = new TableItem(inventory_, SWT.None | SWT.FULL_SELECTION);
 				item.setText(new String[] { (count) + "", epc, sr.EpcLength + "", sr.Ant + "", sr.Count + "",
 						sr.RSSI + "" });
-				item.setData(sr);
+
 				// if messaging is enabled, send the message now in a thread.
-				if (messenger_ != null) {
-					try {
+//				if (messenger_ != null) {
+//					try {
 						final String json = sr.toJson();
 						messenger_.sendMessage(json);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				status("Fetched Tag Info: " + count + " of " + n + "...");
-				updateGuiTasks();
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//				status("Fetched Tag Info: " + count + " of " + n + "...");
+//				updateGuiTasks();
 			}
 			status("Scan Completed. Tags Found: " + n + ". Non-Unique: " + nonunique);
 		} catch (Exception e) {

@@ -1,33 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project j4210u-driver">
-    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-    <!--ANT 1.7 is required             
-                               -->
-    <target name="clean">
-        <delete dir="bin" failonerror="false"/>
-    	<delete file="j4210u.jar" failonerror="false" />
-    </target>
-
-    <target name="init">
-        <mkdir dir="bin"/>
-    </target>
-
-    <target name="compile">
-        <javac srcdir="../../src" destdir="bin" includeantruntime="false" encoding="UTF-8">
-            <classpath>
-                <pathelement location="lib/swt.jar"/>
-            </classpath>
-        </javac>
-    </target>
-
+<project default="create_run_jar" name="Create Runnable Jar for Project j4210u-app-win64(dev) with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
+    <!--ANT 1.7 is required-->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="D:/WORK/workspace"/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
     <target name="create_run_jar">
-        <jar destfile="j4210u.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/j4210u.jar">
             <manifest>
-                <attribute name="Main-Class" value="jence.swt.app.UhfApp"/>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="jence.swing.app.UhfApp"/>
                 <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ swt.jar"/>
             </manifest>
-            <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/swt.jar"/>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="${dir.jarfile}/bin"/>
+            <zipfileset dir="${dir.jarfile}/lib" includes="swt.jar"/>
         </jar>
     </target>
 </project>

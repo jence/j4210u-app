@@ -323,7 +323,7 @@ class J4210():
             self.lib = cdll.LoadLibrary(dllpath)
         elif (platform.system() == 'Linux'):
             self.lib = cdll.LoadLibrary('libj4210u.so')
-        elif (platform.system() == 'Mac OS X'):
+        elif (platform.system() == 'Mac OS X' or platform.system() == 'Darwin'):
             self.lib = cdll.LoadLibrary('libj4210u.dylib')
             print("MACOS x86_64 library Loaded...")
         elif (platform.system() == "Darwin"):
@@ -383,8 +383,8 @@ class J4210():
            38400, 57600 and 115200.
            :return: True, if connected. Otherwise False.
         """
-        self.lib.AvailablePorts.argtypes = [c_char_p, c_uint]
-        self.lib.AvailablePorts.retypes = [c_char]
+        self.lib.OpenComPort.argtypes = [c_char_p, c_uint]
+        self.lib.OpenComPort.retypes = [c_char]
         arg = bytes(port,"ascii")
         print('arg=', arg, ', baud=', baud)
         ret = self.lib.OpenComPort(arg, int(baud))

@@ -41,8 +41,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.graphics.Image;
-
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class UhfApp {
 	
@@ -78,9 +77,6 @@ public class UhfApp {
 		app_.setSize(1024, 768);
 		app_.setText("Jence Uhf App");
 		app_.setLayout(new GridLayout());
-        Image icon = new Image(display_, "UhfApp32.ico");
-        app_.setImage(icon);
-
 		
 		Composite composite = new UhfAppComposite(app_, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

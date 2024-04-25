@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 
+
 /**
  * This is the main class that connects to the device driver and 
  * performs all operations. 
@@ -148,6 +149,7 @@ public class J4210U {
 		public int Count;
 		public byte EpcLength;
 		public byte[] EPC = new byte[12];
+
 		
 		public byte[] toByteArray() {
 			ByteBuffer bb = ByteBuffer.allocate(size());
@@ -174,6 +176,16 @@ public class J4210U {
 		}
 		
 		public ScanResult(){}
+	    public ScanResult(byte Ant, byte RSSI, int Count, byte EpcLength, byte[] EPC) {
+	        this.Ant = Ant;
+	        this.RSSI = RSSI;
+	        this.Count = Count;
+	        this.EpcLength = EpcLength;
+	        System.arraycopy(EPC, 0, this.EPC, 0, Math.min(EPC.length, this.EPC.length));
+	    }
+
+		
+
 		
 		public static int size() {
 			return 1+1+1+1+12;
@@ -186,15 +198,15 @@ public class J4210U {
 		public String toJson() {
 			OffsetDateTime now = OffsetDateTime.now();
 			DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
 			return "{" +
-					"\"Ant\":"+Ant+", " +
-					"\"RSSI\":"+RSSI+", " +
-					"\"Count\":"+Count+", " +
-					"\"EPCLength\":"+EpcLength+", " +
+					"\"Ant\":"+Ant+"," +
+					"\"RSSI\":"+RSSI+"," +
+					"\"Count\":"+Count+"," +
+					"\"EPCLength\":"+EpcLength+"," +
 					"\"EPC\":\""+J4210U.toHex(EPC)+"\"," +
 					"\"Timestamp\":\""+getIsoTimestamp()+"\"" +
-					"}";
-			
+					"}";			
 		}
 	}
 
@@ -713,7 +725,6 @@ public class J4210U {
 	 * @throws Exception
 	 */
 	public String[] listPorts() throws Exception {
-		
 		byte[] ports = new byte[256*8];
 		int n = AvailablePorts(ports);
 		String[] s = new String[n];
@@ -762,11 +773,12 @@ public class J4210U {
 	 * @throws Exception a general exception is thrown.
 	 */
 	public void open(String comPort, int baudrate) throws Exception {		
+		System.out.println("entering open");
 		comPort += "\0";
 		byte[] port = comPort.getBytes("UTF-8");
 		byte ok = OpenComPort(port, baudrate);
 		if (ok == 0) 
-			throw new Exception("Failed to connect to J4210U reader. " + error());
+			throw new Exception("Failed to connect to J4210U reader.\n" + error());
 		log("{open(comPort = "+comPort+", baudrate = "+baudrate+") : "+ok+"}");
 	}
 	

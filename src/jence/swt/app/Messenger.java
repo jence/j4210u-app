@@ -79,23 +79,14 @@ public class Messenger implements Runnable {
 			socket_.getOutputStream().flush();
 		}
 		if (httpMode) {
-//			httpUrl_ = "http://localhost/soalib.com/main/messenger.php?json=";
-			String httpUrl1_ = httpUrl_ + "?json=";
-			httpUrl1_ += URLEncoder.encode(json, "UTF-8");
+			httpUrl_ = "http://localhost/soalib.com/main/messenger.php?json=";
+			httpUrl_ += URLEncoder.encode(json, "UTF-8");
+			URL url = new URL(httpUrl_);
 			HttpURLConnection httpscon = null;
-			if (httpUrl1_.toLowerCase().startsWith("https")) {
-				URL url = new URL(httpUrl1_);
+			if (httpUrl_.toLowerCase().startsWith("https"))
 				httpscon = (HttpsURLConnection)url.openConnection();
-			}
-			else if(httpUrl1_.toLowerCase().startsWith("http")) {
-				URL url = new URL(httpUrl1_);
+			else
 				httpscon = (HttpURLConnection)url.openConnection();
-			}
-			else {
-				httpUrl1_ = "http://" + httpUrl1_;
-				URL url = new URL(httpUrl1_);
-				httpscon = (HttpURLConnection)url.openConnection();
-			}
 			// avoid the annoying certificate error if it occurs.
 			if (httpscon instanceof HttpsURLConnection) {
 				((HttpsURLConnection)httpscon).setHostnameVerifier(new HostnameVerifier() {
@@ -105,7 +96,7 @@ public class Messenger implements Runnable {
 					}
 				  });
 			}
-			System.out.println("URL : " + httpUrl1_);
+			System.out.println("URL : " + httpUrl_);
 			int responseCode = httpscon.getResponseCode();
 			System.out.println("GET Response Code :: " + responseCode);
 		}

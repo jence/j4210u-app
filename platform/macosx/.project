@@ -16,9 +16,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src</name>
+			<name>src_old</name>
 			<type>2</type>
 			<location>/Users/jence/Documents/j4210u-app/src</location>
+		</link>
+		<link>
+			<name>src_swing</name>
+			<type>2</type>
+			<location>/Volumes/WORK/j4210u-swing-app/src_swing</location>
 		</link>
 	</linkedResources>
 </projectDescription>

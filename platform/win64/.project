@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>j4210u-app-win64</name>
+	<name>j4210u-app-win64(dev)</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -18,7 +18,18 @@
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<location>C:/WORK/j4210u-app/src</location>
+			<location>D:/WORK/workspace/j4210u-app/src</location>
 		</link>
 	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1713416295984</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.core.resources.regexFilterMatcher</id>
+				<arguments>node_modules|\.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>
