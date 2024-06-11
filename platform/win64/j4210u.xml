@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project j4210u-app-win64 with Jar-in-Jar Loader">
-    <!--this file was created by Eclipse Runnable JAR file Export Wizard-->
-    <!--ANT 1.7 is required-->
-    <!--define folder properties-->
-    <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="${dir.buildfile}/../../.."/>
-    <property name="dir.jarfile" value="${dir.buildfile}"/>
+<project default="create_run_jar" name="Create Runnable Jar for Project j4210u-app-win64">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/j4210u.jar">
+        <jar destfile="D:/Work/workspace/j4210u-app/platform/win64/j4210u.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="jence.swt.app.UhfApp"/>
+                <attribute name="Main-Class" value="jence.swt.app.UhfApp"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ swt.jar"/>
             </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="${dir.jarfile}/bin"/>
-            <zipfileset dir="${dir.jarfile}/lib" includes="swt.jar"/>
+            <fileset dir="C:/Work/workspace/j4210u-app/platform/win64/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Work/workspace/j4210u-app/platform/win64/lib/swt.jar"/>
         </jar>
     </target>
 </project>
