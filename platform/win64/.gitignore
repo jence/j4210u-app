@@ -9,6 +9,9 @@ dist/
 bin/
 *.a
 *.def
+.temp-UhfApp-args-*.txt
+jence.jni.J4210U.log
+jar-in-jar-loader.zip
 
 # Compiled Java class files
 *.class

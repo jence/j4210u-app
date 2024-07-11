@@ -158,7 +158,7 @@ public class InfoComposite extends Composite {
 //		power_.setTextLimit(26);
 		power_.setMaximum(26);
 		power_.setSelection(26);
-		power_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		power_.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		
 		Label lblScanTime = new Label(this, SWT.NONE);
 		lblScanTime.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -174,6 +174,7 @@ public class InfoComposite extends Composite {
 		new Label(this, SWT.NONE);
 		
 		beepon_ = new Button(this, SWT.CHECK);
+		beepon_.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
 		beepon_.setText("Beep ON");
 		new Label(this, SWT.NONE);
 		new Label(this, SWT.NONE);
