@@ -323,9 +323,17 @@ class J4210():
             self.lib = cdll.LoadLibrary(dllpath)
         elif (platform.system() == 'Linux'):
             self.lib = cdll.LoadLibrary('libj4210u.so')
-        elif (platform.system() == 'Mac OS X'):
+        elif (platform.system() == 'Mac OS X' or platform.system() == 'Darwin'):
             self.lib = cdll.LoadLibrary('libj4210u.dylib')
+            print("MACOS x86_64 library Loaded...")
+        elif (platform.system() == "Darwin"):
+            self.lib = cdll.LoadLibrary('libj4210u.dylib')
+            print("MACOS Aarch64 library Loaded...")
+        else:
+            print("Your Platform is " + platform.system())
+            print("No library Found For your platform...")
         lib = self.lib
+
         return
 
     def getSupportedChips(self):
@@ -375,8 +383,8 @@ class J4210():
            38400, 57600 and 115200.
            :return: True, if connected. Otherwise False.
         """
-        self.lib.AvailablePorts.argtypes = [c_char_p, c_uint]
-        self.lib.AvailablePorts.retypes = [c_char]
+        self.lib.OpenComPort.argtypes = [c_char_p, c_uint]
+        self.lib.OpenComPort.retypes = [c_char]
         arg = bytes(port,"ascii")
         print('arg=', arg, ', baud=', baud)
         ret = self.lib.OpenComPort(arg, int(baud))
@@ -584,7 +592,7 @@ class J4210():
            :param (byte[]): 4 byte default password.
            :return (boolean): True, if successful, otherwise False.
         """
-        self.lib.Auth.argtypes = [c_char_p]
+        self.lib.Auth.argtypes = [c_char_p, c_char]
         self.lib.Auth.retypes = [c_char]
         ret = self.lib.Auth(password, len(password))
         return bool(ret)

@@ -2,9 +2,9 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>d:\Work\workspace\j4210u-app\platform\win64\j4210u.jar</jar>
-  <outfile>d:\Work\workspace\j4210u-app\platform\win64\j4210u.exe</outfile>
-  <errTitle></errTitle>
+  <jar>D:\WORK\workspace\j4210u-app\platform\win64\j4210u.jar</jar>
+  <outfile>D:\WORK\workspace\j4210u-app\platform\win64\j4210u.exe</outfile>
+  <errTitle>Java Is not available on this PC. Please download Java Runtime.</errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
@@ -13,10 +13,10 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>d:\Work\workspace\j4210u-app\platform\win64\UhfApp32.ico</icon>
+  <icon>C:\WORK\_Scratch\j4210u-app\platform\win64\UhfApp32.ico</icon>
   <singleInstance>
     <mutexName>jence</mutexName>
-    <windowTitle>Jence Nfc App</windowTitle>
+    <windowTitle>Jence UHF App</windowTitle>
   </singleInstance>
   <jre>
     <path>%JAVA_HOME%;%PATH%</path>

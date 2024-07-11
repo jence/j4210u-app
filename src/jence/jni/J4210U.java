@@ -173,6 +173,15 @@ public class J4210U {
 			bb.get(EPC);
 		}
 		
+	    public ScanResult(byte Ant, byte RSSI, int Count, byte EpcLength, byte[] EPC) {
+	        this.Ant = Ant;
+	        this.RSSI = RSSI;
+	        this.Count = Count;
+	        this.EpcLength = EpcLength;
+	        System.arraycopy(EPC, 0, this.EPC, 0, Math.min(EPC.length, this.EPC.length));
+	    }
+		
+		
 		public ScanResult(){}
 		
 		public static int size() {
@@ -193,8 +202,7 @@ public class J4210U {
 					"\"EPCLength\":"+EpcLength+", " +
 					"\"EPC\":\""+J4210U.toHex(EPC)+"\"," +
 					"\"Timestamp\":\""+getIsoTimestamp()+"\"" +
-					"}";
-			
+					"}";			
 		}
 	}
 
@@ -766,7 +774,7 @@ public class J4210U {
 		byte[] port = comPort.getBytes("UTF-8");
 		byte ok = OpenComPort(port, baudrate);
 		if (ok == 0) 
-			throw new Exception("Failed to connect to J4210U reader. " + error());
+			throw new Exception("Failed to connect to J4210U reader.\n" + error());
 		log("{open(comPort = "+comPort+", baudrate = "+baudrate+") : "+ok+"}");
 	}
 	
