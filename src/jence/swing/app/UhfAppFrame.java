@@ -32,8 +32,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.border.TitledBorder;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
+import javax.swing.border.LineBorder;
 
 public class UhfAppFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -110,6 +113,8 @@ public class UhfAppFrame extends JFrame {
 			TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(), TagType.MONZA_R6P.name(), TagType.UCODE_8.name(),
 			TagType.KILOWAY_2005BL.name() };
 	private JTable inventory_;
+	public static ArrayList<Tuple<Integer, Integer>> editedValue = new ArrayList<>();
+
 	private JTextField chip_;
 	private JTextField total_;
 	private JTextField total2_;
@@ -469,20 +474,47 @@ public class UhfAppFrame extends JFrame {
 		return true;
 	}
 
-	private boolean connect() {
+	private boolean connect(boolean recurse) {
 		try {
-			int baudrate = Integer.parseInt(comboBaudrate_.getSelectedItem().toString());
 			String port = comboPorts_.getSelectedItem().toString();
-			System.out.println(baudrate);
-			System.out.println(port);
-			jence.swing.app.UhfApp.driver_.open(port, baudrate);
-			tabFolder.setSelectedIndex(0);
-			clearMessaging();
-			status("Device is Successfully connected to " + port + " with " + baudrate + " baud speed.");
-			return true;
+			int baudrate = Integer.parseInt(comboBaudrate_.getSelectedItem().toString());
+			int index = comboBaudrate_.getSelectedIndex();
+
+			if (recurse) {
+				if (index == 0) {
+					UhfApp.driver_.open(port, 115200);
+					UhfApp.prompt("Baudrate is 115200 so connected with 115200...", "Important Information", 3,
+							JOptionPane.INFORMATION_MESSAGE);
+					comboBaudrate_.setSelectedIndex(1);
+					return true;
+				} else if (index == 1) {
+					UhfApp.driver_.open(port, 57600);
+					UhfApp.prompt("Baudrate is 57600 so connected with 57600...", "Important Information", 3,
+							JOptionPane.INFORMATION_MESSAGE);
+					comboBaudrate_.setSelectedIndex(0);
+					return true;
+				}
+			} else {
+				System.out.println(baudrate);
+				System.out.println(port);
+				UhfApp.driver_.open(port, baudrate);
+				tabFolder.setSelectedIndex(0);
+				clearMessaging();
+				status("Device is Successfully connected to " + port + " with " + baudrate + " baud speed.");
+				return true;
+			}
 		} catch (Exception e) {
-			UhfApp.prompt(e.getMessage() + " Could not connect to this port.\nTry another port.", "Warning", 0,
-					JOptionPane.WARNING_MESSAGE);
+			boolean connected = false;
+			if (!recurse) {
+				connected = connect(true);
+			}
+			if (!recurse && !connected) {
+				UhfApp.prompt(e.getMessage() + " Could not connect to this port.\nTry another port.", "Warning", 0,
+						JOptionPane.WARNING_MESSAGE);
+				return false;
+			} else if (!recurse && connected) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -742,7 +774,7 @@ public class UhfAppFrame extends JFrame {
 
 			for (int row = 0; row < rowNum; row++) {
 				Object[] usrRowArray = new Object[8 + 1];
-				usrRowArray[0] = String.format("User [%d-%d]", (row * 8), (row + 1) * 8 - 1);
+				usrRowArray[0] = String.format("User [%d...%d]", (row * 8), (row + 1) * 8 - 1);
 				for (int col = 0; col <= 7; col++) {
 					if (row * 8 + col < ti.userlen / 2) {
 						byte[] word = new byte[2];
@@ -762,7 +794,9 @@ public class UhfAppFrame extends JFrame {
 			status("Memory Load completed.");
 
 			// TODO: Create a default model for bold on change and bold heading
-			memory_.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
+			for (int i = 0; i < memory_.getColumnCount(); i++) {
+				memory_.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+			}
 
 			chip_.setText(ti.chip);
 			epclen_.setText(ti.epclen + "");
@@ -779,6 +813,7 @@ public class UhfAppFrame extends JFrame {
 
 			tabFolder.setSelectedIndex(1); // selects MEMORY folder
 			cellValues = getTableData(memory_);
+
 		} catch (Exception e) {
 			try {
 				UhfApp.prompt(e.getLocalizedMessage() + UhfApp.driver_.error(), "Information", 3,
@@ -791,6 +826,7 @@ public class UhfAppFrame extends JFrame {
 	}
 
 	private void getMemoryDetail() {
+		UhfAppFrame.editedValue.clear();
 		int selectionRow = inventory_.getSelectedRow();
 		Object[] rowData = null;
 		if (selectionRow >= 0) {
@@ -881,6 +917,8 @@ public class UhfAppFrame extends JFrame {
 
 			}
 		}
+		editedValue.clear();
+		memory_.repaint();
 
 	}
 
@@ -1007,7 +1045,7 @@ public class UhfAppFrame extends JFrame {
 		btnConnect_.setMultiClickThreshhold(1L);
 		btnConnect_.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (connect()) {
+				if (connect(false)) {
 					System.out.println("Connected");
 					setEnabled(true, btnDisconnect_, btnScan_, btnScanOnTrigger_, btnScanServer_, tabFolder, memory_,
 							inventory_);
@@ -1484,13 +1522,14 @@ public class UhfAppFrame extends JFrame {
 		penelMemory.add(tagInfo, gbc_tagInfo);
 		GridBagLayout gbl_tagInfo = new GridBagLayout();
 		gbl_tagInfo.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gbl_tagInfo.rowHeights = new int[] { 0, 0, 0 };
+		gbl_tagInfo.rowHeights = new int[] { 30, 25, 0 };
 		gbl_tagInfo.columnWeights = new double[] { 0.0, 1.0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0, 4.0, Double.MIN_VALUE };
 		gbl_tagInfo.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		tagInfo.setLayout(gbl_tagInfo);
 
 		JLabel lblNewLabel = new JLabel("Chip Type");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel.gridx = 0;
@@ -1498,9 +1537,20 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel, gbc_lblNewLabel);
 
 		chip_ = new JTextField();
+		chip_.setBackground(new Color(255, 255, 255));
+		chip_.setEnabled(false);
+		chip_.setText("");
+		chip_.setBounds(new Rectangle(5, 5, 0, 0));
+
+		Border paddingBorder = new EmptyBorder(2, 2, 2, 2);
+		Border blackBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
+		chip_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+//		chip_.setBorder(new LineBorder(new Color(0, 0, 0)));
 		chip_.setEditable(false);
 		GridBagConstraints gbc_chip_ = new GridBagConstraints();
-		gbc_chip_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_chip_.ipady = 2;
+		gbc_chip_.ipadx = 2;
+		gbc_chip_.fill = GridBagConstraints.BOTH;
 		gbc_chip_.gridwidth = 2;
 		gbc_chip_.insets = new Insets(0, 0, 5, 5);
 		gbc_chip_.gridx = 1;
@@ -1510,6 +1560,7 @@ public class UhfAppFrame extends JFrame {
 
 		JLabel lblNewLabel_1 = new JLabel("Total Memory");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+		gbc_lblNewLabel_1.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_1.gridx = 3;
@@ -1517,20 +1568,26 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
 		total_ = new JTextField();
+		total_.setBackground(new Color(255, 255, 255));
+		total_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+
 		total_.setEditable(false);
 		GridBagConstraints gbc_total_ = new GridBagConstraints();
 		gbc_total_.insets = new Insets(0, 0, 5, 5);
-		gbc_total_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_total_.fill = GridBagConstraints.BOTH;
 		gbc_total_.gridx = 4;
 		gbc_total_.gridy = 0;
 		tagInfo.add(total_, gbc_total_);
 		total_.setColumns(10);
 
 		total2_ = new JTextField();
+		total2_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+
+		total2_.setBackground(new Color(255, 255, 0));
 		total2_.setEditable(false);
 		GridBagConstraints gbc_total2_ = new GridBagConstraints();
 		gbc_total2_.insets = new Insets(0, 0, 5, 5);
-		gbc_total2_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_total2_.fill = GridBagConstraints.BOTH;
 		gbc_total2_.gridx = 5;
 		gbc_total2_.gridy = 0;
 		tagInfo.add(total2_, gbc_total2_);
@@ -1538,6 +1595,7 @@ public class UhfAppFrame extends JFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("PWD Size");
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+		gbc_lblNewLabel_2.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_2.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_2.gridx = 6;
@@ -1545,20 +1603,24 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel_2, gbc_lblNewLabel_2);
 
 		pwdlen_ = new JTextField();
+		pwdlen_.setBackground(new Color(255, 255, 255));
+		pwdlen_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
 		pwdlen_.setEditable(false);
 		GridBagConstraints gbc_pwdlen_ = new GridBagConstraints();
 		gbc_pwdlen_.insets = new Insets(0, 0, 5, 5);
-		gbc_pwdlen_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pwdlen_.fill = GridBagConstraints.BOTH;
 		gbc_pwdlen_.gridx = 7;
 		gbc_pwdlen_.gridy = 0;
 		tagInfo.add(pwdlen_, gbc_pwdlen_);
 		pwdlen_.setColumns(10);
 
 		pwdlen2_ = new JTextField();
+		pwdlen2_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+		pwdlen2_.setBackground(new Color(255, 255, 0));
 		pwdlen2_.setEditable(false);
 		GridBagConstraints gbc_pwdlen2_ = new GridBagConstraints();
 		gbc_pwdlen2_.insets = new Insets(0, 0, 5, 0);
-		gbc_pwdlen2_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pwdlen2_.fill = GridBagConstraints.BOTH;
 		gbc_pwdlen2_.gridx = 8;
 		gbc_pwdlen2_.gridy = 0;
 		tagInfo.add(pwdlen2_, gbc_pwdlen2_);
@@ -1566,6 +1628,7 @@ public class UhfAppFrame extends JFrame {
 
 		JLabel lblNewLabel_3 = new JLabel("EPC Size");
 		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_3.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_3.insets = new Insets(0, 0, 0, 5);
 		gbc_lblNewLabel_3.gridx = 0;
@@ -1573,19 +1636,24 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel_3, gbc_lblNewLabel_3);
 
 		epclen_ = new JTextField();
+		epclen_.setBackground(new Color(255, 255, 255));
+		epclen_.setBounds(new Rectangle(5, 5, 0, 0));
+		epclen_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
 		epclen_.setEditable(false);
 		GridBagConstraints gbc_epclen_ = new GridBagConstraints();
 		gbc_epclen_.insets = new Insets(0, 0, 0, 5);
-		gbc_epclen_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_epclen_.fill = GridBagConstraints.BOTH;
 		gbc_epclen_.gridx = 1;
 		gbc_epclen_.gridy = 1;
 		tagInfo.add(epclen_, gbc_epclen_);
 		epclen_.setColumns(10);
 
 		epclen2_ = new JTextField();
+		epclen2_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+		epclen2_.setBackground(new Color(255, 255, 0));
 		epclen2_.setEditable(false);
 		GridBagConstraints gbc_epclen2_ = new GridBagConstraints();
-		gbc_epclen2_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_epclen2_.fill = GridBagConstraints.BOTH;
 		gbc_epclen2_.insets = new Insets(0, 0, 0, 5);
 		gbc_epclen2_.gridx = 2;
 		gbc_epclen2_.gridy = 1;
@@ -1594,6 +1662,7 @@ public class UhfAppFrame extends JFrame {
 
 		JLabel lblNewLabel_4 = new JLabel("TID Size");
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
+		gbc_lblNewLabel_4.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_4.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_4.insets = new Insets(0, 0, 0, 5);
 		gbc_lblNewLabel_4.gridx = 3;
@@ -1601,20 +1670,24 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel_4, gbc_lblNewLabel_4);
 
 		tidlen_ = new JTextField();
+		tidlen_.setBackground(new Color(255, 255, 255));
+		tidlen_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
 		tidlen_.setEditable(false);
 		GridBagConstraints gbc_tidlen_ = new GridBagConstraints();
 		gbc_tidlen_.insets = new Insets(0, 0, 0, 5);
-		gbc_tidlen_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tidlen_.fill = GridBagConstraints.BOTH;
 		gbc_tidlen_.gridx = 4;
 		gbc_tidlen_.gridy = 1;
 		tagInfo.add(tidlen_, gbc_tidlen_);
 		tidlen_.setColumns(10);
 
 		tidlen2_ = new JTextField();
+		tidlen2_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+		tidlen2_.setBackground(new Color(255, 255, 0));
 		tidlen2_.setEditable(false);
 		GridBagConstraints gbc_tidlen2_ = new GridBagConstraints();
 		gbc_tidlen2_.insets = new Insets(0, 0, 0, 5);
-		gbc_tidlen2_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tidlen2_.fill = GridBagConstraints.BOTH;
 		gbc_tidlen2_.gridx = 5;
 		gbc_tidlen2_.gridy = 1;
 		tagInfo.add(tidlen2_, gbc_tidlen2_);
@@ -1622,6 +1695,7 @@ public class UhfAppFrame extends JFrame {
 
 		JLabel lblNewLabel_5 = new JLabel("USER Size");
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
+		gbc_lblNewLabel_5.fill = GridBagConstraints.VERTICAL;
 		gbc_lblNewLabel_5.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_5.insets = new Insets(0, 0, 0, 5);
 		gbc_lblNewLabel_5.gridx = 6;
@@ -1629,19 +1703,23 @@ public class UhfAppFrame extends JFrame {
 		tagInfo.add(lblNewLabel_5, gbc_lblNewLabel_5);
 
 		usrlen_ = new JTextField();
+		usrlen_.setBackground(new Color(255, 255, 255));
+		usrlen_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
 		usrlen_.setEditable(false);
 		GridBagConstraints gbc_usrlen_ = new GridBagConstraints();
 		gbc_usrlen_.insets = new Insets(0, 0, 0, 5);
-		gbc_usrlen_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_usrlen_.fill = GridBagConstraints.BOTH;
 		gbc_usrlen_.gridx = 7;
 		gbc_usrlen_.gridy = 1;
 		tagInfo.add(usrlen_, gbc_usrlen_);
 		usrlen_.setColumns(10);
 
 		usrlen2_ = new JTextField();
+		usrlen2_.setBorder(new CompoundBorder(blackBorder, paddingBorder));
+		usrlen2_.setBackground(new Color(255, 255, 0));
 		usrlen2_.setEditable(false);
 		GridBagConstraints gbc_usrlen2_ = new GridBagConstraints();
-		gbc_usrlen2_.fill = GridBagConstraints.HORIZONTAL;
+		gbc_usrlen2_.fill = GridBagConstraints.BOTH;
 		gbc_usrlen2_.gridx = 8;
 		gbc_usrlen2_.gridy = 1;
 		tagInfo.add(usrlen2_, gbc_usrlen2_);
@@ -1666,10 +1744,10 @@ public class UhfAppFrame extends JFrame {
 
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				if (uneditableRows.contains(row)) {
+				if (uneditableRows.contains(row) | column == 0) {
 					return false; // Make the row uneditable if it's in the set
 				}
-				return columnEditables[column];
+				return true;
 			}
 		};
 
@@ -1679,23 +1757,27 @@ public class UhfAppFrame extends JFrame {
 
 //		memory_.setDefaultRenderer(Object.class, new BoldCellRenderer());
 
+		// Enable cell selection
+		memory_.setCellSelectionEnabled(false);
+
+		// Set custom selection background color for cells
+		memory_.setSelectionBackground(Color.YELLOW);
+		memory_.setSelectionForeground(Color.RED);
+		memory_.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+
 		memory_.setModel(model);
 
 		for (int columnIndex = 0; columnIndex < memory_.getColumnCount(); columnIndex++) {
 			// Set the LimitedCharacterCellEditor for each column
 			memory_.getColumnModel().getColumn(columnIndex)
-					.setCellEditor(new LimitedCharacterCellEditor(4, "0123456789ABCDEFabcdef"));
+					.setCellEditor(new LimitedCharacterCellEditor(memory_, 4, "0123456789ABCDEFabcdef"));
 		}
 
-		memory_.getColumnModel().getColumn(0).setResizable(false);
-		memory_.getColumnModel().getColumn(1).setResizable(false);
-		memory_.getColumnModel().getColumn(2).setResizable(false);
-		memory_.getColumnModel().getColumn(3).setResizable(false);
-		memory_.getColumnModel().getColumn(4).setResizable(false);
-		memory_.getColumnModel().getColumn(5).setResizable(false);
-		memory_.getColumnModel().getColumn(6).setResizable(false);
-		memory_.getColumnModel().getColumn(7).setResizable(false);
-		memory_.getColumnModel().getColumn(8).setResizable(false);
+		for (int columnIndex = 0; columnIndex <= 8; columnIndex++) {
+			// Set the LimitedCharacterCellEditor for each column
+			memory_.getColumnModel().getColumn(columnIndex).setResizable(false);
+		}
+
 		memory_.getTableHeader().setReorderingAllowed(false);
 		memory_.setEnabled(false);
 		scrollPane_1.setViewportView(memory_);
@@ -2144,8 +2226,6 @@ public class UhfAppFrame extends JFrame {
 		// 1200 for mac
 		// 1100 for linux and windows
 
-//		this.setResizable(false);
-//		this.pack();
 		String osName = System.getProperty("os.name").toLowerCase();
 		// Check if the operating system is macOS
 		if (osName.contains("mac") || osName.contains("darwin")) {
@@ -2234,4 +2314,22 @@ class ScanTWorker extends SwingWorker<Void, Void> {
 
 	}
 
+}
+
+class Tuple<A, B> {
+	private final A row;
+	private final B col;
+
+	public Tuple(A row, B col) {
+		this.row = row;
+		this.col = col;
+	}
+
+	public A getRow() {
+		return row;
+	}
+
+	public B getCol() {
+		return col;
+	}
 }
