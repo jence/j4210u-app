@@ -13,6 +13,7 @@ import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -813,6 +814,12 @@ public class UhfAppFrame extends JFrame {
 
 			tabFolder.setSelectedIndex(1); // selects MEMORY folder
 			cellValues = getTableData(memory_);
+	        for (int i = 0; i < memory_.getColumnCount(); i++) {
+	            TableColumn column = memory_.getColumnModel().getColumn(i);
+	            column.setPreferredWidth(80);
+	            column.setMinWidth(80);
+	            column.setMaxWidth(135);
+	        }
 
 		} catch (Exception e) {
 			try {
@@ -1733,7 +1740,8 @@ public class UhfAppFrame extends JFrame {
 		penelMemory.add(scrollPane_1, gbc_scrollPane_1);
 
 		memory_ = new JTable();
-		memory_.setBackground(new Color(255, 255, 255));
+		memory_.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		memory_.setBackground(new Color(240, 240, 240));
 		DefaultTableModel model = new DefaultTableModel(
 				new Object[][] { { "EPC", null, null, null, null, null, null, null, null },
 						{ "TID", null, null, null, null, null, null, null, null },
