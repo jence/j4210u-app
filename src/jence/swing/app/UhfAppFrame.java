@@ -160,6 +160,7 @@ public class UhfAppFrame extends JFrame {
 			public void run() {
 				if (lblStatus != null) {
 					lblStatus.setText(text);
+					lblStatus.repaint();
 
 				}
 			}
@@ -814,12 +815,12 @@ public class UhfAppFrame extends JFrame {
 
 			tabFolder.setSelectedIndex(1); // selects MEMORY folder
 			cellValues = getTableData(memory_);
-	        for (int i = 0; i < memory_.getColumnCount(); i++) {
-	            TableColumn column = memory_.getColumnModel().getColumn(i);
-	            column.setPreferredWidth(80);
-	            column.setMinWidth(80);
-	            column.setMaxWidth(135);
-	        }
+			for (int i = 0; i < memory_.getColumnCount(); i++) {
+				TableColumn column = memory_.getColumnModel().getColumn(i);
+				column.setPreferredWidth(80);
+				column.setMinWidth(80);
+				column.setMaxWidth(135);
+			}
 
 		} catch (Exception e) {
 			try {
@@ -860,6 +861,7 @@ public class UhfAppFrame extends JFrame {
 	}
 
 	private void rawWrite(byte[] epc) {
+		status("Writing EPC...");
 		ArrayList<ArrayList<Integer>> changedIndexes;
 		changedIndexes = getChangedCellIndexes(cellValues, memory_);
 		DefaultTableModel model = (DefaultTableModel) memory_.getModel();
@@ -897,21 +899,30 @@ public class UhfAppFrame extends JFrame {
 			}
 			// if epc changed
 			if (rowNum == 0) {
+				byte[] changedWord = new byte[2];
 				memidx = (colNum - 1);
-				String data = model.getValueAt(rowNum, colNum).toString();
-//				System.out.println(data);
-				int d = Integer.parseInt(data, 16);
-				word[1] = (byte) (d & 0xFF);
-				word[0] = (byte) ((d >> 8) & 0xFF);
+				String changedWordString = model.getValueAt(rowNum, colNum).toString();
+				System.out.println(changedWordString);
+				System.out.println(memidx);
+				int h = (memidx + 1) * 2 - 2; // sub 1 for array index 0 , 1 for being 1st byte of the word
+				int l = (memidx + 1) * 2 - 1; // sub 1 for array
+				int changedWordByte = Integer.parseInt(changedWordString, 16); // parsing to hex
+				changedWord[1] = (byte) (changedWordByte & 0xFF);
+				changedWord[0] = (byte) ((changedWordByte >> 8) & 0xFF);
 
 				// Write the word to the specified memory index
 				try {
-					jence.swing.app.UhfApp.driver_.writeEpcWord(epc, word, memidx);
-					// change the lastEpc to new epc
+//					System.out.println(J4210U.toHex(epc));
+
+					final int index = memidx;
+					jence.swing.app.UhfApp.driver_.writeEpcWord(epc, changedWord, memidx);
+
+					epc[h] = changedWord[0];
+					epc[l] = changedWord[1];
+					System.out.println("");
 					String epcString = "";
 					for (int i = 1; i <= 6; i++) {
 						epcString += model.getValueAt(0, i).toString();
-
 					}
 //					System.out.println(epcString);
 					lastEpc = J4210U.hex2bytes(epcString, 12);

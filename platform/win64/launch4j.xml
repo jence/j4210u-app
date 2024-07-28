@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\WORK\_Scratch\j4210u-app\platform\win64\UhfApp32.ico</icon>
+  <icon>d:\WORK\workspace\j4210u-app\platform\win64\UhfApp32.ico</icon>
   <singleInstance>
     <mutexName>jence</mutexName>
     <windowTitle>Jence UHF App</windowTitle>
