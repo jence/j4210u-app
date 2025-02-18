@@ -46,7 +46,7 @@ public class InfoPanel extends JPanel {
 	private JComboBox<String> band_;
 	private JCheckBox beepon_;
 	private JSpinner scantime_;
-	private JSpinner power_;
+	public JSpinner power_;
 	private UhfAppFrame app_;
 	private J4210U.ReaderInfo ri_ = null;
 
@@ -262,7 +262,7 @@ public class InfoPanel extends JPanel {
 
 		power_ = new JSpinner();
 
-		power_.setModel(new SpinnerNumberModel(19, 0, 26, 1));
+		power_.setModel(new SpinnerNumberModel(19, 0, 33, 1));
 		GridBagConstraints gbc_power_ = new GridBagConstraints();
 		gbc_power_.fill = GridBagConstraints.HORIZONTAL;
 		gbc_power_.insets = new Insets(0, 0, 5, 5);

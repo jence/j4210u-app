@@ -2,9 +2,9 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>D:\WORK\workspace\j4210u-app\platform\win64\j4210u.jar</jar>
-  <outfile>D:\WORK\workspace\j4210u-app\platform\win64\j4210u.exe</outfile>
-  <errTitle>Java Is not available on this PC. Please download Java Runtime.</errTitle>
+  <jar>C:\WORK\Software\j4210u-app\platform\win64\j4210u.jar</jar>
+  <outfile>C:\WORK\Software\j4210u-app\platform\win64\j4210u.exe</outfile>
+  <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
@@ -13,16 +13,14 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>d:\WORK\workspace\j4210u-app\platform\win64\UhfApp32.ico</icon>
-  <singleInstance>
-    <mutexName>jence</mutexName>
-    <windowTitle>Jence UHF App</windowTitle>
-  </singleInstance>
+  <icon>C:\WORK\Software\j4210u-app\platform\win64\UhfApp32.ico</icon>
   <jre>
-    <path>%JAVA_HOME%;%PATH%</path>
-    <requiresJdk>false</requiresJdk>
-    <requires64Bit>true</requires64Bit>
-    <minVersion>1.8.0</minVersion>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>1.7</minVersion>
     <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
   </jre>
 </launch4jConfig>

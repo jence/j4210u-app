@@ -46,6 +46,10 @@ public class UhfAppFrame extends JFrame {
 	// adding something new won't cause problem but renaming existing element will
 	// cause problem
 	public int SCAN_SERVER_DELAY = 550;
+	public static boolean is910_ = false;
+
+	public static final int BYTE_PER_WORD = 2;
+	public static final int ROW_PER_CELL = 8;
 
 	private JButton btnHelp_;
 	private JButton btnRefresh_;
@@ -109,10 +113,10 @@ public class UhfAppFrame extends JFrame {
 	public static final String DOWNLOAD_PAGE = "https://jence.com/web/index.php?route=product/product&path=69_25_225&product_id=792";
 	public static final String LATEST_VERSION_PAGE = "https://jence.com/downloads/version.properties";
 	public static final String[] AUTODETECTED_CHIPS = { TagType.HIGGS_3.toString(), TagType.HIGGS_4.name(),
-			TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(), TagType.IMPINJ_M750.name(), TagType.IMPINJ_M770.name(),
-			TagType.IMPINJ_M775.name(), TagType.MONZA_4D.name(), TagType.MONZA_4E.name(), TagType.MONZA_4I.name(),
-			TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(), TagType.MONZA_R6P.name(), TagType.UCODE_8.name(),
-			TagType.KILOWAY_2005BL.name() };
+			TagType.HIGGS_9.name(), TagType.HIGGS_EC.name(), TagType.IMPINJ_M730.name(), TagType.IMPINJ_M750.name(),
+			TagType.IMPINJ_M770.name(), TagType.IMPINJ_M775.name(), TagType.MONZA_4D.name(), TagType.MONZA_4E.name(),
+			TagType.MONZA_4I.name(), TagType.MONZA_4QT.name(), TagType.MONZA_R6.name(), TagType.MONZA_R6P.name(),
+			TagType.UCODE_8.name(), TagType.KILOWAY_2005BL.name() };
 	private JTable inventory_;
 	public static ArrayList<Tuple<Integer, Integer>> editedValue = new ArrayList<>();
 
@@ -488,12 +492,25 @@ public class UhfAppFrame extends JFrame {
 					UhfApp.prompt("Baudrate is 115200 so connected with 115200...", "Important Information", 3,
 							JOptionPane.INFORMATION_MESSAGE);
 					comboBaudrate_.setSelectedIndex(1);
+					is910_ = UhfApp.driver_.isMu910();
+					if (is910_) {
+						info_.power_.setModel(new SpinnerNumberModel(19, 0, 33, 1));
+					} else {
+						info_.power_.setModel(new SpinnerNumberModel(19, 0, 26, 1));
+					}
 					return true;
 				} else if (index == 1) {
 					UhfApp.driver_.open(port, 57600);
 					UhfApp.prompt("Baudrate is 57600 so connected with 57600...", "Important Information", 3,
 							JOptionPane.INFORMATION_MESSAGE);
 					comboBaudrate_.setSelectedIndex(0);
+					is910_ = UhfApp.driver_.isMu910();
+					if (is910_) {
+						info_.power_.setModel(new SpinnerNumberModel(19, 0, 33, 1));
+					} else {
+						info_.power_.setModel(new SpinnerNumberModel(19, 0, 26, 1));
+					}
+
 					return true;
 				}
 			} else {
@@ -503,6 +520,12 @@ public class UhfAppFrame extends JFrame {
 				tabFolder.setSelectedIndex(0);
 				clearMessaging();
 				status("Device is Successfully connected to " + port + " with " + baudrate + " baud speed.");
+				is910_ = UhfApp.driver_.isMu910();
+				if (is910_) {
+					info_.power_.setModel(new SpinnerNumberModel(19, 0, 33, 1));
+				} else {
+					info_.power_.setModel(new SpinnerNumberModel(19, 0, 26, 1));
+				}
 				return true;
 			}
 		} catch (Exception e) {
@@ -515,6 +538,12 @@ public class UhfAppFrame extends JFrame {
 						JOptionPane.WARNING_MESSAGE);
 				return false;
 			} else if (!recurse && connected) {
+				is910_ = UhfApp.driver_.isMu910();
+				if (is910_) {
+					info_.power_.setModel(new SpinnerNumberModel(19, 0, 33, 1));
+				} else {
+					info_.power_.setModel(new SpinnerNumberModel(19, 0, 26, 1));
+				}
 				return true;
 			}
 		}
@@ -772,11 +801,21 @@ public class UhfAppFrame extends JFrame {
 			J4210U.TagInfo ti = jence.swing.app.UhfApp.driver_.getTagInfo(tid);
 //			System.out.println(Math.ceil((ti.userlen / 2) / 8));
 
-			int rowNum = (int) (Math.ceil((ti.userlen / 2) / 8) == 0 ? 1 : Math.ceil((ti.userlen / 2) / 8));
+//			int rowNum = Math.ceil( (Math.ceil((ti.userlen / 8) / 2) == 0 ? 1 : Math.ceil((ti.userlen / 2) / 8)));
+			int rowNum = 1;
+			int rowNumD = (ti.userlen / BYTE_PER_WORD) / ROW_PER_CELL;
+			int rowNumF = (ti.userlen / BYTE_PER_WORD) % ROW_PER_CELL;
+			if (rowNumF != 0) {
+				rowNum = rowNumD + 1;
+			} else {
+				rowNum = rowNumD;
+			}
+//			System.out.printf("%d\n", rowNum);
+//			System.out.printf("%d\n", ti.userlen);
 
 			for (int row = 0; row < rowNum; row++) {
 				Object[] usrRowArray = new Object[8 + 1];
-				usrRowArray[0] = String.format("User [%d...%d]", (row * 8), (row + 1) * 8 - 1);
+				usrRowArray[0] = String.format("User [%d-%d]", (row * 8), (row + 1) * 8 - 1);
 				for (int col = 0; col <= 7; col++) {
 					if (row * 8 + col < ti.userlen / 2) {
 						byte[] word = new byte[2];
