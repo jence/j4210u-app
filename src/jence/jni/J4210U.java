@@ -431,6 +431,9 @@ public class J4210U {
 	
 	private native byte GetGPI(byte gpino);
 	private native byte SetGPO(byte gpono);
+
+	private native byte GetMu910();
+
 	private native void LibVersion(byte[] version);
 	
 	private native byte SetQ(byte q);
@@ -490,8 +493,23 @@ public class J4210U {
 	}
 
 	/**
-	 * Extract the String from the NULL terminated String array.
-	 * The byte array is synonymous to NULL terminated C String.
+	 * Gets the UHF module model.
+	 * 
+	 * @return the module being used in the reader.
+	 */
+	public boolean isMu910() {
+		System.out.print(GetMu910());
+		
+		if( GetMu910() == 0x01) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	/**
+	 * Extract the String from the NULL terminated String array. The byte array is
+	 * synonymous to NULL terminated C String.
 	 * 
 	 * @param str a NULL terminated String as it is in C programming language.
 	 * @return String represented by the byte array.
