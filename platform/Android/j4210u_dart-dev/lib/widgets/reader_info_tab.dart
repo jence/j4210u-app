@@ -140,10 +140,10 @@ class ReaderInfoTab extends StatelessWidget {
             const SizedBox(height: 16),
             _buildInfoRow('Device Type', rfidManager.isMU910 ? 'MU910' : 'MU903'),
             _buildInfoRow('Version', '${readerInfo!.versionInfo[0]}.${readerInfo!.versionInfo[1]}'),
-            _buildInfoRow('Reader Type', '0x${readerInfo!.readerType.toRadixString(16).toUpperCase()}'),
+            // _buildInfoRow('Reader Type', '0x${readerInfo!.readerType.toRadixString(16).toUpperCase()}'),
             _buildInfoRow('Protocol', '0x${readerInfo!.protocol.toRadixString(16).toUpperCase()}'),
             if (rfidManager.deviceName != null)
-              _buildInfoRow('Device Name', rfidManager.deviceName!),
+              _buildInfoRow('Device Path', rfidManager.deviceName!),
           ],
         ),
       ),
