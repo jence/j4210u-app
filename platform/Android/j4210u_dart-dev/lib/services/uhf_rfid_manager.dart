@@ -1560,4 +1560,44 @@ Future<bool> _setMU910BandAndPower(String band, int power) async {
       return [];
     }
   }
+  Future<int?> getGPI(int num) async {
+    if(_isMU910){
+     return mu910GPI(num);
+    }else{
+     return mu903GPI(num);
+    }
+    
+  }
+  
+  Future<int?> mu903GPI(int num) async{
+       debugPrint('🔍 Getting MU903 GPIO settings...');
+
+    try {
+      final response = await _transferMU903(0x47, [], 100, 10);
+
+      if (response[3]==0) {
+        var out = response[4]& 0x03;
+        debugPrint("VAR:: $out");
+        if(out==0 || out==2){
+          return 1;
+        }
+        debugPrint("✅ ✅ ✅  response is:  $response");
+        
+        return 0;
+      }
+
+      // return _parseMU903Settings(response);
+      // debugPrint("✅ Got Something");
+      // return 1;
+    } catch (e) {
+      debugPrint('❌ Get MU903 settings error: $e');
+      return null;
+    }
+    return null;
+    
+  }
+  
+  int? mu910GPI(int num) {
+    return null;
+  }
 }

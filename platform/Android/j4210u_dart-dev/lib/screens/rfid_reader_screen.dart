@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/uhf_rfid_manager.dart';
@@ -30,7 +32,7 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
   int _scanCount = 0;
   final List<String> _logs = [];
   ReaderInfo? _readerInfo;
-
+  var isTimerRunning=false;
   late AnimationController _pulseController;
   late AnimationController _scanController;
   late Animation<double> _pulseAnimation;
@@ -39,6 +41,7 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
   @override
   void initState() {
     super.initState();
+    // _checkGPIO();
     _initializeAnimations();
   }
 
@@ -113,6 +116,7 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
     _scanController.stop();
     await _rfidManager.disconnect();
     setState(() {
+      isTimerRunning =false;
       _status = AppConstants.disconnected;
       _isScanning = false;
       _tags.clear();
@@ -202,6 +206,7 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
 
   @override
   Widget build(BuildContext context) {
+    
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -220,6 +225,7 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
         ),
         body: Column(
           children: [
+                       
             // Connection Status and Control Buttons Section
             Container(
               color: Colors.white,
@@ -308,6 +314,28 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
                                     ),
                                   ],
                                 ),
+
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: isTimerRunning,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isTimerRunning = value ?? false;
+                          });
+                          // Restart GPIO check with the updated timer state
+                         if(value ==true) _checkGPIO();
+                        },
+                      ),
+                      Text("Trigger"),
+                    ],
+                  ),
+                                // ElevatedButton(
+                                //   onPressed: () {
+                                //    _checkGPIO();
+                                //   },
+                                //   child: Text('GetGPI'),
+                                // ),
                               ],
                             ],
                           ),
@@ -499,4 +527,45 @@ class _RFIDReaderScreenState extends State<RFIDReaderScreen>
       ],
     );
   }
+
+  // void _checkGPIO() {
+  //   Timer.periodic(Duration(milliseconds: 500), (timer) async {
+  //     if (_rfidManager.isConnected) {
+  //       var res = await _rfidManager.getGPI(0);
+  //       debugPrint("###########Res is $res");
+  //       if (res == 1) {
+  //         debugPrint("###########Res is 1");
+  //        await _scanTags();
+  //       //  timer.cancel();
+  //       res=0;
+  //       timer.cancel();
+  //       }
+  //     }
+      
+  //   });
+  // }
+
+  Timer? _gpioTimer; // Declare a variable to store the Timer instance.
+
+void _checkGPIO() {
+  // If the checkbox is unchecked, cancel the timer.
+  if (!isTimerRunning) {
+    _gpioTimer?.cancel(); // Stop the timer if it's running
+    return;
+  }
+
+  // If the checkbox is checked, start the timer.
+  if (_gpioTimer == null || !_gpioTimer!.isActive) {
+    _gpioTimer = Timer.periodic(Duration(milliseconds: 500), (timer) async {
+      if (_rfidManager.isConnected) {
+        var res = await _rfidManager.getGPI(0);
+        debugPrint("###########Res is $res");
+        if (res == 1) {
+          debugPrint("###########Res is 1");
+          await _scanTags();
+        }
+      }
+    });
+  }
+}
 }
