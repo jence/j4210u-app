@@ -69,7 +69,7 @@ class BluetoothService {
             print('📡 [DATA_RAW] Packet #${_dataPacketCount} - Received ${data.length} bytes');
             print('📡 [DATA_HEX] ${data.map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ')}');
             
-            // Use UTF-8 instead of ASCII for better compatibility
+            // Use UTF-8 for better compatibility
             String receivedData = String.fromCharCodes(data);
             print('📄 [DATA_UTF8] UTF-8 decoded: "$receivedData"');
             
@@ -132,78 +132,59 @@ class BluetoothService {
     });
   }
 
-String _processBuffer(String buffer) {
-  String remainingBuffer = buffer;
-  
-  // Clean the buffer first - remove any control characters but preserve structure
-  remainingBuffer = remainingBuffer.replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'), '');
-  
-  print('🧹 [BUFFER_CLEAN] Cleaned buffer length: ${remainingBuffer.length}');
-  
-  // Look for complete JSON structures
-  while (true) {
-    bool foundValidJson = false;
+  String _processBuffer(String buffer) {
+    String remainingBuffer = buffer;
     
-    // Method 1: Look for complete JSON arrays [...]
-    int arrayStart = remainingBuffer.indexOf('[');
-    if (arrayStart != -1) {
-      print('🔍 [JSON_SEARCH] Found array start at position $arrayStart');
-      int arrayEnd = _findMatchingBracket(remainingBuffer, arrayStart, '[', ']');
-      if (arrayEnd != -1) {
-        String jsonArray = remainingBuffer.substring(arrayStart, arrayEnd + 1);
-        print('🎯 [JSON_ARRAY] Found complete JSON array (${jsonArray.length} chars)');
-        
-        // Additional validation: ensure it starts and ends correctly
-        if (jsonArray.startsWith('[') && jsonArray.endsWith(']')) {
-          if (_isValidJson(jsonArray)) {
-            print('✅ [JSON_ARRAY] Valid JSON array found, sending to UI');
-            if (!_isDisposed) {
-              _dataController.add(jsonArray);
-            }
+    // Clean the buffer first - remove control characters but preserve structure
+    remainingBuffer = remainingBuffer.replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]'), '');
+    
+    print('🧹 [BUFFER_CLEAN] Cleaned buffer length: ${remainingBuffer.length}');
+    
+    // Process multiple complete JSON structures in the buffer
+    while (remainingBuffer.isNotEmpty) {
+      remainingBuffer = remainingBuffer.trim();
+      
+      if (remainingBuffer.isEmpty) break;
+      
+      bool processedSomething = false;
+      
+      // Method 1: Look for complete JSON arrays [...]
+      if (remainingBuffer.startsWith('[')) {
+        print('🔍 [JSON_SEARCH] Found array start at beginning');
+        int arrayEnd = _findMatchingBracket(remainingBuffer, 0, '[', ']');
+        if (arrayEnd != -1) {
+          String jsonArray = remainingBuffer.substring(0, arrayEnd + 1);
+          print('🎯 [JSON_ARRAY] Found complete JSON array (${jsonArray.length} chars)');
+          
+          if (_validateAndSendJson(jsonArray)) {
             remainingBuffer = remainingBuffer.substring(arrayEnd + 1);
-            foundValidJson = true;
+            processedSomething = true;
           } else {
-            print('❌ [JSON_ARRAY] Invalid JSON array structure');
-            // Remove the invalid part and continue
-            remainingBuffer = remainingBuffer.substring(arrayStart + 1);
+            // Remove malformed array start and continue
+            remainingBuffer = remainingBuffer.substring(1);
+            processedSomething = true;
           }
         } else {
-          print('⚠️ [JSON_ARRAY] Malformed array boundaries');
-          remainingBuffer = remainingBuffer.substring(arrayStart + 1);
+          print('⏳ [JSON_ARRAY] Incomplete JSON array, waiting for more data...');
+          // Keep the buffer as is, waiting for more data
+          break;
         }
-      } else {
-        print('⏳ [JSON_ARRAY] Incomplete JSON array, waiting for more data...');
-        // Keep the buffer as is, waiting for more data
-        break;
-      }
-    } 
-    // Method 2: Look for complete JSON objects {...}
-    else {
-      int objectStart = remainingBuffer.indexOf('{');
-      if (objectStart != -1) {
-        print('🔍 [JSON_SEARCH] Found object start at position $objectStart');
-        int objectEnd = _findMatchingBracket(remainingBuffer, objectStart, '{', '}');
+      } 
+      // Method 2: Look for complete JSON objects {...}
+      else if (remainingBuffer.startsWith('{')) {
+        print('🔍 [JSON_SEARCH] Found object start at beginning');
+        int objectEnd = _findMatchingBracket(remainingBuffer, 0, '{', '}');
         if (objectEnd != -1) {
-          String jsonObject = remainingBuffer.substring(objectStart, objectEnd + 1);
+          String jsonObject = remainingBuffer.substring(0, objectEnd + 1);
           print('🎯 [JSON_OBJECT] Found complete JSON object (${jsonObject.length} chars)');
           
-          // Additional validation: ensure it starts and ends correctly
-          if (jsonObject.startsWith('{') && jsonObject.endsWith('}')) {
-            if (_isValidJson(jsonObject)) {
-              print('✅ [JSON_OBJECT] Valid JSON object found, sending to UI');
-              if (!_isDisposed) {
-                _dataController.add(jsonObject);
-              }
-              remainingBuffer = remainingBuffer.substring(objectEnd + 1);
-              foundValidJson = true;
-            } else {
-              print('❌ [JSON_OBJECT] Invalid JSON object structure');
-              // Remove the invalid part and continue
-              remainingBuffer = remainingBuffer.substring(objectStart + 1);
-            }
+          if (_validateAndSendJson(jsonObject)) {
+            remainingBuffer = remainingBuffer.substring(objectEnd + 1);
+            processedSomething = true;
           } else {
-            print('⚠️ [JSON_OBJECT] Malformed object boundaries');
-            remainingBuffer = remainingBuffer.substring(objectStart + 1);
+            // Remove malformed object start and continue
+            remainingBuffer = remainingBuffer.substring(1);
+            processedSomething = true;
           }
         } else {
           print('⏳ [JSON_OBJECT] Incomplete JSON object, waiting for more data...');
@@ -211,102 +192,126 @@ String _processBuffer(String buffer) {
           break;
         }
       } else {
-        print('🔍 [JSON_SEARCH] No JSON start markers found');
-        // No JSON markers found, clear any leading garbage
-        remainingBuffer = '';
-        break;
-      }
-    }
-    
-    // If we didn't find valid JSON in this iteration, break to avoid infinite loop
-    if (!foundValidJson) {
-      break;
-    }
-    
-    // Clean the remaining buffer for next iteration
-    remainingBuffer = remainingBuffer.trim();
-    if (remainingBuffer.isEmpty) {
-      break;
-    }
-  }
-  
-  // Prevent buffer from growing too large
-  if (remainingBuffer.length > 10000) {
-    print('🚨 [BUFFER] Buffer too large (${remainingBuffer.length}), keeping only last 5000 chars');
-    remainingBuffer = remainingBuffer.substring(remainingBuffer.length - 5000);
-  }
-  
-  print('🔄 [BUFFER_RETURN] Returning buffer with ${remainingBuffer.length} chars');
-  return remainingBuffer;
-}
-
-int _findMatchingBracket(String text, int startIndex, String openBracket, String closeBracket) {
-  if (startIndex >= text.length || text[startIndex] != openBracket) {
-    print('🚫 [BRACKET_MATCH] Invalid start position or character');
-    return -1;
-  }
-  
-  int bracketCount = 1;
-  bool inString = false;
-  bool escapeNext = false;
-  
-  for (int i = startIndex + 1; i < text.length; i++) {
-    String char = text[i];
-    
-    // Handle escape sequences
-    if (escapeNext) {
-      escapeNext = false;
-      continue;
-    }
-    
-    if (char == '\\' && inString) {
-      escapeNext = true;
-      continue;
-    }
-    
-    // Handle string boundaries
-    if (char == '"') {
-      inString = !inString;
-      continue;
-    }
-    
-    // Only count brackets when not inside strings
-    if (!inString) {
-      if (char == openBracket) {
-        bracketCount++;
-        print('🔓 [BRACKET_COUNT] Open bracket at $i, count: $bracketCount');
-      } else if (char == closeBracket) {
-        bracketCount--;
-        print('🔒 [BRACKET_COUNT] Close bracket at $i, count: $bracketCount');
-        if (bracketCount == 0) {
-          print('✅ [BRACKET_MATCH] Found matching bracket at position $i');
-          return i;
+        // Remove leading garbage characters until we find a JSON start
+        int nextJsonStart = -1;
+        for (int i = 0; i < remainingBuffer.length; i++) {
+          if (remainingBuffer[i] == '{' || remainingBuffer[i] == '[') {
+            nextJsonStart = i;
+            break;
+          }
+        }
+        
+        if (nextJsonStart > 0) {
+          print('🗑️ [CLEANUP] Removing ${nextJsonStart} garbage characters');
+          remainingBuffer = remainingBuffer.substring(nextJsonStart);
+          processedSomething = true;
+        } else if (nextJsonStart == -1) {
+          print('🔍 [JSON_SEARCH] No JSON start markers found, clearing buffer');
+          remainingBuffer = '';
+          break;
         }
       }
+      
+      // Prevent infinite loops
+      if (!processedSomething) {
+        print('⚠️ [SAFETY] No progress made, removing first character to prevent infinite loop');
+        remainingBuffer = remainingBuffer.length > 1 ? remainingBuffer.substring(1) : '';
+      }
     }
+    
+    // Prevent buffer from growing too large
+    if (remainingBuffer.length > 10000) {
+      print('🚨 [BUFFER] Buffer too large (${remainingBuffer.length}), keeping only last 5000 chars');
+      remainingBuffer = remainingBuffer.substring(remainingBuffer.length - 5000);
+    }
+    
+    print('🔄 [BUFFER_RETURN] Returning buffer with ${remainingBuffer.length} chars');
+    return remainingBuffer;
   }
-  
-  print('🔍 [BRACKET_SEARCH] No matching $closeBracket found for $openBracket at position $startIndex (final count: $bracketCount)');
-  return -1;
-}
 
-  bool _isValidJson(String jsonString) {
+  bool _validateAndSendJson(String jsonString) {
     try {
+      // Validate JSON structure
       dynamic parsed = jsonDecode(jsonString);
       print('✅ [JSON_VALIDATE] Valid JSON parsed successfully');
       
       // Log the structure for debugging
       if (parsed is List) {
         print('📋 [JSON_STRUCTURE] Array with ${parsed.length} items');
-      } else if (parsed is Map) {
+        // Ensure all array items are objects with required fields
+        for (int i = 0; i < parsed.length; i++) {
+          if (parsed[i] is! Map<String, dynamic>) {
+            print('❌ [JSON_VALIDATE] Array item $i is not an object');
+            return false;
+          }
+        }
+      } else if (parsed is Map<String, dynamic>) {
         print('📄 [JSON_STRUCTURE] Object with keys: ${parsed.keys.join(', ')}');
+      } else {
+        print('❌ [JSON_VALIDATE] JSON is neither array nor object');
+        return false;
+      }
+      
+      // Send valid JSON to UI
+      if (!_isDisposed) {
+        print('📤 [JSON_SEND] Sending valid JSON to UI');
+        _dataController.add(jsonString);
       }
       
       return true;
     } catch (e) {
       print('🚫 [JSON_VALIDATE] Invalid JSON: $e');
+      print('📄 [JSON_INVALID] Data was: "$jsonString"');
       return false;
     }
+  }
+
+  int _findMatchingBracket(String text, int startIndex, String openBracket, String closeBracket) {
+    if (startIndex >= text.length || text[startIndex] != openBracket) {
+      print('🚫 [BRACKET_MATCH] Invalid start position or character');
+      return -1;
+    }
+    
+    int bracketCount = 1;
+    bool inString = false;
+    bool escapeNext = false;
+    
+    for (int i = startIndex + 1; i < text.length; i++) {
+      String char = text[i];
+      
+      // Handle escape sequences
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+      
+      if (char == '\\' && inString) {
+        escapeNext = true;
+        continue;
+      }
+      
+      // Handle string boundaries
+      if (char == '"') {
+        inString = !inString;
+        continue;
+      }
+      
+      // Only count brackets when not inside strings
+      if (!inString) {
+        if (char == openBracket) {
+          bracketCount++;
+        } else if (char == closeBracket) {
+          bracketCount--;
+          if (bracketCount == 0) {
+            print('✅ [BRACKET_MATCH] Found matching bracket at position $i');
+            return i;
+          }
+        }
+      }
+    }
+    
+    print('🔍 [BRACKET_SEARCH] No matching $closeBracket found for $openBracket at position $startIndex (final count: $bracketCount)');
+    return -1;
   }
 
   Future<void> sendCommand(String command) async {
